@@ -16,13 +16,13 @@ public class Member {
 
     private String email;
 
-    private long password;
+    private String password;
 
     @Column(name = "member_name")
     private String name;
 
     @ManyToOne
-    @JoinColumn("authority_id")
+    @JoinColumn(name = "authority_id")
     private Authority authority;
 
     @OneToMany(mappedBy = "member")
