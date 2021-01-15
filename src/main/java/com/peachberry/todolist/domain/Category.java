@@ -1,6 +1,7 @@
 package com.peachberry.todolist.domain;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -13,5 +14,5 @@ public class Category {
     private String title;
 
     @OneToMany(mappedBy = "category")
-    private List<Todo> todos;
+    private List<Todo> todos = new ArrayList<>();
 }

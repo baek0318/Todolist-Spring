@@ -3,6 +3,7 @@ package com.peachberry.todolist.domain;
 import lombok.Getter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -21,5 +22,5 @@ public class Member {
     private String name;
 
     @OneToMany(mappedBy = "member")
-    private List<Todo> todos;
+    private List<Todo> todos = new ArrayList<>();
 }
