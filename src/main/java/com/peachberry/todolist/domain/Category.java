@@ -1,10 +1,13 @@
 package com.peachberry.todolist.domain;
 
+import lombok.Getter;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Getter
 public class Category {
 
     @Id @GeneratedValue

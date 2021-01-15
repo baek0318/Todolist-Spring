@@ -21,6 +21,10 @@ public class Member {
     @Column(name = "member_name")
     private String name;
 
+    @ManyToOne
+    @JoinColumn("authority_id")
+    private Authority authority;
+
     @OneToMany(mappedBy = "member")
     private List<Todo> todos = new ArrayList<>();
 }
