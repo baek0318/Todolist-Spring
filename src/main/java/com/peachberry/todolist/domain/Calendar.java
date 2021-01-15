@@ -5,11 +5,11 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class Calendar {
 
-    private Integer year;
+    private int year;
 
-    private Integer month;
+    private int month;
 
-    private Integer day;
+    private int day;
 
     protected Calendar() {}
 
