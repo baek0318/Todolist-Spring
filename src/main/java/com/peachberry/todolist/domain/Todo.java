@@ -8,7 +8,8 @@ import javax.persistence.*;
 @Getter
 public class Todo {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "todo_id")
     private Long id;
 

@@ -3,6 +3,7 @@ package com.peachberry.todolist.domain;
 import lombok.Getter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +11,7 @@ import java.util.List;
 @Getter
 public class Member {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long id;
 
@@ -22,11 +23,17 @@ public class Member {
     private String name;
 
     @ManyToOne
+    @NotNull
     @JoinColumn(name = "authority_id")
     private Authority authority;
 
     @OneToMany(mappedBy = "member")
     private List<Todo> todos = new ArrayList<>();
 
-
+    public Member(String email, String password, String name, Authority authority) {
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.authority = authority;
+    }
 }
