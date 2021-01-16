@@ -64,7 +64,9 @@ public class CookieUtilImpl implements CookieUtil{
     }
 
     private Cookie getCookie(Cookie[] cookies, String type) {
-        return Arrays.stream(cookies).filter(cookie -> cookie.getName().equals(type)).findFirst()
+        return Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals(type))
+                .findFirst()
                 .orElse(null);
     }
 }
