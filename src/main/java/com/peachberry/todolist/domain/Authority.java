@@ -24,4 +24,8 @@ public class Authority {
     public Authority(Role role) {
         this.role = role;
     }
+
+    public Authority() {
+
+    }
 }
