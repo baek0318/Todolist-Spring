@@ -20,4 +20,8 @@ public class Authority {
 
     @OneToMany(mappedBy = "authority")
     private List<Member> members = new ArrayList<>();
+
+    public Authority(Role role) {
+        this.role = role;
+    }
 }
