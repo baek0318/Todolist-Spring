@@ -3,7 +3,7 @@ package com.peachberry.todolist.domain;
 import lombok.Getter;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,11 +15,16 @@ public class Member {
     @Column(name = "member_id")
     private Long id;
 
+    @Email
+    @NotBlank
     private String email;
 
+    @NotBlank
+    @Max(value = 20)
     private String password;
 
     @Column(name = "member_name")
+    @NotBlank
     private String name;
 
     @ManyToOne

@@ -3,6 +3,7 @@ package com.peachberry.todolist.domain;
 import lombok.Getter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +17,7 @@ public class Authority {
     private Long id;
 
     @Enumerated(EnumType.STRING)
+    @NotNull
     private Role role;
 
     @OneToMany(mappedBy = "authority")

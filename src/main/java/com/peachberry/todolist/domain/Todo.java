@@ -3,6 +3,7 @@ package com.peachberry.todolist.domain;
 import lombok.Getter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 @Entity
 @Getter
@@ -23,6 +24,9 @@ public class Todo {
 
     @Embedded
     private Calendar calendar;
+
+    @NotBlank
+    private String title;
 
     @Enumerated(EnumType.STRING)
     private TodoStatus status; //COMPLELETE, ING
