@@ -20,7 +20,7 @@ public class Member {
     private String email;
 
     @NotBlank
-    @Max(value = 20)
+    @Size(max = 20)
     private String password;
 
     @Column(name = "member_name")
