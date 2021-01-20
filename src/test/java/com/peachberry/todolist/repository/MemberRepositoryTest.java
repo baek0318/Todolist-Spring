@@ -23,6 +23,10 @@ public class MemberRepositoryTest {
     @Rollback
     @DisplayName("제대로 저장 검색되는지 확인")
     void saveAndLoadMemberData() {
+        //given
 
+        //when
+
+        //then
     }
 }
