@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,9 +87,29 @@ public class MemberRepositoryTest {
     @DisplayName("동일한 이메일 존재")
     void checkSameEmail() {
         //given
+        Member member = new Member(EMAIL, PASSWORD, NAME, authority);
 
         //when
+        memberRepository.save(member);
+        Boolean result = memberRepository.existByEmail(EMAIL);
 
         //then
+        Assertions.assertThat(result).isEqualTo(true);
     }
+
+    @Test
+    @Rollback
+    @DisplayName("ID로 찾기")
+    void testFindById() {
+        //given
+        Member member = new Member(EMAIL, PASSWORD, NAME, authority);
+
+        //when
+        memberRepository.save(member);
+        Member result = memberRepository.findById(1L);
+        //then
+        Assertions.assertThat(result).isEqualTo(member);
+    }
+
+
 }
