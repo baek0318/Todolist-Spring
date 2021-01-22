@@ -27,6 +27,11 @@ public class Authority {
         this.role = role;
     }
 
+    public Authority(Long id, Role role) {
+        this.id = id;
+        this.role = role;
+    }
+
     public Authority() {
 
     }
