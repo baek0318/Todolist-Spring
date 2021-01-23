@@ -32,7 +32,7 @@ public class Authority {
         this.role = role;
     }
 
-    public Authority() {
+    private Authority() {
 
     }
 }
