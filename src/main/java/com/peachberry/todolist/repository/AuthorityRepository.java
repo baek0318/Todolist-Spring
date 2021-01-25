@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 @Repository
 public class AuthorityRepository {
@@ -24,6 +26,7 @@ public class AuthorityRepository {
      */
     public void save(Authority authority) {
         em.persist(authority);
+        logger.info("member save success");
     }
 
     /**
@@ -32,7 +35,14 @@ public class AuthorityRepository {
      * @return 있다면 true 없다면 false
      */
     public Boolean existByRole(Role role) {
-        return findByRole(role) != null;
+        if(findByRole(role) != null) {
+            logger.error("member already exist");
+            return true;
+        }
+        else {
+            logger.info("member doesn't exist");
+            return false;
+        }
     }
 
     /**
@@ -42,11 +52,13 @@ public class AuthorityRepository {
      */
     public Authority findByRole(Role role) {
         try {
-            return em.createQuery("select a from Authority a where a.role = :role", Authority.class)
+            Authority authority = em.createQuery("select a from Authority a where a.role = :role", Authority.class)
                     .setParameter("role", role)
                     .getSingleResult();
+            logger.info("success find member");
+            return authority;
         }catch(NoResultException e){
-            logger.error("can not find role {}",e.getMessage());
+            logger.error("can not find role {}" ,e.getMessage());
             return null;
         }
     }
