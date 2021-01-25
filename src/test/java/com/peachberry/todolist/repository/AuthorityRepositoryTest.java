@@ -5,84 +5,60 @@ import com.peachberry.todolist.domain.Role;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.annotation.Rollback;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
-import java.util.Set;
 
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
+@Transactional
 public class AuthorityRepositoryTest {
 
-    @Mock
+    @Autowired
     private AuthorityRepository authorityRepository;
 
-    private Validator validator;
-
-    @BeforeEach
-    void beforeEach() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
-    }
-
-
     @Test
-    @DisplayName("값을 Email로 찾아 확인")
-    void authoritySaveAndFind() {
+    @DisplayName("값을 저장후 저장 확인")
+    void authoritySaveNFind() {
         //given
-        given(authorityRepository.findByRole(Role.USER)).willReturn(new Authority(1L, Role.USER));
+        Authority authority = new Authority(Role.USER);
+        authorityRepository.save(authority);
         //when
         Authority result = authorityRepository.findByRole(Role.USER);
+
         //then
-        verify(authorityRepository, times(1)).findByRole(Role.USER);
-        Assertions.assertThat(result.getId()).isEqualTo(1L);
-        Assertions.assertThat(result.getRole()).isEqualTo(Role.USER);
+        Assertions.assertThat(result).isEqualTo(authority);
     }
 
     @Test
-    @DisplayName("authority 저장시에 아무런 인자도 넘어오지 않았을 때")
-    void authorityNoArgument() {
-        //given
-        Authority authority = new Authority();
-
-        //when
-        Set<ConstraintViolation<Authority>> validates = validator.validate(authority);
-
-        //then
-        Assertions.assertThat(validates.iterator().next().getMessage()).isEqualTo("널이어서는 안됩니다");
-    }
-
-    @Test @Rollback
     @DisplayName("없는 권한을 찾을 때")
     void authorityNoName() {
         //given
         Authority authority = new Authority(Role.USER);
         authorityRepository.save(authority);
+
         //when
-        Authority result = authorityRepository.findByRole(Role.ADMIN);
+        Authority resultNull = authorityRepository.findByRole(Role.ADMIN);
+        Authority resultNotNull = authorityRepository.findByRole(Role.USER);
         //then
-        Assertions.assertThat(result).isEqualTo(null);
+        Assertions.assertThat(resultNull).isEqualTo(null);
+        Assertions.assertThat(resultNotNull).isEqualTo(authority);
     }
 
     @Test
     @DisplayName("권한정보 저장후 해당 정보가 존재하는지 확인")
     void authorityExist() {
         //given
-        given(authorityRepository.existByRole(Role.USER)).willReturn(true);
-        //when
+        Authority authority = new Authority(Role.USER);
+        authorityRepository.save(authority);
 
-        Boolean result = authorityRepository.existByRole(Role.USER);
+        //when
+        Boolean resultTrue = authorityRepository.existByRole(Role.USER);
+
         //then
-        verify(authorityRepository, times(1)).existByRole(Role.USER);
-        Assertions.assertThat(result).isEqualTo(true);
+        Assertions.assertThat(resultTrue).isEqualTo(true);
     }
 
     @Test
@@ -90,9 +66,10 @@ public class AuthorityRepositoryTest {
     void authorityNotExist() {
         //given
         Authority authority = new Authority(Role.USER);
+
         //when
-        authorityRepository.save(authority);
         Boolean result = authorityRepository.existByRole(Role.ADMIN);
+
         //then
         Assertions.assertThat(result).isEqualTo(false);
     }
