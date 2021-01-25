@@ -18,11 +18,13 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.OrderBy;
 import javax.validation.*;
+import java.util.List;
 import java.util.Set;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
+@SpringBootTest()
 @Transactional
 public class MemberRepositoryTest {
 
@@ -51,7 +53,6 @@ public class MemberRepositoryTest {
     }
 
     @Test
-    @Rollback
     @DisplayName("제대로 저장 검색되는지 확인")
     void saveAndLoadMemberData() {
         //given
@@ -67,7 +68,6 @@ public class MemberRepositoryTest {
 
     //올바르지 않은 이메일 형식을 입력하였을때
     @Test
-    @Rollback
     @DisplayName("이메일 형식이 올바르지 않습니다")
     void checkEmailValidation() {
         //given
@@ -83,7 +83,6 @@ public class MemberRepositoryTest {
 
     //동일한 이메일이 존재하는지 확인
     @Test
-    @Rollback
     @DisplayName("동일한 이메일 존재")
     void checkSameEmail() {
         //given
@@ -98,18 +97,19 @@ public class MemberRepositoryTest {
     }
 
     @Test
-    @Rollback
-    @DisplayName("ID로 찾기")
-    void testFindById() {
+    @DisplayName("전체 멤버 불러오기")
+    void checkFindAllMember() {
         //given
-        Member member = new Member(EMAIL, PASSWORD, NAME, authority);
+        Member member1 = new Member(EMAIL, PASSWORD, NAME, authority);
+        Member member2 = new Member("peachberry0318@gmail.comm", "1234", "baek", authority);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
 
         //when
-        memberRepository.save(member);
-        Member result = memberRepository.findById(1L);
+        List<Member> result = memberRepository.findMembers();
+
         //then
-        Assertions.assertThat(result).isEqualTo(member);
+        Assertions.assertThat(member1).isEqualTo(result.get(0));
+        Assertions.assertThat(member2).isEqualTo(result.get(1));
     }
-
-
 }
