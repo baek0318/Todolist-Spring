@@ -21,4 +21,13 @@ public class Category {
 
     @OneToMany(mappedBy = "category")
     private List<Todo> todos = new ArrayList<>();
+
+    public Category(@NotBlank String title, List<Todo> todos) {
+        this.title = title;
+        this.todos = todos;
+    }
+
+    protected Category() {
+
+    }
 }
