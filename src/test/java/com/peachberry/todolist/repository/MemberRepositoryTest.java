@@ -97,6 +97,20 @@ public class MemberRepositoryTest {
     }
 
     @Test
+    @DisplayName("id로 member 찾기")
+    void testFindById() {
+        //given
+        Member member = new Member(EMAIL, PASSWORD, NAME, authority);
+
+        //when
+        Long id = memberRepository.save(member);
+        Member result = memberRepository.findById(id);
+
+        //then
+        Assertions.assertThat(result).isEqualTo(member);
+    }
+
+    @Test
     @DisplayName("전체 멤버 불러오기")
     void checkFindAllMember() {
         //given
