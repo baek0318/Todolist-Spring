@@ -6,6 +6,7 @@ import com.peachberry.todolist.domain.Todo;
 import com.peachberry.todolist.domain.TodoStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -43,6 +44,7 @@ public class TodoRepository {
      * @param id DB에 적용된 id값
      * @return id에 부합하는 todo값     */
     public Todo findById(Long id) {
+        em.clear();
         return em.find(Todo.class, id);
     }
 
@@ -77,10 +79,11 @@ public class TodoRepository {
      * @param status 변경할려는 status
      * @param id 해당하는 id
      */
-    public void reviseStatus(TodoStatus status, Long id) {
-        em.createQuery("update Todo set Todo.status = :status where Todo.id = :id")
-                .setParameter("status", status)
-                .setParameter("id", id);
+    public Long reviseStatus(TodoStatus status, Long id) {
+        Todo todo = em.find(Todo.class, id);
+        todo.setStatus(status);
+        em.merge(todo);
+        return todo.getId();
     }
 
     /**
@@ -88,10 +91,11 @@ public class TodoRepository {
      * @param title 변경할려는 title
      * @param id 해당하는 id
      */
-    public void reviseTodo(String title, Long id) {
-        em.createQuery("update Todo set Todo.title = :title where Todo.id = :id")
-                .setParameter("title", title)
-                .setParameter("id", id);
+    public Long reviseTodo(String title, Long id) {
+        Todo todo = em.find(Todo.class, id);
+        todo.setTitle(title);
+        em.merge(todo);
+        return todo.getId();
     }
 
     /**
@@ -99,19 +103,23 @@ public class TodoRepository {
      * @param date 변경할려는 date
      * @param id 해당하는 id
      */
-    public void reviseCalendar(Calendar date, Long id) {
-        em.createQuery("update Todo set Todo.calendar = :date where Todo.id = :id")
-                .setParameter("date", date)
-                .setParameter("id", id);
+    public Long reviseCalendar(Calendar date, Long id) {
+        Todo todo = em.find(Todo.class, id);
+        todo.setCalendar(date);
+        em.merge(todo);
+        return todo.getId();
     }
 
     /**
      * Todo를 삭제할 수 있다
      * @param id 해당하는 id
      */
-    public void deleteById(Long id) {
-        em.createQuery("delete from Todo where Todo.id = :id")
-                .setParameter("id", id);
+    public int deleteById(Long id) {
+        int result = em.createQuery("delete from Todo td where td.id = :id")
+                .setParameter("id", id)
+                .executeUpdate();
+        return result;
+
     }
 
 
