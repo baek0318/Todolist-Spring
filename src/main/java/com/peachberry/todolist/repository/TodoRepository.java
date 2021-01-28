@@ -23,8 +23,14 @@ public class TodoRepository {
 
 
     public Long save(Todo todo) {
-        em.persist(todo);
-        logger.info("todo save success");
+        if(todo.getId() == null){
+            em.persist(todo);
+            logger.info("todo save success");
+        }
+        else {
+            em.merge(todo);
+            logger.info("todo update success");
+        }
         return todo.getId();
     }
 
@@ -80,9 +86,9 @@ public class TodoRepository {
      * @param id 해당하는 id
      */
     public Long reviseStatus(TodoStatus status, Long id) {
-        Todo todo = em.find(Todo.class, id);
-        todo.setStatus(status);
-        em.merge(todo);
+        Todo todo = findById(id);
+        todo.changeStatus(status);
+        save(todo);
         return todo.getId();
     }
 
@@ -92,9 +98,9 @@ public class TodoRepository {
      * @param id 해당하는 id
      */
     public Long reviseTodo(String title, Long id) {
-        Todo todo = em.find(Todo.class, id);
-        todo.setTitle(title);
-        em.merge(todo);
+        Todo todo = findById(id);
+        todo.changeTitle(title);
+        save(todo);
         return todo.getId();
     }
 
@@ -104,9 +110,9 @@ public class TodoRepository {
      * @param id 해당하는 id
      */
     public Long reviseCalendar(Calendar date, Long id) {
-        Todo todo = em.find(Todo.class, id);
-        todo.setCalendar(date);
-        em.merge(todo);
+        Todo todo = findById(id);
+        todo.changeCalendar(date);
+        save(todo);
         return todo.getId();
     }
 
@@ -114,12 +120,10 @@ public class TodoRepository {
      * Todo를 삭제할 수 있다
      * @param id 해당하는 id
      */
-    public int deleteById(Long id) {
-        int result = em.createQuery("delete from Todo td where td.id = :id")
-                .setParameter("id", id)
-                .executeUpdate();
-        return result;
-
+    public void deleteById(Long id) {
+        Todo todo = em.find(Todo.class, id);
+        em.remove(todo);
+        logger.info("todo delete success");
     }
 
 
