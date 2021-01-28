@@ -8,7 +8,6 @@ import javax.validation.constraints.NotBlank;
 
 @Entity
 @Getter
-@Setter
 public class Todo {
 
     @Id
@@ -41,11 +40,17 @@ public class Todo {
         this.status = status;
     }
 
-    public Todo( Calendar calendar, @NotBlank String title, TodoStatus status) {
-        this.calendar = calendar;
+    protected Todo() {}
+
+    public void changeTitle(String title) {
         this.title = title;
-        this.status = status;
     }
 
-    protected Todo() {}
+    public void changeCalendar(Calendar calendar) {
+        this.calendar = calendar;
+    }
+
+    public void changeStatus(TodoStatus status) {
+        this.status = status;
+    }
 }

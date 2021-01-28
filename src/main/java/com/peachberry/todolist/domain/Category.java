@@ -22,12 +22,20 @@ public class Category {
     @OneToMany(mappedBy = "category")
     private List<Todo> todos = new ArrayList<>();
 
-    public Category(@NotBlank String title, List<Todo> todos) {
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    public Category(@NotBlank String title, Member member) {
         this.title = title;
-        this.todos = todos;
+        this.member = member;
     }
 
     protected Category() {
 
+    }
+
+    public void changeTitle(String title) {
+        this.title = title;
     }
 }

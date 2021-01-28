@@ -35,6 +35,9 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<Todo> todos = new ArrayList<>();
 
+    @OneToMany(mappedBy = "member")
+    private List<Category> categories = new ArrayList<>();
+
     public Member(String email, String password, String name, Authority authority) {
         this.email = email;
         this.password = password;
