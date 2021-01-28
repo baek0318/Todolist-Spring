@@ -37,7 +37,7 @@ class TodoRepositoryTest {
         Calendar calendar = new Calendar(2021, 1, 26);
         String title = "밥 먹기";
         TodoStatus status = TodoStatus.ING;
-        Todo todo = new Todo(calendar, title, status);
+        Todo todo = new Todo(null,null,calendar, title, status);
 
         //when
         Long id = todoRepository.save(todo);
@@ -55,12 +55,9 @@ class TodoRepositoryTest {
         Member member1 = new Member("baek0318@icloud.com","1234","baek", authority);
         Member member2 = new Member("peachberry@icloud.com","1234","seung", authority);
         Calendar calendar = new Calendar(2021, 1, 26);
-        Todo todo1 = new Todo(calendar, "밥 먹기", TodoStatus.ING);
-        todo1.setMember(member1);
-        Todo todo2 = new Todo(calendar, "화장실 가기", TodoStatus.COMPLETE);
-        todo2.setMember(member2);
-        Todo todo3 = new Todo(calendar, "학교가기", TodoStatus.ING);
-        todo3.setMember(member1);
+        Todo todo1 = new Todo(member1, null, calendar, "밥 먹기", TodoStatus.ING);
+        Todo todo2 = new Todo(member2, null, calendar, "화장실 가기", TodoStatus.COMPLETE);
+        Todo todo3 = new Todo(member1, null, calendar, "학교가기", TodoStatus.ING);
 
         //when
         authorityRepository.save(authority);
@@ -85,12 +82,9 @@ class TodoRepositoryTest {
         Member member1 = new Member("baek0318@icloud.com","1234","baek", authority);
         Member member2 = new Member("peachberry@icloud.com","1234","seung", authority);
         Calendar calendar = new Calendar(2021, 1, 26);
-        Todo todo1 = new Todo(calendar, "밥 먹기", TodoStatus.COMPLETE);
-        todo1.setMember(member1);
-        Todo todo2 = new Todo(calendar, "화장실 가기", TodoStatus.COMPLETE);
-        todo2.setMember(member2);
-        Todo todo3 = new Todo(calendar, "학교가기", TodoStatus.ING);
-        todo3.setMember(member1);
+        Todo todo1 = new Todo(member1, null, calendar, "밥 먹기", TodoStatus.COMPLETE);
+        Todo todo2 = new Todo(member2, null, calendar, "화장실 가기", TodoStatus.COMPLETE);
+        Todo todo3 = new Todo(member1, null, calendar, "학교가기", TodoStatus.ING);
 
         //when
         authorityRepository.save(authority);
@@ -119,12 +113,9 @@ class TodoRepositoryTest {
         Member member2 = new Member("peachberry@icloud.com","1234","seung", authority);
         Calendar calendar = new Calendar(2021, 1, 26);
         Calendar calendar2 = new Calendar(2021, 1, 27);
-        Todo todo1 = new Todo(calendar, "밥 먹기", TodoStatus.COMPLETE);
-        todo1.setMember(member1);
-        Todo todo2 = new Todo(calendar, "화장실 가기", TodoStatus.COMPLETE);
-        todo2.setMember(member2);
-        Todo todo3 = new Todo(calendar2, "학교가기", TodoStatus.ING);
-        todo3.setMember(member1);
+        Todo todo1 = new Todo(member1, null, calendar, "밥 먹기", TodoStatus.COMPLETE);
+        Todo todo2 = new Todo(member2, null, calendar, "화장실 가기", TodoStatus.COMPLETE);
+        Todo todo3 = new Todo(member1, null, calendar2, "학교가기", TodoStatus.ING);
 
         //when
         authorityRepository.save(authority);
@@ -149,10 +140,8 @@ class TodoRepositoryTest {
         Member member1 = new Member("baek0318@icloud.com","1234","baek", authority);
         Member member2 = new Member("peachberry@icloud.com","1234","seung", authority);
         Calendar calendar = new Calendar(2021, 1, 26);
-        Todo todo1 = new Todo(calendar, "밥 먹기", TodoStatus.COMPLETE);
-        todo1.setMember(member1);
-        Todo todo2 = new Todo(calendar, "화장실 가기", TodoStatus.COMPLETE);
-        todo2.setMember(member2);
+        Todo todo1 = new Todo(member1, null, calendar, "밥 먹기", TodoStatus.COMPLETE);
+        Todo todo2 = new Todo(member2, null, calendar, "화장실 가기", TodoStatus.COMPLETE);
 
         //when
         authorityRepository.save(authority);
@@ -178,10 +167,8 @@ class TodoRepositoryTest {
         Member member1 = new Member("baek0318@icloud.com","1234","baek", authority);
         Member member2 = new Member("peachberry@icloud.com","1234","seung", authority);
         Calendar calendar = new Calendar(2021, 1, 26);
-        Todo todo1 = new Todo(calendar, "밥 먹기", TodoStatus.COMPLETE);
-        todo1.setMember(member1);
-        Todo todo2 = new Todo(calendar, "화장실 가기", TodoStatus.COMPLETE);
-        todo2.setMember(member2);
+        Todo todo1 = new Todo(member1, null, calendar, "밥 먹기", TodoStatus.COMPLETE);
+        Todo todo2 = new Todo(member2, null, calendar, "화장실 가기", TodoStatus.COMPLETE);
 
         //when
         authorityRepository.save(authority);
@@ -206,10 +193,8 @@ class TodoRepositoryTest {
         Member member1 = new Member("baek0318@icloud.com","1234","baek", authority);
         Member member2 = new Member("peachberry@icloud.com","1234","seung", authority);
         Calendar calendar = new Calendar(2021, 1, 26);
-        Todo todo1 = new Todo(calendar, "밥 먹기", TodoStatus.COMPLETE);
-        todo1.setMember(member1);
-        Todo todo2 = new Todo(calendar, "화장실 가기", TodoStatus.COMPLETE);
-        todo2.setMember(member2);
+        Todo todo1 = new Todo(member1, null, calendar, "밥 먹기", TodoStatus.COMPLETE);
+        Todo todo2 = new Todo(member2, null, calendar, "화장실 가기", TodoStatus.COMPLETE);
 
         //when
         authorityRepository.save(authority);
@@ -234,20 +219,18 @@ class TodoRepositoryTest {
         Authority authority = new Authority(Role.USER);
         Member member1 = new Member("baek0318@icloud.com","1234","baek", authority);
         Calendar calendar = new Calendar(2021, 1, 26);
-        Todo todo1 = new Todo(calendar, "밥 먹기", TodoStatus.COMPLETE);
-        todo1.setMember(member1);
+        Todo todo1 = new Todo(member1, null, calendar, "밥 먹기", TodoStatus.COMPLETE);
 
         //when
         authorityRepository.save(authority);
         memberRepository.save(member1);
         Long id = todoRepository.save(todo1);
 
-        int result = todoRepository.deleteById(id);
+        todoRepository.deleteById(id);
         List<Todo> result2 = todoRepository.findByStatus(TodoStatus.COMPLETE, member1);
         Todo result3 = todoRepository.findById(id);
 
         //then
-        Assertions.assertThat(result).isEqualTo(1);
         Assertions.assertThat(result2.size()).isEqualTo(0);
         Assertions.assertThat(result3).isNull();
     }
