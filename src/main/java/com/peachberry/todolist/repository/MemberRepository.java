@@ -25,15 +25,6 @@ public class MemberRepository {
     }
 
     /**
-     * email이 존재하는지 확인하는 메서드
-     * @param email 사용자의 email
-     * @return 있다면 true 없다면 false
-     */
-    public Boolean existByEmail(String email) {
-        return findByEmail(email) != null;
-    }
-
-    /**
      * id로 member를 찾아주는 메서드
      * @param id db에 사용된 아이디
      * @return 찾은 member 객체
@@ -47,15 +38,10 @@ public class MemberRepository {
      * @param email 찾고자 하는 이메일
      * @return member 객체
      */
-    public Member findByEmail(String email) {
-        try {
-            return em.createQuery("select m from Member m where m.email = :email",Member.class)
-                    .setParameter("email", email)
-                    .getSingleResult();
-        }catch (NoResultException e) {
-            logger.info("Email not found {}", e.getMessage());
-            return null;
-        }
+    public List<Member> findByEmail(String email) {
+        return em.createQuery("select m from Member m where m.email = :email",Member.class)
+                .setParameter("email", email)
+                .getResultList();
     }
 
     /**
