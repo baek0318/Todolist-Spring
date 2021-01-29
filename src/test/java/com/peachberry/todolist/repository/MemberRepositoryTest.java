@@ -28,7 +28,6 @@ import java.util.Set;
 @Transactional
 public class MemberRepositoryTest {
 
-    private Logger logger = LoggerFactory.getLogger(MemberRepositoryTest.class);
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
@@ -59,11 +58,12 @@ public class MemberRepositoryTest {
         Member member = new Member(EMAIL, PASSWORD, NAME, authority);
 
         //when
-        memberRepository.save(member);
-        Member result = memberRepository.findByEmail(EMAIL);
+        Long id = memberRepository.save(member);
+        List<Member> result = memberRepository.findByEmail(EMAIL);
 
         //then
-        Assertions.assertThat(result).isEqualTo(member);
+        Assertions.assertThat(result.get(0).getId()).isEqualTo(id);
+        Assertions.assertThat(result.size()).isEqualTo(1);
     }
 
     //올바르지 않은 이메일 형식을 입력하였을때
@@ -79,21 +79,6 @@ public class MemberRepositoryTest {
 
         //then
         Assertions.assertThat(validates.iterator().next().getInvalidValue()).isEqualTo(wrong);
-    }
-
-    //동일한 이메일이 존재하는지 확인
-    @Test
-    @DisplayName("동일한 이메일 존재")
-    void checkSameEmail() {
-        //given
-        Member member = new Member(EMAIL, PASSWORD, NAME, authority);
-
-        //when
-        memberRepository.save(member);
-        Boolean result = memberRepository.existByEmail(EMAIL);
-
-        //then
-        Assertions.assertThat(result).isEqualTo(true);
     }
 
     @Test

@@ -13,6 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
@@ -62,11 +64,13 @@ class CategoryRepositoryTest {
         Long id = categoryRepository.save(category1);
         categoryRepository.save(category2);
 
-        Category result = categoryRepository.findByTitle("하루일과", member1);
+        List<Category> result = categoryRepository.findByTitle("하루일과", member1);
 
         //then
-        Assertions.assertThat(result.getId()).isEqualTo(id);
-        Assertions.assertThat(result.getTitle()).isEqualTo("하루일과");
+        Assertions.assertThat(result.isEmpty()).isFalse();
+        Assertions.assertThat(result.size()).isEqualTo(1);
+        Assertions.assertThat(result.get(0).getId()).isEqualTo(id);
+        Assertions.assertThat(result.get(0).getTitle()).isEqualTo("하루일과");
     }
 
     @Test

@@ -10,6 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -26,10 +28,10 @@ public class AuthorityRepositoryTest {
         Authority authority = new Authority(Role.USER);
         authorityRepository.save(authority);
         //when
-        Authority result = authorityRepository.findByRole(Role.USER);
+        List<Authority> result = authorityRepository.findByRole(Role.USER);
 
         //then
-        Assertions.assertThat(result).isEqualTo(authority);
+        Assertions.assertThat(result.get(0).getRole()).isEqualTo(Role.USER);
     }
 
     @Test
@@ -40,37 +42,12 @@ public class AuthorityRepositoryTest {
         authorityRepository.save(authority);
 
         //when
-        Authority resultNull = authorityRepository.findByRole(Role.ADMIN);
-        Authority resultNotNull = authorityRepository.findByRole(Role.USER);
+        List<Authority> resultEmpty = authorityRepository.findByRole(Role.ADMIN);
+        List<Authority> result = authorityRepository.findByRole(Role.USER);
         //then
-        Assertions.assertThat(resultNull).isEqualTo(null);
-        Assertions.assertThat(resultNotNull).isEqualTo(authority);
+        Assertions.assertThat(resultEmpty.isEmpty()).isTrue();
+        Assertions.assertThat(result.size()).isEqualTo(1);
+        Assertions.assertThat(result.get(0).getRole()).isEqualTo(Role.USER);
     }
 
-    @Test
-    @DisplayName("권한정보 저장후 해당 정보가 존재하는지 확인")
-    void authorityExist() {
-        //given
-        Authority authority = new Authority(Role.USER);
-        authorityRepository.save(authority);
-
-        //when
-        Boolean resultTrue = authorityRepository.existByRole(Role.USER);
-
-        //then
-        Assertions.assertThat(resultTrue).isEqualTo(true);
-    }
-
-    @Test
-    @DisplayName("없는 권한이 존재하는지 확인")
-    void authorityNotExist() {
-        //given
-        Authority authority = new Authority(Role.USER);
-
-        //when
-        Boolean result = authorityRepository.existByRole(Role.ADMIN);
-
-        //then
-        Assertions.assertThat(result).isEqualTo(false);
-    }
 }
