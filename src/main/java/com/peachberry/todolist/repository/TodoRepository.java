@@ -1,9 +1,6 @@
 package com.peachberry.todolist.repository;
 
-import com.peachberry.todolist.domain.Calendar;
-import com.peachberry.todolist.domain.Member;
-import com.peachberry.todolist.domain.Todo;
-import com.peachberry.todolist.domain.TodoStatus;
+import com.peachberry.todolist.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.Modifying;
@@ -80,6 +77,13 @@ public class TodoRepository {
                 .getResultList();
     }
 
+    public List<Todo> findByCategory(Category category, Member member) {
+        return em.createQuery("select td from Todo td where td.category = :category and td.member = :member", Todo.class)
+                .setParameter("category", category)
+                .setParameter("member", member)
+                .getResultList();
+    }
+
     /**
      * Todo status를 변경할 수 있다
      * @param status 변경할려는 status
@@ -125,6 +129,5 @@ public class TodoRepository {
         em.remove(todo);
         logger.info("todo delete success");
     }
-
 
 }
