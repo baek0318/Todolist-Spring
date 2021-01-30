@@ -15,14 +15,8 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    private final AuthorityRepository authorityRepository;
-
-    private final AuthenticationManager authenticationManager;
-
-    public MemberService(MemberRepository memberRepository, AuthorityRepository authorityRepository, AuthenticationManager authenticationManager) {
+    public MemberService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
-        this.authorityRepository = authorityRepository;
-        this.authenticationManager = authenticationManager;
     }
 
     public Long join(Member member) {
@@ -38,7 +32,15 @@ public class MemberService {
     }
 
     public List<Member> findAll() {
-        return memberRepository.findMembers();
+        List<Member> members = memberRepository.findMembers();
+        validateList(members);
+        return members;
+    }
+
+    private void validateList(List<Member> members) {
+        if(members.isEmpty()) {
+            throw new IllegalStateException("회원이 존재하지 않습니다");
+        }
     }
 
     public Member findMember(Member member) {
