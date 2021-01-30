@@ -41,4 +41,8 @@ public class AuthorityRepository {
                 .setParameter("role", role)
                 .getResultList();
     }
+
+    public Authority findById(Long id) {
+        return em.find(Authority.class, id);
+    }
 }
