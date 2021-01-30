@@ -34,6 +34,12 @@
 
 ## :hammer_and_wrench: 설계
 ### DB설계
-![DB](./img/Todolist-DB%20복사본.png)
+![DB](./img/Todolist-DB.png)
 
 ### 백엔드 설계
+**아키텍처**
+![Architecture](./img/Todolist-Architecture-2.png)
+
+**다이어그램**
+![Diagram](./img/Todolist-Diagram.png)
+
