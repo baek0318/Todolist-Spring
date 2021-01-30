@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,6 +20,7 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
+    @Transactional
     public Long join(Member member) {
         validateEmail(member.getEmail());
         return memberRepository.save(member);
@@ -31,6 +33,7 @@ public class MemberService {
         }
     }
 
+    @Transactional
     public List<Member> findAll() {
         List<Member> members = memberRepository.findMembers();
         validateList(members);
@@ -43,6 +46,7 @@ public class MemberService {
         }
     }
 
+    @Transactional
     public Member findMember(Member member) {
         Member m = memberRepository.findById(member.getId());
         validateMember(m);
