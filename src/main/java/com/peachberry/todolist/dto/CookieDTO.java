@@ -1,7 +1,10 @@
 package com.peachberry.todolist.dto;
 
+import lombok.Getter;
+
 import javax.servlet.http.Cookie;
 
+@Getter
 public class CookieDTO {
 
     private final Cookie accessCookie;
