@@ -18,16 +18,12 @@ public class AuthorityService {
     }
 
     @Transactional
-    public Long saveAuthority(Authority authority) {
-        validateAuthority(authority);
-        return authorityRepository.save(authority);
-
-    }
-
-    private void validateAuthority(Authority authority) {
+    public Authority saveAuthority(Authority authority) {
         List<Authority> authorities = authorityRepository.findByRole(authority.getRole());
         if(!authorities.isEmpty()){
-            throw new IllegalStateException("이미 존재하는 권한입니다");
+            return authorities.get(0);
+        }else {
+            return authorityRepository.findById(authorityRepository.save(authority));
         }
     }
 }
