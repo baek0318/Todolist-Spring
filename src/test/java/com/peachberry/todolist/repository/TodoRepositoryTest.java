@@ -12,6 +12,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,6 +30,9 @@ class TodoRepositoryTest {
 
     @Autowired
     private AuthorityRepository authorityRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @Test
     @DisplayName("저장이 제대로 되는지 확인")
@@ -233,5 +237,27 @@ class TodoRepositoryTest {
         //then
         Assertions.assertThat(result2.size()).isEqualTo(0);
         Assertions.assertThat(result3).isNull();
+    }
+
+    @Test
+    @DisplayName("카테고리로 Todo 검색하기")
+    void  testFindByCategory() {
+        //given
+        Authority authority = new Authority(Role.USER);
+        Member member1 = new Member("baek0318@icloud.com","1234","baek", authority);
+        Category category = new Category("하루일과", member1);
+        Calendar calendar = new Calendar(2021, 1, 26);
+        Todo todo1 = new Todo(member1, category, calendar, "밥 먹기", TodoStatus.COMPLETE);
+
+        //when
+        authorityRepository.save(authority);
+        memberRepository.save(member1);
+        categoryRepository.save(category);
+        Long id = todoRepository.save(todo1);
+
+        List<Todo> result = todoRepository.findByCategory(category, member1);
+
+        //then
+        Assertions.assertThat(result).isEqualTo(Arrays.asList(todo1));
     }
 }
