@@ -10,7 +10,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@Builder
 public class Member {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +21,7 @@ public class Member {
     private String email;
 
     @NotBlank
-    @Size(max = 20)
+    @Size(min = 4)
     private String password;
 
     @Column(name = "member_name")
@@ -40,6 +39,7 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<Category> categories = new ArrayList<>();
 
+    @Builder
     public Member(String email, String password, String name, Authority authority) {
         this.email = email;
         this.password = password;
@@ -50,4 +50,5 @@ public class Member {
     protected Member() {
 
     }
+
 }
