@@ -1,6 +1,7 @@
 package com.peachberry.todolist.repository;
 
 
+import com.peachberry.todolist.AppConfig;
 import com.peachberry.todolist.domain.Authority;
 import com.peachberry.todolist.domain.Member;
 import com.peachberry.todolist.domain.Role;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest()
+@ContextConfiguration(classes = {AppConfig.class})
 @Transactional
 public class MemberRepositoryTest {
 
