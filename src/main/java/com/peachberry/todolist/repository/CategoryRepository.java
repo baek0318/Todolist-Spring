@@ -36,15 +36,15 @@ public class CategoryRepository {
     }
 
     public List<Category> findAll(Member member) {
-        return em.createQuery("select c from Category c where c.member = :member", Category.class)
-                .setParameter("member" , member)
+        return em.createQuery("select c from Category c where c.member.id = :id", Category.class)
+                .setParameter("id" , member.getId())
                 .getResultList();
     }
 
     public List<Category> findByTitle(String title, Member member) {
-        return em.createQuery("select c from Category c where c.title = :title and c.member = :member", Category.class)
+        return em.createQuery("select c from Category c where c.title = :title and c.member.id = :id", Category.class)
                 .setParameter("title", title)
-                .setParameter("member", member)
+                .setParameter("id", member.getId())
                 .getResultList();
     }
 

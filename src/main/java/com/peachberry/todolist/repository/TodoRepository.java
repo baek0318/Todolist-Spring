@@ -58,9 +58,9 @@ public class TodoRepository {
      * @return 해당하는 todo를 list로 반환한다
      */
     public List<Todo> findByStatus(TodoStatus status, Member member) {
-        return em.createQuery("select td from Todo td where td.status = :status and td.member = :member", Todo.class)
+        return em.createQuery("select td from Todo td where td.status = :status and td.member.id = :id", Todo.class)
                 .setParameter("status", status)
-                .setParameter("member", member)
+                .setParameter("id", member.getId())
                 .getResultList();
     }
 
@@ -71,16 +71,16 @@ public class TodoRepository {
      * @return 해당하는 todo를 list로 반환한다
      */
     public List<Todo> findByCalendar(Calendar date, Member member) {
-        return em.createQuery("select td from Todo td where td.calendar =:date and td.member = :member", Todo.class)
+        return em.createQuery("select td from Todo td where td.calendar =:date and td.member.id = :id", Todo.class)
                 .setParameter("date", date)
-                .setParameter("member", member)
+                .setParameter("id", member.getId())
                 .getResultList();
     }
 
     public List<Todo> findByCategory(Category category, Member member) {
-        return em.createQuery("select td from Todo td where td.category = :category and td.member = :member", Todo.class)
+        return em.createQuery("select td from Todo td where td.category = :category and td.member.id = :id", Todo.class)
                 .setParameter("category", category)
-                .setParameter("member", member)
+                .setParameter("id", member.getId())
                 .getResultList();
     }
 
