@@ -50,6 +50,29 @@ class CategoryRepositoryTest {
     }
 
     @Test
+    @DisplayName("전체 카테고리 조회")
+    void testFindAll() {
+        //given
+        Authority authority = new Authority(Role.USER);
+        Member member1 = new Member("baek0318@icloud.com","1234","baek", authority);
+        Category category1 = new Category("하루일과", member1);
+        Category category2 = new Category("하루공부", member1);
+        Category category3 = new Category("하루운동", member1);
+
+        //when
+        authorityRepository.save(authority);
+        memberRepository.save(member1);
+        Long id1 = categoryRepository.save(category1);
+        Long id2 = categoryRepository.save(category2);
+        Long id3 = categoryRepository.save(category3);
+
+        List<Category> result = categoryRepository.findAll(member1);
+
+        //then
+        Assertions.assertThat(result.size()).isEqualTo(3);
+    }
+
+    @Test
     @DisplayName("카테고리 이름으로 검색 확인")
     void testFindByTitle() {
         //given
