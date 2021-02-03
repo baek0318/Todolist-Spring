@@ -1,4 +1,4 @@
-package com.peachberry.todolist.dto;
+package com.peachberry.todolist.dto.request;
 
 import com.peachberry.todolist.domain.Authority;
 import lombok.Builder;

@@ -1,4 +1,4 @@
-package com.peachberry.todolist.dto;
+package com.peachberry.todolist.dto.response;
 
 import lombok.Getter;
 
