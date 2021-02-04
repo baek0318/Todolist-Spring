@@ -37,8 +37,8 @@ public class TodoRepository {
      * @return 찾은 값들을 List로 반환한다
      */
     public List<Todo> findAll(Member member) {
-        return em.createQuery("select td from Todo td where td.member = :member", Todo.class)
-                .setParameter("member", member)
+        return em.createQuery("select td from Todo td where td.member.id = :id", Todo.class)
+                .setParameter("id", member.getId())
                 .getResultList();
     }
 
@@ -47,7 +47,6 @@ public class TodoRepository {
      * @param id DB에 적용된 id값
      * @return id에 부합하는 todo값     */
     public Todo findById(Long id) {
-        em.clear();
         return em.find(Todo.class, id);
     }
 
