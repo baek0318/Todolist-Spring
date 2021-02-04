@@ -9,7 +9,7 @@ import lombok.Getter;
 @Getter
 public class CategoryDTO {
 
-    private final Category category;
+    private Category category;
 
-    private final Member member;
+    private Member member;
 }
