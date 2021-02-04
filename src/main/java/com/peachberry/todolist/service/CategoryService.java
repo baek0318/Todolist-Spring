@@ -6,6 +6,7 @@ import com.peachberry.todolist.dto.CategoryDTO;
 import com.peachberry.todolist.repository.CategoryRepository;
 import com.peachberry.todolist.repository.MemberRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,7 +22,8 @@ public class CategoryService {
         this.memberRepository = memberRepository;
     }
 
-    public void save(CategoryDTO categoryDTO) {
+    @Transactional
+    public void saveCategory(CategoryDTO categoryDTO) {
         //카테고리를 저장할때 어떤 유저의 카테고리인지 정해주고 넣어줘야한다
         Member m = memberRepository.findById(categoryDTO.getMember().getId());
         findDuplicateTitle(categoryDTO);
@@ -36,6 +38,7 @@ public class CategoryService {
         }
     }
 
+    @Transactional
     public Category findByTitle(CategoryDTO categoryDTO) {
         //해당아이디에 같은 주제의 카테고리가 있는지 확인
         List<Category> result = categoryRepository.findByTitle(categoryDTO.getCategory().getTitle(), categoryDTO.getMember());
@@ -45,15 +48,18 @@ public class CategoryService {
         return result.get(0);
     }
 
+    @Transactional
     public List<Category> findAll(Member member) {
         return categoryRepository.findAll(member);
     }
 
+    @Transactional
     public void reviseTitle(String title, Category category) {
         //해당아이디의 특정 카테고리의 주제를 수정
         categoryRepository.reviseCategory(title, category.getId());
     }
 
+    @Transactional
     public void deleteCategory(Category category) {
         //해당아이디의 특정 카테고리 삭제
         categoryRepository.deleteById(category.getId());
