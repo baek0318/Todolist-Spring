@@ -49,14 +49,14 @@ public class CategoryServiceTest {
                 .willReturn(Collections.singletonList(category));
 
         //when
-        categoryService.save(categoryDTO);
+        categoryService.saveCategory(categoryDTO);
 
         //then
         verify(memberRepository, times(1))
                 .findById(categoryDTO.getMember().getId());
         verify(categoryRepository, times(1))
                 .findByTitle(categoryDTO.getCategory().getTitle(), categoryDTO.getMember());
-        Assertions.assertThatThrownBy(() -> categoryService.save(categoryDTO)).isInstanceOf(IllegalStateException.class);
+        Assertions.assertThatThrownBy(() -> categoryService.saveCategory(categoryDTO)).isInstanceOf(IllegalStateException.class);
         verify(memberRepository, times(2))
                 .findById(categoryDTO.getMember().getId());
         verify(categoryRepository, times(2))
