@@ -62,4 +62,21 @@ public class CategoryServiceTest {
         verify(categoryRepository, times(2))
                 .findByTitle(categoryDTO.getCategory().getTitle(), categoryDTO.getMember());
     }
+
+    @Test
+    @DisplayName("카테고리 주제가 존재하지 않을떄")
+    void findByTitleTest() {
+        //given
+        given(categoryRepository.findByTitle("하루일과", member))
+                .willReturn(Collections.singletonList(category))
+                .willReturn(Collections.emptyList());
+
+        //when
+        Category result = categoryService.findByTitle(categoryDTO);
+
+        //then
+        Assertions.assertThat(result).isEqualTo(category);
+        Assertions.assertThatThrownBy(() -> categoryService.findByTitle(categoryDTO)).isInstanceOf(IllegalStateException.class);
+        verify(categoryRepository, times(2)).findByTitle("하루일과", member);
+    }
 }
