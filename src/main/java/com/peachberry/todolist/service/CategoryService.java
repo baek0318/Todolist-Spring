@@ -36,9 +36,13 @@ public class CategoryService {
         }
     }
 
-    public List<Category> findByTitle(CategoryDTO categoryDTO) {
+    public Category findByTitle(CategoryDTO categoryDTO) {
         //해당아이디에 같은 주제의 카테고리가 있는지 확인
-        return categoryRepository.findByTitle(categoryDTO.getCategory().getTitle(), categoryDTO.getMember());
+        List<Category> result = categoryRepository.findByTitle(categoryDTO.getCategory().getTitle(), categoryDTO.getMember());
+        if(result.isEmpty()) {
+            throw new IllegalStateException("동일한 카테고리가 존재하지 않습니다");
+        }
+        return result.get(0);
     }
 
     public List<Category> findAll(Member member) {
