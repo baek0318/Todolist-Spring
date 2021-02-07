@@ -1,5 +1,6 @@
 package com.peachberry.todolist.domain;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,6 +33,7 @@ public class Todo {
     @Enumerated(EnumType.STRING)
     private TodoStatus status; //COMPLELETE, ING
 
+    @Builder
     public Todo(Member member, Category category, Calendar calendar, @NotBlank String title, TodoStatus status) {
         this.member = member;
         this.category = category;
