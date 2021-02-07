@@ -73,7 +73,7 @@ class TodoRepositoryTest {
         todoRepository.save(todo2);
         todoRepository.save(todo3);
 
-        List<Todo> result = todoRepository.findAll(member1);
+        List<Todo> result = todoRepository.findAll(member1.getId());
 
         //then
         System.out.println(result);
@@ -100,8 +100,8 @@ class TodoRepositoryTest {
         todoRepository.save(todo2);
         todoRepository.save(todo3);
 
-        List<Todo> complete = todoRepository.findByStatus(TodoStatus.COMPLETE, member1);
-        List<Todo> ing = todoRepository.findByStatus(TodoStatus.ING, member1);
+        List<Todo> complete = todoRepository.findByStatus(TodoStatus.COMPLETE, member1.getId());
+        List<Todo> ing = todoRepository.findByStatus(TodoStatus.ING, member1.getId());
 
         //then
         Assertions.assertThat(complete).isEqualTo(Arrays.asList(todo1));
@@ -131,7 +131,7 @@ class TodoRepositoryTest {
         todoRepository.save(todo2);
         todoRepository.save(todo3);
 
-        List<Todo> result = todoRepository.findByCalendar(calendar2, member1);
+        List<Todo> result = todoRepository.findByCalendar(calendar2, member1.getId());
 
         //then
         Assertions.assertThat(result).isEqualTo(Arrays.asList(todo3));
@@ -157,7 +157,7 @@ class TodoRepositoryTest {
         todoRepository.save(todo2);
 
         todoRepository.reviseStatus(TodoStatus.ING, id1);
-        List<Todo> yes = todoRepository.findByStatus(TodoStatus.ING, member1);
+        List<Todo> yes = todoRepository.findByStatus(TodoStatus.ING, member1.getId());
 
         //then
         System.out.println(yes.get(0).getStatus());
@@ -184,7 +184,7 @@ class TodoRepositoryTest {
         todoRepository.save(todo2);
 
         todoRepository.reviseTodo("운동하기", id1);
-        List<Todo> yes = todoRepository.findAll(member1);
+        List<Todo> yes = todoRepository.findAll(member1.getId());
 
         //then
         Assertions.assertThat(yes.get(0).getTitle()).isEqualTo("운동하기");
@@ -211,7 +211,7 @@ class TodoRepositoryTest {
 
         Calendar c = new Calendar(2021, 1, 31);
         todoRepository.reviseCalendar(c, id1);
-        List<Todo> yes = todoRepository.findByCalendar(c, member1);
+        List<Todo> yes = todoRepository.findByCalendar(c, member1.getId());
 
         //then
         Assertions.assertThat(yes.get(0).getCalendar()).isEqualTo(c);
@@ -233,7 +233,7 @@ class TodoRepositoryTest {
         Long id = todoRepository.save(todo1);
 
         todoRepository.deleteById(id);
-        List<Todo> result2 = todoRepository.findByStatus(TodoStatus.COMPLETE, member1);
+        List<Todo> result2 = todoRepository.findByStatus(TodoStatus.COMPLETE, member1.getId());
         Todo result3 = todoRepository.findById(id);
 
         //then
@@ -257,7 +257,7 @@ class TodoRepositoryTest {
         categoryRepository.save(category);
         Long id = todoRepository.save(todo1);
 
-        List<Todo> result = todoRepository.findByCategory(category, member1);
+        List<Todo> result = todoRepository.findByCategory(category.getId(), member1.getId());
 
         //then
         Assertions.assertThat(result).isEqualTo(Arrays.asList(todo1));

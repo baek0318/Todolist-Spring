@@ -66,7 +66,7 @@ class CategoryRepositoryTest {
         Long id2 = categoryRepository.save(category2);
         Long id3 = categoryRepository.save(category3);
 
-        List<Category> result = categoryRepository.findAll(member1);
+        List<Category> result = categoryRepository.findAll(member1.getId());
 
         //then
         Assertions.assertThat(result.size()).isEqualTo(3);
@@ -89,7 +89,7 @@ class CategoryRepositoryTest {
         Long id = categoryRepository.save(category1);
         categoryRepository.save(category2);
 
-        List<Category> result = categoryRepository.findByTitle("하루일과", member1);
+        List<Category> result = categoryRepository.findByTitle("하루일과", member1.getId());
 
         //then
         Assertions.assertThat(result.isEmpty()).isFalse();
