@@ -4,9 +4,9 @@ import com.peachberry.todolist.domain.Authority;
 import com.peachberry.todolist.domain.Member;
 import com.peachberry.todolist.domain.Role;
 import com.peachberry.todolist.dto.CookieDTO;
-import com.peachberry.todolist.dto.SignInDTO;
-import com.peachberry.todolist.dto.SignUpDTO;
-import com.peachberry.todolist.dto.SignUpSuccessDTO;
+import com.peachberry.todolist.dto.request.SignInDTO;
+import com.peachberry.todolist.dto.request.SignUpDTO;
+import com.peachberry.todolist.dto.response.SignUpSuccessDTO;
 import com.peachberry.todolist.security.cookie.CookieUtil;
 import com.peachberry.todolist.security.jwt.JwtUtil;
 import org.slf4j.Logger;
@@ -70,7 +70,7 @@ public class AuthenticationService {
         return SignUpSuccessDTO.builder()
                 .email(member.getEmail())
                 .name(member.getName())
-                .authority(member.getAuthority())
+                .role(member.getAuthority().getRole())
                 .id(member.getId())
                 .build();
     }
