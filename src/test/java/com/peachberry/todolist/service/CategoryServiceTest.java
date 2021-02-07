@@ -36,47 +36,46 @@ public class CategoryServiceTest {
     private final Authority authority = new Authority(Role.USER);
     private final Member member = new Member("baek0318@icloud.com", "1234", "baek", authority);
     private final Category category = new Category("하루일과", member);
-    private final CategoryDTO categoryDTO = CategoryDTO.builder().category(category).member(member).build();
 
     @Test
     @DisplayName("카테고리 저장하기 중복확인")
     void saveTest() {
         //given
-        given(memberRepository.findById(categoryDTO.getMember().getId()))
+        given(memberRepository.findById(1L))
                 .willReturn(member);
-        given(categoryRepository.findByTitle(categoryDTO.getCategory().getTitle(), categoryDTO.getMember()))
+        given(categoryRepository.findByTitle(category.getTitle(), 1L))
                 .willReturn(Collections.emptyList())
                 .willReturn(Collections.singletonList(category));
 
         //when
-        categoryService.saveCategory(categoryDTO);
+        categoryService.saveCategory(1L ,category.getTitle());
 
         //then
         verify(memberRepository, times(1))
-                .findById(categoryDTO.getMember().getId());
+                .findById(1L);
         verify(categoryRepository, times(1))
-                .findByTitle(categoryDTO.getCategory().getTitle(), categoryDTO.getMember());
-        Assertions.assertThatThrownBy(() -> categoryService.saveCategory(categoryDTO)).isInstanceOf(IllegalStateException.class);
+                .findByTitle(category.getTitle(), 1L);
+        Assertions.assertThatThrownBy(() -> categoryService.saveCategory(1L ,category.getTitle())).isInstanceOf(IllegalStateException.class);
         verify(memberRepository, times(2))
-                .findById(categoryDTO.getMember().getId());
+                .findById(1L);
         verify(categoryRepository, times(2))
-                .findByTitle(categoryDTO.getCategory().getTitle(), categoryDTO.getMember());
+                .findByTitle(category.getTitle(), 1L);
     }
 
     @Test
     @DisplayName("카테고리 주제가 존재하지 않을떄")
     void findByTitleTest() {
         //given
-        given(categoryRepository.findByTitle("하루일과", member))
+        given(categoryRepository.findByTitle("하루일과", 1L))
                 .willReturn(Collections.singletonList(category))
                 .willReturn(Collections.emptyList());
 
         //when
-        Category result = categoryService.findByTitle(categoryDTO);
+        Category result = categoryService.findByTitle(category.getTitle(), 1L);
 
         //then
         Assertions.assertThat(result).isEqualTo(category);
-        Assertions.assertThatThrownBy(() -> categoryService.findByTitle(categoryDTO)).isInstanceOf(IllegalStateException.class);
-        verify(categoryRepository, times(2)).findByTitle("하루일과", member);
+        Assertions.assertThatThrownBy(() -> categoryService.findByTitle(category.getTitle(), 1L)).isInstanceOf(IllegalStateException.class);
+        verify(categoryRepository, times(2)).findByTitle("하루일과", 1L);
     }
 }
