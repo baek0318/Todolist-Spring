@@ -35,28 +35,28 @@ public class CategoryRepository {
         return em.find(Category.class, id);
     }
 
-    public List<Category> findAll(Member member) {
+    public List<Category> findAll(Long member_id) {
         return em.createQuery("select c from Category c where c.member.id = :id", Category.class)
-                .setParameter("id" , member.getId())
+                .setParameter("id" , member_id)
                 .getResultList();
     }
 
-    public List<Category> findByTitle(String title, Member member) {
+    public List<Category> findByTitle(String title, Long member_id) {
         return em.createQuery("select c from Category c where c.title = :title and c.member.id = :id", Category.class)
                 .setParameter("title", title)
-                .setParameter("id", member.getId())
+                .setParameter("id", member_id)
                 .getResultList();
     }
 
-    public Long reviseCategory(String title, Long id){
-        Category category = findById(id);
+    public Long reviseCategory(String title, Long category_id){
+        Category category = findById(category_id);
         category.changeTitle(title);
         save(category);
         return category.getId();
     }
 
-    public void deleteById(Long id) {
-        Category category = findById(id);
+    public void deleteById(Long category_id) {
+        Category category = findById(category_id);
         em.remove(category);
     }
 
