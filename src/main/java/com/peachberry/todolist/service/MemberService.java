@@ -40,6 +40,13 @@ public class MemberService {
         return members;
     }
 
+    @Transactional
+    public Member findByEmail(String email) {
+        List<Member> members = memberRepository.findByEmail(email);
+        validateList(members);
+        return members.get(0);
+    }
+
     private void validateList(List<Member> members) {
         if(members.isEmpty()) {
             throw new IllegalStateException("회원이 존재하지 않습니다");
