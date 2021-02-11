@@ -36,12 +36,9 @@ public class AuthenticationService {
 
     private final CookieUtil cookieUtil;
 
-    private Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
-
     private final String ACCESS = "ACCESS-TOKEN";
     private final String REFRESH = "REFRESH-TOKEN";
 
-    @Autowired
     public AuthenticationService(AuthorityService authorityService, MemberService memberService,
                                  AuthenticationManager authenticationManager, PasswordEncoder encoder, JwtUtil jwtUtil, CookieUtil cookieUtil) {
         this.authorityService = authorityService;
@@ -107,6 +104,26 @@ public class AuthenticationService {
         return new CookieDTO(accessCookie, refreshCookie);
     }
 
+    public CookieDTO signout() {
+        //메서드가 실행되면
+        //쿠키의 생명주기를 0으로 해서 만들어준다
+        //CookieDTO에 담아서 반환한다
+        Cookie accessCookie = cookieUtil.createLogoutAccessCookie(ACCESS);
+        Cookie refreshCookie = cookieUtil.createLogoutRefreshCookie(REFRESH);
 
+        return new CookieDTO(accessCookie, refreshCookie);
+    }
 
+    public Cookie issueToken(Cookie refreshCookie) {
+        //메서드가 실행되면
+        //만료가 되었기 때문에 이곳으로 요청이 온다
+        //요청을 받으면 accessToken을 만든다
+        //accessToken을 accessCookie에 담는다
+        String token = refreshCookie.getValue();
+        String email = jwtUtil.getEmailFromJwtToken(token);
+        memberService.findByEmail(email);
+        String jws = jwtUtil.accessTokenGenerate(email);
+
+        return cookieUtil.createAccessCookie(jws, ACCESS);
+    }
 }
