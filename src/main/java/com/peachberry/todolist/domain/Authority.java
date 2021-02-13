@@ -35,4 +35,15 @@ public class Authority {
     protected Authority() {
 
     }
+
+    @Override
+    public String toString() {
+        return id + " " + role;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        Authority authority = (Authority) object;
+        return role == authority.role;
+    }
 }
