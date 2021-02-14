@@ -6,6 +6,7 @@ import com.peachberry.todolist.domain.Role;
 import com.peachberry.todolist.dto.request.SignUpDTO;
 import com.peachberry.todolist.dto.response.SignUpSuccessDTO;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ public class AuthenticationClientTest {
 
     @Test
     @DisplayName("회원가입 통합 테스트")
-    void testSignUpTest() throws JsonProcessingException {
+    void testSignUp() {
 
         HttpHeaders headers = new HttpHeaders();
 
@@ -39,8 +40,22 @@ public class AuthenticationClientTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().getRole()).isEqualTo(Role.USER);
-        assertThat(response.getBody().getName()).isEqualTo("peachberry");
-        assertThat(response.getBody().getEmail()).isEqualTo("peachberry@kakao.com");
+        assertThat(response.getBody().getName()).isEqualTo(signUpDTO.getName());
+        assertThat(response.getBody().getEmail()).isEqualTo(signUpDTO.getEmail());
         assertThat(response.getBody().getId()).isEqualTo(1L);
     }
+
+    @Test
+    @DisplayName("로그인 통합 테스트")
+    void testSignUp_Failed() {
+        HttpHeaders headers = new HttpHeaders();
+
+        HttpEntity<SignUpDTO> request = new HttpEntity<>(signUpDTO, headers);
+
+        ResponseEntity<SignUpSuccessDTO> response = restTemplate
+                .postForEntity()
+
+
+    }
+
 }
