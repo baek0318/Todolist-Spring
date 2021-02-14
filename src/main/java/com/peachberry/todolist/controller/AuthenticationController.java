@@ -1,12 +1,12 @@
 package com.peachberry.todolist.controller;
 
-import com.peachberry.todolist.dto.*;
+import com.peachberry.todolist.service.exception.SignUpFailException;
+import com.peachberry.todolist.dto.request.SignUpDTO;
+import com.peachberry.todolist.dto.response.SignUpSuccessDTO;
 import com.peachberry.todolist.service.AuthenticationService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -19,22 +19,15 @@ public class AuthenticationController {
     }
 
     @PostMapping("/signup")
-    ResponseEntity<?> memberSignUp(@Valid @RequestBody SignUpDTO signUpDTO) {
+    public ResponseEntity<?> memberSignUp(@RequestBody SignUpDTO user) {
 
-        SignUpSuccessDTO success = authenticationService.signup(signUpDTO);
+        SignUpSuccessDTO response = authenticationService.signup(user);
 
-        return ResponseEntity.ok(success);
+        return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/signin")
-    ResponseEntity<?> memberSignIn(@Valid @RequestBody SignInDTO signInDTO, HttpServletResponse response) {
-
-        CookieDTO tokens = authenticationService.signin(signInDTO);
-
-        response.addCookie(tokens.getAccessCookie());
-        response.addCookie(tokens.getRefreshCookie());
-        return ResponseEntity.ok(new SuccessResponseDTO("SignIn Success!!"));
-    }
-
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public void signUpFail(SignUpFailException ex) {}
 
 }
