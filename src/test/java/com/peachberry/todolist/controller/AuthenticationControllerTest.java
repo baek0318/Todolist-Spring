@@ -1,12 +1,10 @@
 package com.peachberry.todolist.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.peachberry.todolist.AppConfig;
-import com.peachberry.todolist.domain.Member;
+import com.peachberry.todolist.service.exception.SignUpFailException;
 import com.peachberry.todolist.domain.Role;
 import com.peachberry.todolist.dto.request.SignUpDTO;
 import com.peachberry.todolist.dto.response.SignUpSuccessDTO;
-import com.peachberry.todolist.security.WebSecurityConfig;
 import com.peachberry.todolist.security.cookie.CookieUtilImpl;
 import com.peachberry.todolist.security.jwt.JwtAuthEntryPoint;
 import com.peachberry.todolist.security.jwt.JwtAuthTokenFilter;
@@ -16,23 +14,18 @@ import com.peachberry.todolist.service.AuthenticationService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -60,28 +53,43 @@ public class AuthenticationControllerTest {
     private JwtAuthEntryPoint jwtAuthEntryPoint;
 
 
-    private final SignUpDTO signUpDTO = new SignUpDTO("peachberry@kakao.com", "1234", "peach", "USER");
+    private final SignUpDTO signUpDTO = new SignUpDTO("peachberry@kakao.com", "1234", "peachberry", "USER");
 
     @Test
     @DisplayName("회원가입을 진행시에 올바른 응답값이 나오는지 확인")
-    @WithMockUser
-    void signUpTest() throws Exception {
-
+    void testSignUp() throws Exception {
         String content = objectMapper.writeValueAsString(signUpDTO);
 
-        given(authenticationService.signup(signUpDTO))
+        given(authenticationService.signup(any()))
                 .willReturn(SignUpSuccessDTO.builder()
                         .email("peachberry@kakao.com")
-                        .name("peach")
+                        .name("peachberry")
+                        .role(Role.USER)
                         .id(1L)
-                        .role(Role.USER).build());
+                        .build());
 
         mockMvc.perform(post("/api/auth/signup")
-                .content(content)
+                .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
+                .content(content))
                 .andExpect(status().isOk())
-                .andDo(print());
-        verify(authenticationService, times(1)).signup(signUpDTO);
+                .andExpect(jsonPath("email").value("peachberry@kakao.com"))
+                .andExpect(jsonPath("name").value("peachberry"))
+                .andExpect(jsonPath("role").value("USER"))
+                .andExpect(jsonPath("id").value(1L));
+    }
+
+    @Test
+    @DisplayName("회원가입이 실패한 경우")
+    void testSignUp_if_signup_fail() throws Exception {
+        String content = objectMapper.writeValueAsString(signUpDTO);
+
+        given(authenticationService.signup(any())).willThrow(new SignUpFailException());
+
+        mockMvc.perform(post("/api/auth/signup")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content))
+                .andExpect(status().isUnauthorized());
     }
 }
