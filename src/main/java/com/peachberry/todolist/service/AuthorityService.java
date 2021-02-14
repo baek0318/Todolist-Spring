@@ -18,11 +18,12 @@ public class AuthorityService {
     }
 
     @Transactional
-    public Authority saveAuthority(Authority authority) {
-        List<Authority> authorities = authorityRepository.findByRole(authority.getRole());
+    public Authority saveAuthority(Role role) {
+        List<Authority> authorities = authorityRepository.findByRole(role);
         if(!authorities.isEmpty()){
             return authorities.get(0);
         }else {
+            Authority authority = new Authority(role);
             return authorityRepository.findById(authorityRepository.save(authority));
         }
     }
