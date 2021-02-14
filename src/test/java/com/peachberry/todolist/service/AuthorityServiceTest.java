@@ -41,8 +41,8 @@ class AuthorityServiceTest {
                 .willReturn(Collections.singletonList(authority));
 
         //when
-        Authority result = authorityService.saveAuthority(authority);
-        Authority result2 = authorityService.saveAuthority(authority);
+        Authority result = authorityService.saveAuthority(authority.getRole());
+        Authority result2 = authorityService.saveAuthority(authority.getRole());
 
         //then
         verify(authorityRepository, times(1)).save(authority);
