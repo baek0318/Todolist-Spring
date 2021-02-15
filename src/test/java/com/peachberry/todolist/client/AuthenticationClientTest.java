@@ -73,7 +73,9 @@ public class AuthenticationClientTest {
         String access_token = cookies.get(0).split(";")[0].split("=")[1]; //access_header
         String refresh_header = cookies.get(2).split("=")[0]; //refresh_token
         String refresh_token = cookies.get(2).split(";")[0].split("=")[1]; //refresh_token
-
+        for(String cookie : cookies){
+            System.out.println(cookie.split(";")[1]);
+        }
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(access_header).isEqualTo("ACCESS-TOKEN");
         assertThat(refresh_header).isEqualTo("REFRESH-TOKEN");
@@ -84,6 +86,22 @@ public class AuthenticationClientTest {
     @Test
     @DisplayName("로그아웃 통합 테스트")
     void testSignOut() {
-        
+        HttpHeaders headers = new HttpHeaders();
+
+        HttpEntity<SignInDTO> request = new HttpEntity<>(null, headers);
+
+        ResponseEntity<SuccessResponseDTO> response = restTemplate
+                .postForEntity("/api/auth/signout", null, SuccessResponseDTO.class);
+
+        List<String> cookies = response.getHeaders().getValuesAsList(headers.SET_COOKIE);
+        String access_header = cookies.get(0).split("=")[0]; //access_header
+        String access_age = cookies.get(0).split(";")[1].split("=")[1]; //access_age
+        String refresh_header = cookies.get(2).split("=")[0]; //refresh_header
+        String refresh_age = cookies.get(2).split(";")[1].split("=")[1]; //refresh_age
+
+        assertThat(access_header).isEqualTo("ACCESS-TOKEN");
+        assertThat(refresh_header).isEqualTo("REFRESH-TOKEN");
+        assertThat(access_age).isEqualTo("0");
+        assertThat(refresh_age).isEqualTo("0");
     }
 }
