@@ -58,4 +58,14 @@ public class AuthenticationController {
     public void signInFail(SignInFailException ex) {
         logger.error(ex.getMessage());
     }
+
+    @PostMapping("/signout")
+    public ResponseEntity<?> memberSignOut(HttpServletResponse response) {
+
+        CookieDTO cookies = authenticationService.signout();
+
+        response.addCookie(cookies.getAccessCookie());
+        response.addCookie(cookies.getRefreshCookie());
+        return ResponseEntity.ok(SuccessResponseDTO.builder().response("SignOut Success").build());
+    }
 }
