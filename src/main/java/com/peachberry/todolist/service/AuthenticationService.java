@@ -4,30 +4,52 @@ package com.peachberry.todolist.service;
 import com.peachberry.todolist.domain.Authority;
 import com.peachberry.todolist.domain.Member;
 import com.peachberry.todolist.domain.Role;
+import com.peachberry.todolist.dto.CookieDTO;
+import com.peachberry.todolist.dto.request.SignInDTO;
 import com.peachberry.todolist.dto.request.SignUpDTO;
 import com.peachberry.todolist.dto.response.SignUpSuccessDTO;
 import com.peachberry.todolist.repository.MemberRepository;
+import com.peachberry.todolist.security.cookie.CookieUtil;
+import com.peachberry.todolist.security.jwt.JwtUtil;
+import com.peachberry.todolist.service.exception.SignInFailException;
 import com.peachberry.todolist.service.exception.SignUpFailException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.*;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.Cookie;
 import java.util.List;
 
 
 @Service
 public class AuthenticationService {
 
-    private MemberRepository memberRepository;
+    private final MemberRepository memberRepository;
 
-    private AuthorityService authorityService;
+    private final AuthorityService authorityService;
 
-    private PasswordEncoder encoder;
+    private final AuthenticationManager authenticationManager;
 
-    public AuthenticationService(MemberRepository memberRepository, AuthorityService authorityService, PasswordEncoder encoder) {
+    private final CookieUtil cookieUtil;
+
+    private final JwtUtil jwtUtil;
+
+    private final PasswordEncoder encoder;
+
+    private final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
+
+    public AuthenticationService(MemberRepository memberRepository, AuthorityService authorityService
+            , AuthenticationManager authenticationManager, CookieUtil cookieUtil, JwtUtil jwtUtil, PasswordEncoder encoder) {
         this.memberRepository = memberRepository;
         this.authorityService = authorityService;
+        this.authenticationManager = authenticationManager;
+        this.cookieUtil = cookieUtil;
+        this.jwtUtil = jwtUtil;
         this.encoder = encoder;
     }
 
@@ -57,7 +79,26 @@ public class AuthenticationService {
     private void emailDuplication(String email) {
         List<Member> member = memberRepository.findByEmail(email);
         if(!member.isEmpty()) {
-            throw new SignUpFailException();
+            throw new SignUpFailException("동일한 이메일이 존재합니다");
+        }
+    }
+
+    public CookieDTO signin(SignInDTO signInDTO) {
+        try {
+            Authentication authentication = authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(signInDTO.getEmail(), signInDTO.getPassword()));
+
+            String access_token = jwtUtil.accessTokenGenerate(authentication);
+            String refresh_token = jwtUtil.refreshTokenGenerate(authentication);
+
+            Cookie access = cookieUtil.createAccessCookie(access_token);
+            Cookie refresh = cookieUtil.createRefreshCookie(refresh_token);
+
+            return new CookieDTO(access, refresh);
+        }
+        catch (Exception e) {
+            logger.error(e.getMessage() + e.getClass());
+            throw new SignInFailException("로그인에 실패했습니다");
         }
     }
 }
