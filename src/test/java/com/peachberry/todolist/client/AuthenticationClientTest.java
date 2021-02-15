@@ -3,12 +3,18 @@ package com.peachberry.todolist.client;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peachberry.todolist.domain.Role;
+import com.peachberry.todolist.dto.CookieDTO;
+import com.peachberry.todolist.dto.request.SignInDTO;
 import com.peachberry.todolist.dto.request.SignUpDTO;
 import com.peachberry.todolist.dto.response.SignUpSuccessDTO;
+import com.peachberry.todolist.dto.response.SuccessResponseDTO;
+import com.peachberry.todolist.security.jwt.JwtUtil;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -16,6 +22,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,7 +33,14 @@ public class AuthenticationClientTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
     private final SignUpDTO signUpDTO = new SignUpDTO("peachberry@kakao.com", "1234", "peachberry", "USER");
+
+    private final SignInDTO signInDTO = new SignInDTO("peachberry@kakao.com", "1234");
+
+    private final Logger logger = LoggerFactory.getLogger(AuthenticationClientTest.class);
 
     @Test
     @DisplayName("회원가입 통합 테스트")
@@ -42,19 +57,31 @@ public class AuthenticationClientTest {
         assertThat(response.getBody().getRole()).isEqualTo(Role.USER);
         assertThat(response.getBody().getName()).isEqualTo(signUpDTO.getName());
         assertThat(response.getBody().getEmail()).isEqualTo(signUpDTO.getEmail());
-        assertThat(response.getBody().getId()).isEqualTo(1L);
+        assertThat(response.getBody().getId()).isNotNull();
     }
 
     @Test
     @DisplayName("로그인 통합 테스트")
-    void testSignUp_Failed() {
+    void testSignIn() {
+
         HttpHeaders headers = new HttpHeaders();
 
-        HttpEntity<SignUpDTO> request = new HttpEntity<>(signUpDTO, headers);
+        HttpEntity<SignInDTO> request = new HttpEntity<>(signInDTO, headers);
 
-        ResponseEntity<SignUpSuccessDTO> response = restTemplate
-                .postForEntity()
+        ResponseEntity<SuccessResponseDTO> response = restTemplate
+                .postForEntity("/api/auth/signin", request, SuccessResponseDTO.class);
 
+        List<String> cookies = response.getHeaders().getValuesAsList(headers.SET_COOKIE);
+        String access_header = cookies.get(0).split("=")[0]; //access_header
+        String access_token = cookies.get(0).split("=")[1]; //access_header
+        String refresh_header = cookies.get(1).split("=")[0]; //refresh_token
+        String refresh_token = cookies.get(1).split("=")[1]; //refresh_token
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(access_header).isEqualTo("ACCESS-TOKEN");
+        assertThat(refresh_header).isEqualTo("REFRESH-TOKEN");
+        assertThat(jwtUtil.getEmailFromJwtToken(access_token)).isEqualTo(signInDTO.getEmail());
+        assertThat(jwtUtil.getEmailFromJwtToken(refresh_token)).isEqualTo(signInDTO.getEmail());
 
     }
 
