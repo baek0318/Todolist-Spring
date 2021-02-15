@@ -101,4 +101,12 @@ public class AuthenticationService {
             throw new SignInFailException("로그인에 실패했습니다");
         }
     }
+
+    public CookieDTO signout() {
+
+        Cookie access = cookieUtil.createLogoutAccessCookie();
+        Cookie refresh = cookieUtil.createLogoutRefreshCookie();
+
+        return new CookieDTO(access, refresh);
+    }
 }
