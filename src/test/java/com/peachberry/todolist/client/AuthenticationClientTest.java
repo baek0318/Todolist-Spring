@@ -1,18 +1,12 @@
 package com.peachberry.todolist.client;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peachberry.todolist.domain.Role;
-import com.peachberry.todolist.dto.CookieDTO;
 import com.peachberry.todolist.dto.request.SignInDTO;
 import com.peachberry.todolist.dto.request.SignUpDTO;
 import com.peachberry.todolist.dto.response.SignUpSuccessDTO;
 import com.peachberry.todolist.dto.response.SuccessResponseDTO;
 import com.peachberry.todolist.security.jwt.JwtUtil;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +22,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class AuthenticationClientTest {
 
     @Autowired
@@ -43,6 +38,7 @@ public class AuthenticationClientTest {
     private final Logger logger = LoggerFactory.getLogger(AuthenticationClientTest.class);
 
     @Test
+    @Order(1)
     @DisplayName("회원가입 통합 테스트")
     void testSignUp() {
 
@@ -61,6 +57,7 @@ public class AuthenticationClientTest {
     }
 
     @Test
+    @Order(2)
     @DisplayName("로그인 통합 테스트")
     void testSignIn() {
 
@@ -73,16 +70,20 @@ public class AuthenticationClientTest {
 
         List<String> cookies = response.getHeaders().getValuesAsList(headers.SET_COOKIE);
         String access_header = cookies.get(0).split("=")[0]; //access_header
-        String access_token = cookies.get(0).split("=")[1]; //access_header
-        String refresh_header = cookies.get(1).split("=")[0]; //refresh_token
-        String refresh_token = cookies.get(1).split("=")[1]; //refresh_token
+        String access_token = cookies.get(0).split(";")[0].split("=")[1]; //access_header
+        String refresh_header = cookies.get(2).split("=")[0]; //refresh_token
+        String refresh_token = cookies.get(2).split(";")[0].split("=")[1]; //refresh_token
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(access_header).isEqualTo("ACCESS-TOKEN");
         assertThat(refresh_header).isEqualTo("REFRESH-TOKEN");
         assertThat(jwtUtil.getEmailFromJwtToken(access_token)).isEqualTo(signInDTO.getEmail());
         assertThat(jwtUtil.getEmailFromJwtToken(refresh_token)).isEqualTo(signInDTO.getEmail());
-
     }
 
+    @Test
+    @DisplayName("로그아웃 통합 테스트")
+    void testSignOut() {
+        
+    }
 }
