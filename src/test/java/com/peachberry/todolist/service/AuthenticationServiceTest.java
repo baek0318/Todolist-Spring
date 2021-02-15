@@ -126,4 +126,30 @@ public class AuthenticationServiceTest {
 
         Assertions.assertThatThrownBy(() -> authenticationService.signin(signInDTO)).isInstanceOf(SignInFailException.class);
     }
+
+    @Test
+    @DisplayName("로그아웃 쿠키 만들기")
+    void testSignOut_Success() {
+        Cookie refresh = new Cookie("REFRESH-TOKEN","logout");
+        refresh.setHttpOnly(true);
+        refresh.setPath("/api/auth/issueAccess");
+        refresh.setMaxAge(0);
+
+        Cookie access = new Cookie("ACCESS-TOKEN","logout");
+        access.setHttpOnly(true);
+        access.setPath("/");
+        access.setMaxAge(0);
+
+        given(cookieUtil.createLogoutAccessCookie()).willReturn(access);
+        given(cookieUtil.createLogoutRefreshCookie()).willReturn(refresh);
+
+        CookieDTO cookies = authenticationService.signout();
+
+        Assertions.assertThat(cookies.getAccessCookie().getName()).isEqualTo("ACCESS-TOKEN");
+        Assertions.assertThat(cookies.getRefreshCookie().getName()).isEqualTo("REFRESH-TOKEN");
+        Assertions.assertThat(cookies.getAccessCookie().getMaxAge()).isEqualTo(0);
+        Assertions.assertThat(cookies.getRefreshCookie().getMaxAge()).isEqualTo(0);
+        Assertions.assertThat(cookies.getAccessCookie().isHttpOnly()).isTrue();
+        Assertions.assertThat(cookies.getRefreshCookie().isHttpOnly()).isTrue();
+    }
 }
