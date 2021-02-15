@@ -141,4 +141,23 @@ public class AuthenticationControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
+    @Test
+    @DisplayName("로그아웃이 성공한 경우")
+    void testSignOut_Success() throws Exception {
+
+        Cookie access = cookieUtil.createLogoutAccessCookie();
+        Cookie refresh = cookieUtil.createLogoutRefreshCookie();
+        given(authenticationService.signout()).willReturn(new CookieDTO(access, refresh));
+
+        mockMvc.perform(post("/api/auth/signout")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(cookie().httpOnly("ACCESS-TOKEN", true))
+                .andExpect(cookie().httpOnly("REFRESH-TOKEN", true))
+                .andExpect(cookie().exists("ACCESS-TOKEN"))
+                .andExpect(cookie().exists("REFRESH-TOKEN"))
+                .andExpect(cookie().maxAge("ACCESS-TOKEN", 0))
+                .andExpect(cookie().maxAge("REFRESH-TOKEN", 0));
+    }
 }
