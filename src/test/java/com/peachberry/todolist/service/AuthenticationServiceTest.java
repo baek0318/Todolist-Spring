@@ -4,12 +4,15 @@ package com.peachberry.todolist.service;
 import com.peachberry.todolist.domain.Authority;
 import com.peachberry.todolist.domain.Member;
 import com.peachberry.todolist.domain.Role;
+import com.peachberry.todolist.dto.CookieDTO;
+import com.peachberry.todolist.dto.request.SignInDTO;
 import com.peachberry.todolist.dto.request.SignUpDTO;
 import com.peachberry.todolist.dto.response.SignUpSuccessDTO;
 import com.peachberry.todolist.repository.MemberRepository;
 import com.peachberry.todolist.security.cookie.CookieUtil;
 import com.peachberry.todolist.security.cookie.CookieUtilImpl;
 import com.peachberry.todolist.security.jwt.JwtUtil;
+import com.peachberry.todolist.service.exception.SignInFailException;
 import com.peachberry.todolist.service.exception.SignUpFailException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -17,16 +20,25 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import javax.servlet.http.Cookie;
 import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -44,11 +56,16 @@ public class AuthenticationServiceTest {
     private AuthenticationManager authenticationManager;
 
     @Mock
+    private Authentication authentication;
+
+    @Mock
     private PasswordEncoder encoder;
 
-    private JwtUtil jwtUtil = new JwtUtil();
+    @Mock
+    private JwtUtil jwtUtil;
 
-    private CookieUtil cookieUtil = new CookieUtilImpl();
+    @Mock
+    private CookieUtil cookieUtil;
 
     @InjectMocks
     private AuthenticationService authenticationService;
@@ -57,6 +74,7 @@ public class AuthenticationServiceTest {
     private final SignUpDTO signUpDTO = new SignUpDTO("peachberry@kakao.com", "1234", "peachberry", "USER");
     private final Authority authority = new Authority(Role.USER);
     private final Member member = Member.builder().email("peachberry@kakao.com").name("peachberry").authority(authority).password("1234").build();
+    private final SignInDTO signInDTO = new SignInDTO("peachberry@kakao.com", "1234");
 
     @Test
     @DisplayName("회원가입 부르기")
@@ -80,5 +98,32 @@ public class AuthenticationServiceTest {
 
         Assertions.assertThatThrownBy(() -> authenticationService.signup(signUpDTO))
                 .isInstanceOf(SignUpFailException.class);
+    }
+
+    @Test
+    @DisplayName("로그인 성공시키기")
+    void testSignIn() {
+        given(authenticationManager.authenticate(any())).willReturn(authentication);
+        given(jwtUtil.accessTokenGenerate(authentication)).willReturn("peachberry@kakao.com");
+        given(jwtUtil.refreshTokenGenerate(authentication)).willReturn("peachberry@kakao.com");
+        given(cookieUtil.createAccessCookie(anyString())).willReturn(new Cookie("ACCESS-TOKEN", "peachberry@kakao.com"));
+        given(cookieUtil.createRefreshCookie(anyString())).willReturn(new Cookie("REFRESH-TOKEN", "peachberry@kakao.com"));
+
+        CookieDTO cookies = authenticationService.signin(signInDTO);
+
+        String access = cookies.getAccessCookie().getValue();
+        String refresh = cookies.getRefreshCookie().getValue();
+
+        //실제에서는 jwtUtil를 가지고 parsing을 진행해야한다
+        Assertions.assertThat(access).isEqualTo(signInDTO.getEmail());
+        Assertions.assertThat(refresh).isEqualTo(signInDTO.getEmail());
+    }
+
+    @Test
+    @DisplayName("로그인 오류 던지기")
+    void testSignInt_Failed() {
+        given(authenticationManager.authenticate(any())).willThrow(new DisabledException("인증이 올바르지 않습니다"));
+
+        Assertions.assertThatThrownBy(() -> authenticationService.signin(signInDTO)).isInstanceOf(SignInFailException.class);
     }
 }
