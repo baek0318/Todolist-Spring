@@ -16,8 +16,8 @@ public class CookieUtilImpl implements CookieUtil{
     private final String REFRESH_TOKEN = "REFRESH-TOKEN";
 
     @Override
-    public Cookie createAccessCookie(String token, String name) {
-        Cookie cookie = new Cookie(name,token);
+    public Cookie createAccessCookie(String token) {
+        Cookie cookie = new Cookie(ACCESS_TOKEN, token);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setMaxAge(MAX_AGE);
@@ -25,8 +25,8 @@ public class CookieUtilImpl implements CookieUtil{
     }
 
     @Override
-    public Cookie createRefreshCookie(String token, String name) {
-        Cookie cookie = new Cookie(name,token);
+    public Cookie createRefreshCookie(String token) {
+        Cookie cookie = new Cookie(REFRESH_TOKEN,token);
         cookie.setHttpOnly(true);
         cookie.setPath("/api/auth/issueAccess");
         cookie.setMaxAge(MAX_AGE);
@@ -34,8 +34,8 @@ public class CookieUtilImpl implements CookieUtil{
     }
 
     @Override
-    public Cookie createLogoutRefreshCookie(String name) {
-        Cookie cookie = new Cookie(name,"logout");
+    public Cookie createLogoutRefreshCookie() {
+        Cookie cookie = new Cookie(REFRESH_TOKEN,"logout");
         cookie.setHttpOnly(true);
         cookie.setPath("/api/auth/issueAccess");
         cookie.setMaxAge(0);
@@ -43,8 +43,8 @@ public class CookieUtilImpl implements CookieUtil{
     }
 
     @Override
-    public Cookie createLogoutAccessCookie(String name) {
-        Cookie cookie = new Cookie(name,"logout");
+    public Cookie createLogoutAccessCookie() {
+        Cookie cookie = new Cookie(ACCESS_TOKEN,"logout");
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setMaxAge(0);
