@@ -3,6 +3,7 @@ package com.peachberry.todolist.controller;
 import com.peachberry.todolist.dto.CookieDTO;
 import com.peachberry.todolist.dto.request.SignInDTO;
 import com.peachberry.todolist.dto.response.SuccessResponseDTO;
+import com.peachberry.todolist.security.cookie.CookieUtil;
 import com.peachberry.todolist.service.exception.SignInFailException;
 import com.peachberry.todolist.service.exception.SignUpFailException;
 import com.peachberry.todolist.dto.request.SignUpDTO;
@@ -14,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -25,8 +28,11 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
 
-    public AuthenticationController(AuthenticationService authenticationService) {
+    private final CookieUtil cookieUtil;
+
+    public AuthenticationController(AuthenticationService authenticationService, CookieUtil cookieUtil) {
         this.authenticationService = authenticationService;
+        this.cookieUtil = cookieUtil;
     }
 
     @PostMapping("/signup")
@@ -59,7 +65,7 @@ public class AuthenticationController {
         logger.error(ex.getMessage());
     }
 
-    @PostMapping("/signout")
+    @GetMapping("/signout")
     public ResponseEntity<?> memberSignOut(HttpServletResponse response) {
 
         CookieDTO cookies = authenticationService.signout();
@@ -67,5 +73,16 @@ public class AuthenticationController {
         response.addCookie(cookies.getAccessCookie());
         response.addCookie(cookies.getRefreshCookie());
         return ResponseEntity.ok(SuccessResponseDTO.builder().response("SignOut Success").build());
+    }
+
+    @GetMapping("/issueAccess")
+    public ResponseEntity<?> issueAccess(HttpServletRequest request, HttpServletResponse response) {
+
+        Cookie refreshCookie = cookieUtil.getRefreshCookie(request);
+
+        Cookie cookie = authenticationService.issueAccess(refreshCookie);
+
+        response.addCookie(cookie);
+        return ResponseEntity.ok(SuccessResponseDTO.builder().response("Issue Access Token Success").build());
     }
 }
