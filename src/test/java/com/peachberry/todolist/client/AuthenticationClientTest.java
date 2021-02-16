@@ -5,6 +5,7 @@ import com.peachberry.todolist.dto.request.SignInDTO;
 import com.peachberry.todolist.dto.request.SignUpDTO;
 import com.peachberry.todolist.dto.response.SignUpSuccessDTO;
 import com.peachberry.todolist.dto.response.SuccessResponseDTO;
+import com.peachberry.todolist.security.cookie.CookieUtil;
 import com.peachberry.todolist.security.jwt.JwtUtil;
 import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
@@ -12,10 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 
 import java.util.List;
 
@@ -31,11 +29,16 @@ public class AuthenticationClientTest {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Autowired
+    private CookieUtil cookieUtil;
+
     private final SignUpDTO signUpDTO = new SignUpDTO("peachberry@kakao.com", "1234", "peachberry", "USER");
 
     private final SignInDTO signInDTO = new SignInDTO("peachberry@kakao.com", "1234");
 
     private final Logger logger = LoggerFactory.getLogger(AuthenticationClientTest.class);
+
+    private String refresh = "empty";
 
     @Test
     @Order(1)
@@ -73,9 +76,7 @@ public class AuthenticationClientTest {
         String access_token = cookies.get(0).split(";")[0].split("=")[1]; //access_header
         String refresh_header = cookies.get(2).split("=")[0]; //refresh_token
         String refresh_token = cookies.get(2).split(";")[0].split("=")[1]; //refresh_token
-        for(String cookie : cookies){
-            System.out.println(cookie.split(";")[1]);
-        }
+
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(access_header).isEqualTo("ACCESS-TOKEN");
         assertThat(refresh_header).isEqualTo("REFRESH-TOKEN");
@@ -86,14 +87,11 @@ public class AuthenticationClientTest {
     @Test
     @DisplayName("로그아웃 통합 테스트")
     void testSignOut() {
-        HttpHeaders headers = new HttpHeaders();
-
-        HttpEntity<SignInDTO> request = new HttpEntity<>(null, headers);
 
         ResponseEntity<SuccessResponseDTO> response = restTemplate
-                .postForEntity("/api/auth/signout", null, SuccessResponseDTO.class);
+                .getForEntity("/api/auth/signout",SuccessResponseDTO.class);
 
-        List<String> cookies = response.getHeaders().getValuesAsList(headers.SET_COOKIE);
+        List<String> cookies = response.getHeaders().getValuesAsList("Set-Cookie");
         String access_header = cookies.get(0).split("=")[0]; //access_header
         String access_age = cookies.get(0).split(";")[1].split("=")[1]; //access_age
         String refresh_header = cookies.get(2).split("=")[0]; //refresh_header
@@ -103,5 +101,33 @@ public class AuthenticationClientTest {
         assertThat(refresh_header).isEqualTo("REFRESH-TOKEN");
         assertThat(access_age).isEqualTo("0");
         assertThat(refresh_age).isEqualTo("0");
+    }
+
+    @Test
+    @DisplayName("ACCESS 토큰 재발행하기 통합테스트")
+    void testIssueAccessToken() {
+
+        HttpHeaders headers2 = new HttpHeaders();
+
+        HttpEntity<SignInDTO> request = new HttpEntity<>(signInDTO, headers2);
+
+        ResponseEntity<SuccessResponseDTO> response2 = restTemplate
+                .postForEntity("/api/auth/signin", request, SuccessResponseDTO.class);
+
+        List<String> cookies2 = response2.getHeaders().getValuesAsList(headers2.SET_COOKIE);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Cookie", cookies2.get(2));
+
+        ResponseEntity<SuccessResponseDTO> response = restTemplate
+                .exchange("/api/auth/issueAccess", HttpMethod.GET, new HttpEntity<>(headers) ,SuccessResponseDTO.class);
+
+        List<String> cookies = response.getHeaders().getValuesAsList("Set-Cookie");
+        String access_header = cookies.get(0).split("=")[0]; //access_header
+        String access_age = cookies.get(0).split(";")[1].split("=")[1]; //access_age
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(access_header).isEqualTo("ACCESS-TOKEN");
+        assertThat(Integer.parseInt(access_age)).isGreaterThan(Integer.parseInt("0"));
     }
 }
