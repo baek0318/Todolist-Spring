@@ -109,4 +109,13 @@ public class AuthenticationService {
 
         return new CookieDTO(access, refresh);
     }
+
+    public Cookie issueAccess(Cookie refresh) {
+
+        String refresh_jws = refresh.getValue();
+        String email = jwtUtil.getEmailFromJwtToken(refresh_jws);
+        String jws = jwtUtil.accessTokenGenerate(email);
+
+        return cookieUtil.createAccessCookie(jws);
+    }
 }
