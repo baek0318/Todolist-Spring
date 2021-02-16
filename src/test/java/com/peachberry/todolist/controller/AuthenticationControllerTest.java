@@ -1,9 +1,12 @@
 package com.peachberry.todolist.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.peachberry.todolist.domain.Authority;
+import com.peachberry.todolist.domain.Member;
 import com.peachberry.todolist.dto.CookieDTO;
 import com.peachberry.todolist.dto.request.SignInDTO;
 import com.peachberry.todolist.security.cookie.CookieUtil;
+import com.peachberry.todolist.security.domain.UserDetailsImpl;
 import com.peachberry.todolist.service.exception.SignInFailException;
 import com.peachberry.todolist.service.exception.SignUpFailException;
 import com.peachberry.todolist.domain.Role;
@@ -24,7 +27,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 
 import javax.servlet.http.Cookie;
@@ -32,6 +37,7 @@ import javax.servlet.http.Cookie;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -40,7 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @WebMvcTest(value = AuthenticationController.class, includeFilters = @ComponentScan.Filter(classes = {EnableWebSecurity.class}))
-@Import({JwtAuthTokenFilter.class, CookieUtilImpl.class})
+@Import({JwtAuthTokenFilter.class, CookieUtilImpl.class, JwtUtil.class, JwtAuthEntryPoint.class})
 public class AuthenticationControllerTest {
 
     @Autowired
@@ -51,13 +57,13 @@ public class AuthenticationControllerTest {
     private AuthenticationService authenticationService;
     @Autowired
     private JwtAuthTokenFilter jwtAuthTokenFilter;
-    @MockBean
+    @Autowired
     private JwtUtil jwtUtil;
     @Autowired
     private CookieUtil cookieUtil;
     @MockBean
     private UserDetailsServiceImpl userDetailsService;
-    @MockBean
+    @Autowired
     private JwtAuthEntryPoint jwtAuthEntryPoint;
 
     private final SignUpDTO signUpDTO = new SignUpDTO("peachberry@kakao.com", "1234", "peachberry", "USER");
@@ -149,7 +155,7 @@ public class AuthenticationControllerTest {
         Cookie refresh = cookieUtil.createLogoutRefreshCookie();
         given(authenticationService.signout()).willReturn(new CookieDTO(access, refresh));
 
-        mockMvc.perform(post("/api/auth/signout")
+        mockMvc.perform(get("/api/auth/signout")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -159,5 +165,38 @@ public class AuthenticationControllerTest {
                 .andExpect(cookie().exists("REFRESH-TOKEN"))
                 .andExpect(cookie().maxAge("ACCESS-TOKEN", 0))
                 .andExpect(cookie().maxAge("REFRESH-TOKEN", 0));
+    }
+
+    @Test
+    @DisplayName("Access 토큰 재발급이 성공한 경우")
+    void testIssueAccessToken_Success() throws Exception {
+        String jws = jwtUtil.accessTokenGenerate("peachberry@kakao.com");
+        Cookie cookie = cookieUtil.createRefreshCookie(jws);
+
+        given(userDetailsService.loadUserByUsername(any()))
+                .willReturn(UserDetailsImpl.build(Member
+                        .builder()
+                        .email("peachberry@kakao.com")
+                        .password("1234")
+                        .name("peachberry")
+                        .authority(new Authority(Role.USER)).build()));
+
+        given(authenticationService.issueAccess(any())).willReturn(cookieUtil.createAccessCookie("peachberry@kakao.com"));
+
+        mockMvc.perform(get("/api/auth/issueAccess")
+                .cookie(cookie))
+                .andExpect(status().isOk())
+                .andExpect(cookie().httpOnly("ACCESS-TOKEN", true))
+                .andExpect(cookie().exists("ACCESS-TOKEN"));
+        verify(authenticationService, times(1)).issueAccess(any());
+        verify(userDetailsService, times(1)).loadUserByUsername(any());
+    }
+
+    @Test
+    @DisplayName("Access 토큰 재발급이 실패한 경우")
+    void testIssueAccessToken_Fail() throws Exception {
+
+        mockMvc.perform(get("/api/auth/issueAccess"))
+                .andExpect(status().isUnauthorized());
     }
 }

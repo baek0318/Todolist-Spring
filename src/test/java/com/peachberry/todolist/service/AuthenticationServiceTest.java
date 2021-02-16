@@ -1,6 +1,5 @@
 package com.peachberry.todolist.service;
 
-
 import com.peachberry.todolist.domain.Authority;
 import com.peachberry.todolist.domain.Member;
 import com.peachberry.todolist.domain.Role;
@@ -10,7 +9,6 @@ import com.peachberry.todolist.dto.request.SignUpDTO;
 import com.peachberry.todolist.dto.response.SignUpSuccessDTO;
 import com.peachberry.todolist.repository.MemberRepository;
 import com.peachberry.todolist.security.cookie.CookieUtil;
-import com.peachberry.todolist.security.cookie.CookieUtilImpl;
 import com.peachberry.todolist.security.jwt.JwtUtil;
 import com.peachberry.todolist.service.exception.SignInFailException;
 import com.peachberry.todolist.service.exception.SignUpFailException;
@@ -20,19 +18,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.servlet.http.Cookie;
 import java.util.Collections;
@@ -59,13 +51,13 @@ public class AuthenticationServiceTest {
     private Authentication authentication;
 
     @Mock
-    private PasswordEncoder encoder;
-
-    @Mock
     private JwtUtil jwtUtil;
 
     @Mock
     private CookieUtil cookieUtil;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private AuthenticationService authenticationService;
@@ -152,4 +144,29 @@ public class AuthenticationServiceTest {
         Assertions.assertThat(cookies.getAccessCookie().isHttpOnly()).isTrue();
         Assertions.assertThat(cookies.getRefreshCookie().isHttpOnly()).isTrue();
     }
+
+    //AccessToken이 만료된 뒤에 issueAccess api를 호출하는 것이기 때문에 별도의 인증은 필요없다 이미 로그인 되어있다고 가정
+    //1. 필터에서 검증을 진행하기 때문에 별도의 인증 절차는 필요없다
+    //2. 리프레쉬 토큰을 분해해서 나온 이메일로 액세스 토큰을 생성해서 반환해주면 된다
+    @Test
+    @DisplayName("액세스 토큰 발급 로직 검사")
+    void testIssueAccessToken_Logic() {
+        Cookie cookie = new Cookie("ACCESS-TOKEN","logout");
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(1000);
+
+        given(jwtUtil.getEmailFromJwtToken(anyString())).willReturn("peachberry@kakao.com");
+        given(jwtUtil.accessTokenGenerate(anyString())).willReturn("access-token");
+        given(cookieUtil.createAccessCookie(anyString())).willReturn(cookie);
+
+        Cookie access = authenticationService.issueAccess(cookie);
+
+        Assertions.assertThat(access.getName()).isEqualTo("ACCESS-TOKEN");
+        Assertions.assertThat(access.getMaxAge()).isGreaterThan(0);
+        verify(jwtUtil, times(1)).getEmailFromJwtToken(anyString());
+        verify(jwtUtil, times(1)).accessTokenGenerate(anyString());
+        verify(cookieUtil, times(1)).createAccessCookie(anyString());
+    }
+
 }
