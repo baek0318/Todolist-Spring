@@ -13,8 +13,6 @@ public class TodoDTO {
 
     private Long id;
 
-    private Member member;
-
     private Category category;
 
     private Calendar calendar;
