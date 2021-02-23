@@ -1,5 +1,6 @@
 package com.peachberry.todolist.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 
 import javax.persistence.*;
@@ -19,9 +20,11 @@ public class Category {
     @NotBlank
     private String title;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "category")
     private List<Todo> todos = new ArrayList<>();
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
