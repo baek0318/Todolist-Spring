@@ -48,14 +48,14 @@ public class CategoryServiceTest {
                 .willReturn(Collections.singletonList(category));
 
         //when
-        categoryService.saveCategory(1L ,category.getTitle());
+        categoryService.saveCategory(1L ,new CategoryDTO(category.getTitle()));
 
         //then
         verify(memberRepository, times(1))
                 .findById(1L);
         verify(categoryRepository, times(1))
                 .findByTitle(category.getTitle(), 1L);
-        Assertions.assertThatThrownBy(() -> categoryService.saveCategory(1L ,category.getTitle())).isInstanceOf(IllegalStateException.class);
+        Assertions.assertThatThrownBy(() -> categoryService.saveCategory(1L ,new CategoryDTO(category.getTitle()))).isInstanceOf(IllegalStateException.class);
         verify(memberRepository, times(2))
                 .findById(1L);
         verify(categoryRepository, times(2))
