@@ -5,11 +5,16 @@ import com.peachberry.todolist.domain.Member;
 import lombok.Builder;
 import lombok.Getter;
 
-@Builder
+
 @Getter
 public class CategoryDTO {
 
-    private Category category;
+    private String title;
 
-    private Member member;
+    @Builder
+    public CategoryDTO(String title) {
+        this.title = title;
+    }
+
+    public CategoryDTO() {}
 }
