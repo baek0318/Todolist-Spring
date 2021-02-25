@@ -23,12 +23,14 @@ public class CategoryService {
     }
 
     @Transactional
-    public void saveCategory(Long member_id, String title) {
+    public Long saveCategory(Long member_id, CategoryDTO categoryDTO) {
         //카테고리를 저장할때 어떤 유저의 카테고리인지 정해주고 넣어줘야한다
         Member member = memberRepository.findById(member_id);
-        findDuplicateTitle(title, member_id);
-        Category category = new Category(title, member);
+        findDuplicateTitle(categoryDTO.getTitle(), member_id);
+        Category category = new Category(categoryDTO.getTitle(), member);
         categoryRepository.save(category);
+
+        return category.getId();
     }
 
     private void findDuplicateTitle(String title, Long member_id) {
@@ -54,9 +56,9 @@ public class CategoryService {
     }
 
     @Transactional
-    public void reviseTitle(String title, Long category_id) {
+    public Long reviseTitle(String title, Long category_id) {
         //해당아이디의 특정 카테고리의 주제를 수정
-        categoryRepository.reviseCategory(title, category_id);
+        return categoryRepository.reviseCategory(title, category_id);
     }
 
     @Transactional
