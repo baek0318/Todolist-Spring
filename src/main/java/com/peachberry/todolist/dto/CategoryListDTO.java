@@ -1,9 +1,11 @@
 package com.peachberry.todolist.dto;
 
 import com.peachberry.todolist.domain.Category;
+import lombok.Getter;
 
 import java.util.List;
 
+@Getter
 public class CategoryListDTO {
 
     private List<Category> categoryList;
