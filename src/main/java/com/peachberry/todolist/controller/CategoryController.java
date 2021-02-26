@@ -2,9 +2,12 @@ package com.peachberry.todolist.controller;
 
 import com.peachberry.todolist.domain.Category;
 import com.peachberry.todolist.dto.CategoryDTO;
+import com.peachberry.todolist.dto.CategoryDeleteDTO;
 import com.peachberry.todolist.dto.CategoryListDTO;
+import com.peachberry.todolist.dto.CategoryUpdateDTO;
 import com.peachberry.todolist.dto.response.SuccessResponseDTO;
 import com.peachberry.todolist.service.CategoryService;
+import com.peachberry.todolist.service.exception.CategoryUpdateFail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -56,14 +59,25 @@ public class CategoryController {
         return ResponseEntity.ok(CategoryDTO.builder().title(category.getTitle()).build());
     }
 
+    @PostMapping("/update")
+    public ResponseEntity<?> updateTitle(@Valid @RequestBody CategoryUpdateDTO categoryUpdateDTO, @PathVariable Long id) {
 
-/*
-    @PostMapping("/delete")
-    public ResponseEntity<?> deleteCategory() {
-        //categoryService.deleteCategory();
+        categoryService.reviseTitle(categoryUpdateDTO.getChangedTitle(), categoryUpdateDTO.getId());
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(SuccessResponseDTO.builder().response("Update Complete").build());
     }
 
-     */
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public void updateFailed(CategoryUpdateFail e) {
+        logger.error(e.getMessage());
+    }
+
+    @PostMapping("/delete")
+    public ResponseEntity<?> deleteCategory(@Valid @RequestBody CategoryDeleteDTO categoryDeleteDTO, @PathVariable Long id) {
+
+        categoryService.deleteCategory(categoryDeleteDTO.getId());
+
+        return ResponseEntity.ok(SuccessResponseDTO.builder().response("Update Complete").build());
+    }
 }
