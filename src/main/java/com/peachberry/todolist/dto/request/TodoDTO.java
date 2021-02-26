@@ -1,9 +1,7 @@
 package com.peachberry.todolist.dto.request;
 
 import com.peachberry.todolist.domain.Calendar;
-import com.peachberry.todolist.domain.Category;
-import com.peachberry.todolist.domain.Member;
-import com.peachberry.todolist.domain.TodoStatus;
+import com.peachberry.todolist.dto.CategoryDTO;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -11,14 +9,11 @@ import lombok.Getter;
 @Builder
 public class TodoDTO {
 
-    private Long id;
-
-    private Category category;
+    private String category;
 
     private Calendar calendar;
 
     private String title;
 
-    private TodoStatus status;
-
+    private String member_id;
 }
