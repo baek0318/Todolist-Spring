@@ -4,6 +4,7 @@ package com.peachberry.todolist.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peachberry.todolist.domain.Category;
 import com.peachberry.todolist.dto.CategoryDTO;
+import com.peachberry.todolist.dto.CategoryUpdateDTO;
 import com.peachberry.todolist.security.cookie.CookieUtil;
 import com.peachberry.todolist.security.cookie.CookieUtilImpl;
 import com.peachberry.todolist.security.jwt.JwtAuthEntryPoint;
@@ -12,6 +13,7 @@ import com.peachberry.todolist.security.jwt.JwtUtil;
 import com.peachberry.todolist.security.service.UserDetailsServiceImpl;
 import com.peachberry.todolist.service.CategoryService;
 import com.peachberry.todolist.service.exception.CategorySaveFail;
+import com.peachberry.todolist.service.exception.CategoryUpdateFail;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,9 +34,12 @@ import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(value = CategoryController.class, includeFilters = @ComponentScan.Filter(classes = {EnableWebSecurity.class}))
@@ -102,20 +107,39 @@ public class CategoryControllerTest {
 
     @Test
     @WithMockUser
-    @DisplayName("해당 카테고리 업데이트하기")
-    void testUpdateCategory() {
+    @DisplayName("카테고리 업데이트하기")
+    void testUpdateCategory() throws Exception {
 
         given(categoryService.reviseTitle(anyString(), anyLong())).willReturn(1L);
 
-        mockMvc.perform(get())
+        String content = objectMapper.writeValueAsString(new CategoryUpdateDTO(1L, "하루종일"));
+
+        mockMvc.perform(post("/api/{id}/category/update", 1)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.response").value("Update Complete"))
+                .andDo(print());
+
+        verify(categoryService, times(1)).reviseTitle(anyString(), anyLong());
     }
 
-    /*
     @Test
-    @DisplayName("해당 카테고리 삭제하기")
-    void testDeleteCategory() {
+    @WithMockUser
+    @DisplayName("카테고리 업데이트 실패")
+    void testUpdateCategory_Failed() throws Exception {
 
+        given(categoryService.reviseTitle(anyString(), anyLong())).willThrow(new CategoryUpdateFail("Update Fail"));
+
+        String content = objectMapper.writeValueAsString(new CategoryUpdateDTO(1L, "하루종일"));
+
+        mockMvc.perform(post("/api/{id}/category/update", 1)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
     }
 
- */
 }
