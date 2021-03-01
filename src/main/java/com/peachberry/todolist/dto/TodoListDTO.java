@@ -6,10 +6,17 @@ import lombok.Getter;
 
 import java.util.List;
 
-@Builder
+
 @Getter
 public class TodoListDTO {
 
     private List<Todo> todoList;
 
+    public TodoListDTO() {
+        super();
+    }
+
+    public TodoListDTO(List<Todo> todoList) {
+        this.todoList = todoList;
+    }
 }
