@@ -1,6 +1,7 @@
 package com.peachberry.todolist.service;
 
 import com.peachberry.todolist.domain.*;
+import com.peachberry.todolist.dto.request.TodoDTO;
 import com.peachberry.todolist.repository.TodoRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,8 +20,9 @@ public class TodoService {
     }
 
     @Transactional
-    public void saveTodo(Todo todo) {
-        todoRepository.save(todo);
+    public void saveTodo(TodoDTO todoDTO) {
+
+
     }
 
     @Transactional
