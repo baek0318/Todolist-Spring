@@ -2,6 +2,8 @@ package com.peachberry.todolist.service;
 
 import com.peachberry.todolist.domain.*;
 import com.peachberry.todolist.dto.request.TodoDTO;
+import com.peachberry.todolist.repository.CategoryRepository;
+import com.peachberry.todolist.repository.MemberRepository;
 import com.peachberry.todolist.repository.TodoRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,14 +17,28 @@ public class TodoService {
 
     private final TodoRepository todoRepository;
 
-    public TodoService(TodoRepository todoRepository) {
+    private final MemberRepository memberRepository;
+
+    private final CategoryRepository categoryRepository;
+
+    public TodoService(TodoRepository todoRepository, MemberRepository memberRepository, CategoryRepository categoryRepository) {
         this.todoRepository = todoRepository;
+        this.memberRepository = memberRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     @Transactional
-    public void saveTodo(TodoDTO todoDTO) {
-
-
+    public Long saveTodo(TodoDTO todoDTO) {
+        List<Category> category = categoryRepository.findByTitle(todoDTO.getCategory(), todoDTO.getMember_id());
+        Member member = memberRepository.findById(todoDTO.getMember_id());
+        Todo todo = Todo.builder()
+                .calendar(todoDTO.getCalendar())
+                .category(category.get(0))
+                .title(todoDTO.getTitle())
+                .member(member)
+                .status(TodoStatus.ING)
+                .build();
+        return todoRepository.save(todo);
     }
 
     @Transactional
