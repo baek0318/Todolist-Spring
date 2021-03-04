@@ -15,5 +15,5 @@ public class TodoDTO {
 
     private String title;
 
-    private String member_id;
+    private Long member_id;
 }
