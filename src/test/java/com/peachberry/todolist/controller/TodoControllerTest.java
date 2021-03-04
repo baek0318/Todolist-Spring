@@ -108,10 +108,4 @@ public class TodoControllerTest {
         verify(todoService, times(1)).findAllTodo(anyLong());
     }
 
-    @Test
-    @DisplayName("Todo 가져오기")
-    @WithMockUser
-    void testGetTodo() {
-
-    }
 }
