@@ -25,7 +25,7 @@ public class TodoController {
 
     private Logger logger = LoggerFactory.getLogger(TodoController.class);
 
-    @PostMapping("save")
+    @PostMapping("/save")
     public ResponseEntity<?> save(@Valid @RequestBody TodoDTO todoDTO, @PathVariable String id) {
 
         todoService.saveTodo(todoDTO);
@@ -33,11 +33,50 @@ public class TodoController {
         return ResponseEntity.ok(SuccessResponseDTO.builder().response("Save todo success").build());
     }
 
-    @GetMapping("search/all")
+    @GetMapping("/search/all")
     public ResponseEntity<?> getAllTodo(@PathVariable String id) {
 
         List<Todo> todoList =  todoService.findAllTodo(Long.parseLong(id));
 
         return ResponseEntity.ok(new TodoListDTO(todoList));
     }
+
+    @GetMapping("/search/cateogry")
+    public ResponseEntity<?> getTodoByCategory(@RequestParam("category_id") Long category_id, @PathVariable Long member_id) {
+
+        List<Todo> response = todoService.findTodoByCategory(category_id, member_id);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/search/calendar")
+    public ResponseEntity<?> getTodoByCalendar() {
+
+    }
+
+    @GetMapping("/search/status")
+    public ResponseEntity<?> getTodoByStatus() {
+
+    }
+
+    @PostMapping("/update/todo")
+    public ResponseEntity<?> updateTodoTitle() {
+
+    }
+
+    @PostMapping("/update/status")
+    public ResponseEntity<?> updateTodoStatus() {
+
+    }
+
+    @PostMapping("/update/Calendar")
+    public ResponseEntity<?> updateTodoCalendar() {
+
+    }
+
+    @GetMapping("/delete")
+    public ResponseEntity<?> deleteTodo() {
+
+    }
+
 }
