@@ -1,6 +1,8 @@
 package com.peachberry.todolist.controller;
 
+import com.peachberry.todolist.domain.Calendar;
 import com.peachberry.todolist.domain.Todo;
+import com.peachberry.todolist.domain.TodoStatus;
 import com.peachberry.todolist.dto.TodoListDTO;
 import com.peachberry.todolist.dto.request.TodoDTO;
 import com.peachberry.todolist.dto.response.SuccessResponseDTO;
@@ -50,33 +52,38 @@ public class TodoController {
     }
 
     @GetMapping("/search/calendar")
-    public ResponseEntity<?> getTodoByCalendar() {
+    public ResponseEntity<?> getTodoByCalendar(@RequestParam("calendar") Calendar calendar, @PathVariable Long memberId) {
 
+        List<Todo> response = todoService.findTodoByCalendar(calendar, memberId);
+
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/search/status")
-    public ResponseEntity<?> getTodoByStatus() {
-
+    public ResponseEntity<?> getTodoByStatus(@RequestParam("status") String status, @PathVariable Long memberId) {
+        TodoStatus todoStatus = TodoStatus.valueOf(status);
+        List<Todo> response = todoService.findTodoByStatus(todoStatus, memberId);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/update/todo")
-    public ResponseEntity<?> updateTodoTitle() {
-
+    public ResponseEntity<?> updateTodoTitle(@RequestBody TodoUpdateTitleDTO updateTitleDTO) {
+        todoService.reviseTodoByTitle();
     }
 
     @PostMapping("/update/status")
-    public ResponseEntity<?> updateTodoStatus() {
-
+    public ResponseEntity<?> updateTodoStatus(@RequestBody TodoUpdateStatusDTO updateStatusDTO) {
+        todoService.reviseTodoByStatus();
     }
 
     @PostMapping("/update/Calendar")
-    public ResponseEntity<?> updateTodoCalendar() {
-
+    public ResponseEntity<?> updateTodoCalendar(@RequestBody TodoUpdateCalendarDTO updateCalendarDTO) {
+        todoService.reviseTodoByCalendar();
     }
 
     @GetMapping("/delete")
-    public ResponseEntity<?> deleteTodo() {
-
+    public ResponseEntity<?> deleteTodo(@RequestParam("todoId") Long todoId, @PathVariable Long memberId) {
+        todoService.deleteTodo(todoId);
     }
 
 }
