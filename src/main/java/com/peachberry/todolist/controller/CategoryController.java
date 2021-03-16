@@ -1,12 +1,13 @@
 package com.peachberry.todolist.controller;
 
 import com.peachberry.todolist.domain.Category;
-import com.peachberry.todolist.dto.CategoryDTO;
-import com.peachberry.todolist.dto.CategoryDeleteDTO;
-import com.peachberry.todolist.dto.CategoryListDTO;
-import com.peachberry.todolist.dto.CategoryUpdateDTO;
-import com.peachberry.todolist.dto.response.SuccessResponseDTO;
+import com.peachberry.todolist.controller.dto.category.CategorySaveDTO;
+import com.peachberry.todolist.controller.dto.category.CategoryDeleteDTO;
+import com.peachberry.todolist.controller.dto.category.CategoryListDTO;
+import com.peachberry.todolist.controller.dto.category.CategoryUpdateDTO;
+import com.peachberry.todolist.controller.dto.SuccessResponseDTO;
 import com.peachberry.todolist.service.CategoryService;
+import com.peachberry.todolist.service.dto.category.CategoryServiceDto;
 import com.peachberry.todolist.service.exception.CategoryUpdateFail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +30,9 @@ public class CategoryController {
     private Logger logger = LoggerFactory.getLogger(CategoryController.class);
 
     @PostMapping("/save")
-    public ResponseEntity<?> createCategory(@Valid @RequestBody CategoryDTO categoryDTO, @PathVariable Long id) {
+    public ResponseEntity<?> saveCategory(@Valid @RequestBody CategorySaveDTO categorySaveDTO, @PathVariable Long id) {
 
-        categoryService.saveCategory(id, categoryDTO);
+        categoryService.saveCategory(categorySaveDTO.toServiceDto(id));
 
         return ResponseEntity.ok(SuccessResponseDTO.builder().response("Save category success").build());
     }
@@ -54,15 +55,15 @@ public class CategoryController {
     @GetMapping("/search")
     public ResponseEntity<?> findCategoryTitle(@RequestParam("title") String title, @PathVariable Long id) {
 
-        Category category = categoryService.findByTitle(title, id);
+        Category category = categoryService.findByTitle(new CategoryServiceDto.FindByTitle(id, title));
 
-        return ResponseEntity.ok(CategoryDTO.builder().title(category.getTitle()).build());
+        return ResponseEntity.ok(CategorySaveDTO.builder().title(category.getTitle()).build());
     }
 
     @PostMapping("/update")
     public ResponseEntity<?> updateTitle(@Valid @RequestBody CategoryUpdateDTO categoryUpdateDTO, @PathVariable Long id) {
 
-        categoryService.reviseTitle(categoryUpdateDTO.getChangedTitle(), categoryUpdateDTO.getId());
+        categoryService.reviseTitle(categoryUpdateDTO.toServiceDto());
 
         return ResponseEntity.ok(SuccessResponseDTO.builder().response("Update Complete").build());
     }
