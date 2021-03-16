@@ -2,9 +2,10 @@ package com.peachberry.todolist.service;
 
 import com.peachberry.todolist.domain.Category;
 import com.peachberry.todolist.domain.Member;
-import com.peachberry.todolist.dto.CategoryDTO;
+import com.peachberry.todolist.controller.dto.category.CategorySaveDTO;
 import com.peachberry.todolist.repository.CategoryRepository;
 import com.peachberry.todolist.repository.MemberRepository;
+import com.peachberry.todolist.service.dto.category.CategoryServiceDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,11 +24,11 @@ public class CategoryService {
     }
 
     @Transactional
-    public Long saveCategory(Long member_id, CategoryDTO categoryDTO) {
+    public Long saveCategory(CategoryServiceDto.Save saveDto) {
         //카테고리를 저장할때 어떤 유저의 카테고리인지 정해주고 넣어줘야한다
-        Member member = memberRepository.findById(member_id);
-        findDuplicateTitle(categoryDTO.getTitle(), member_id);
-        Category category = new Category(categoryDTO.getTitle(), member);
+        Member member = memberRepository.findById(saveDto.getMemberId());
+        findDuplicateTitle(saveDto.getTitle(), saveDto.getMemberId());
+        Category category = new Category(saveDto.getTitle(), member);
         categoryRepository.save(category);
 
         return category.getId();
@@ -41,9 +42,9 @@ public class CategoryService {
     }
 
     @Transactional
-    public Category findByTitle(String title, Long member_id) {
+    public Category findByTitle(CategoryServiceDto.FindByTitle byTitleDto) {
         //해당아이디에 같은 주제의 카테고리가 있는지 확인
-        List<Category> result = categoryRepository.findByTitle(title, member_id);
+        List<Category> result = categoryRepository.findByTitle(byTitleDto.getTitle(), byTitleDto.getMemberId());
         if(result.isEmpty()) {
             throw new IllegalStateException("동일한 카테고리가 존재하지 않습니다");
         }
@@ -56,9 +57,9 @@ public class CategoryService {
     }
 
     @Transactional
-    public Long reviseTitle(String title, Long category_id) {
+    public Long reviseTitle(CategoryServiceDto.UpdateTitle updateTitleDto) {
         //해당아이디의 특정 카테고리의 주제를 수정
-        return categoryRepository.reviseCategory(title, category_id);
+        return categoryRepository.reviseCategory(updateTitleDto.getTitle(), updateTitleDto.getId());
     }
 
     @Transactional
