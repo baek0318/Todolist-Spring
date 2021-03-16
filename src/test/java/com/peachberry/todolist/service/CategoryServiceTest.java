@@ -4,9 +4,10 @@ import com.peachberry.todolist.domain.Authority;
 import com.peachberry.todolist.domain.Category;
 import com.peachberry.todolist.domain.Member;
 import com.peachberry.todolist.domain.Role;
-import com.peachberry.todolist.dto.CategoryDTO;
+import com.peachberry.todolist.controller.dto.category.CategorySaveDTO;
 import com.peachberry.todolist.repository.CategoryRepository;
 import com.peachberry.todolist.repository.MemberRepository;
+import com.peachberry.todolist.service.dto.category.CategoryServiceDto;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -48,14 +49,14 @@ public class CategoryServiceTest {
                 .willReturn(Collections.singletonList(category));
 
         //when
-        categoryService.saveCategory(1L ,new CategoryDTO(category.getTitle()));
+        categoryService.saveCategory(new CategoryServiceDto.Save(1L, category.getTitle()));
 
         //then
         verify(memberRepository, times(1))
                 .findById(1L);
         verify(categoryRepository, times(1))
                 .findByTitle(category.getTitle(), 1L);
-        Assertions.assertThatThrownBy(() -> categoryService.saveCategory(1L ,new CategoryDTO(category.getTitle()))).isInstanceOf(IllegalStateException.class);
+        Assertions.assertThatThrownBy(() -> categoryService.saveCategory(new CategoryServiceDto.Save(1L, category.getTitle()))).isInstanceOf(IllegalStateException.class);
         verify(memberRepository, times(2))
                 .findById(1L);
         verify(categoryRepository, times(2))
@@ -71,11 +72,11 @@ public class CategoryServiceTest {
                 .willReturn(Collections.emptyList());
 
         //when
-        Category result = categoryService.findByTitle(category.getTitle(), 1L);
+        Category result = categoryService.findByTitle(new CategoryServiceDto.FindByTitle(1L, category.getTitle()));
 
         //then
         Assertions.assertThat(result).isEqualTo(category);
-        Assertions.assertThatThrownBy(() -> categoryService.findByTitle(category.getTitle(), 1L)).isInstanceOf(IllegalStateException.class);
+        Assertions.assertThatThrownBy(() -> categoryService.findByTitle(new CategoryServiceDto.FindByTitle(1L, category.getTitle()))).isInstanceOf(IllegalStateException.class);
         verify(categoryRepository, times(2)).findByTitle("하루일과", 1L);
     }
 }
