@@ -1,16 +1,14 @@
 package com.peachberry.todolist.client;
 
-import com.peachberry.todolist.dto.CategoryDTO;
-import com.peachberry.todolist.dto.CategoryListDTO;
-import com.peachberry.todolist.dto.request.SignInDTO;
-import com.peachberry.todolist.dto.response.SuccessResponseDTO;
+import com.peachberry.todolist.controller.dto.CategoryControllerDto;
+import com.peachberry.todolist.controller.dto.auth.SignInDTO;
+import com.peachberry.todolist.controller.dto.SuccessResponseDTO;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
-import org.springframework.security.test.context.support.WithMockUser;
 
 import java.util.Collections;
 
@@ -23,7 +21,7 @@ public class CategoryClientTest {
 
     private final SignInDTO signInDTO = new SignInDTO("peachberry@kakao.com", "1234");
 
-    private final CategoryDTO categoryDTO = CategoryDTO.builder()
+    private final CategoryControllerDto.Save categorySaveDTO = CategoryControllerDto.Save.builder()
             .title("하루일과")
             .build();
 
@@ -57,7 +55,7 @@ public class CategoryClientTest {
     @DisplayName("카테고리 저장하기")
     void testSaveCategory() {
 
-        HttpEntity<CategoryDTO> request = new HttpEntity<>(categoryDTO, headers);
+        HttpEntity<CategoryControllerDto.Save> request = new HttpEntity<>(categorySaveDTO, headers);
 
         ResponseEntity<SuccessResponseDTO> response = restTemplate
                 .postForEntity("/api/{id}/category/save", request, SuccessResponseDTO.class,1);
@@ -72,8 +70,12 @@ public class CategoryClientTest {
 
         HttpEntity request = new HttpEntity<>(headers);
 
-        ResponseEntity<CategoryListDTO> response = restTemplate
-                .exchange("/api/{id}/category/search/all",HttpMethod.GET, request, CategoryListDTO.class, 1);
+        ResponseEntity<CategoryControllerDto.CategoryList> response = restTemplate
+                .exchange("/api/{id}/category/search/all",
+                        HttpMethod.GET,
+                        request,
+                        CategoryControllerDto.CategoryList.class,
+                        1);
 
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -86,8 +88,12 @@ public class CategoryClientTest {
 
         HttpEntity request = new HttpEntity<>(headers);
 
-        ResponseEntity<CategoryListDTO> response = restTemplate
-                .exchange("/api/{id}/category/search/all",HttpMethod.GET, request, CategoryListDTO.class, 1);
+        ResponseEntity<CategoryControllerDto.CategoryList> response = restTemplate
+                .exchange("/api/{id}/category/search/all",
+                        HttpMethod.GET,
+                        request,
+                        CategoryControllerDto.CategoryList.class,
+                        1);
 
     }
 
