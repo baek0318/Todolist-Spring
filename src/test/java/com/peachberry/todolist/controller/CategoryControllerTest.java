@@ -2,9 +2,8 @@ package com.peachberry.todolist.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.peachberry.todolist.controller.dto.CategoryControllerDto;
 import com.peachberry.todolist.domain.Category;
-import com.peachberry.todolist.dto.CategoryDTO;
-import com.peachberry.todolist.dto.CategoryUpdateDTO;
 import com.peachberry.todolist.security.cookie.CookieUtil;
 import com.peachberry.todolist.security.cookie.CookieUtilImpl;
 import com.peachberry.todolist.security.jwt.JwtAuthEntryPoint;
@@ -12,9 +11,7 @@ import com.peachberry.todolist.security.jwt.JwtAuthTokenFilter;
 import com.peachberry.todolist.security.jwt.JwtUtil;
 import com.peachberry.todolist.security.service.UserDetailsServiceImpl;
 import com.peachberry.todolist.service.CategoryService;
-import com.peachberry.todolist.service.exception.CategorySaveFail;
 import com.peachberry.todolist.service.exception.CategoryUpdateFail;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -69,10 +66,10 @@ public class CategoryControllerTest {
     @WithMockUser
     void testSaveCategory() throws Exception {
 
-        given(categoryService.saveCategory(anyLong(), any())).willThrow(new IllegalStateException("저장에 실패했습니다"));
+        given(categoryService.saveCategory(any())).willThrow(new IllegalStateException("저장에 실패했습니다"));
 
-        CategoryDTO categoryDTO = new CategoryDTO("하루일과");
-        String content = objectMapper.writeValueAsString(categoryDTO);
+        CategoryControllerDto.Save categorySaveDTO = new CategoryControllerDto.Save("하루일과");
+        String content = objectMapper.writeValueAsString(categorySaveDTO);
         mockMvc.perform(post("/api/{id}/category/save", 1)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -97,7 +94,7 @@ public class CategoryControllerTest {
     @DisplayName("특정 제목으로 카테고리 검색하기")
     void testFindCategoryByTitle() throws Exception {
 
-        given(categoryService.findByTitle(anyString(), anyLong())).willReturn(new Category("하루일과", null));
+        given(categoryService.findByTitle(any())).willReturn(new Category("하루일과", null));
 
         mockMvc.perform(get("/api/{id}/category/search", 1 )
                 .param("title", "하루일과"))
@@ -110,9 +107,9 @@ public class CategoryControllerTest {
     @DisplayName("카테고리 업데이트하기")
     void testUpdateCategory() throws Exception {
 
-        given(categoryService.reviseTitle(anyString(), anyLong())).willReturn(1L);
+        given(categoryService.reviseTitle(any())).willReturn(1L);
 
-        String content = objectMapper.writeValueAsString(new CategoryUpdateDTO(1L, "하루종일"));
+        String content = objectMapper.writeValueAsString(new CategoryControllerDto.Update(1L, "하루종일"));
 
         mockMvc.perform(post("/api/{id}/category/update", 1)
                 .accept(MediaType.APPLICATION_JSON)
@@ -122,7 +119,7 @@ public class CategoryControllerTest {
                 .andExpect(jsonPath("$.response").value("Update Complete"))
                 .andDo(print());
 
-        verify(categoryService, times(1)).reviseTitle(anyString(), anyLong());
+        verify(categoryService, times(1)).reviseTitle(any());
     }
 
     @Test
@@ -130,9 +127,9 @@ public class CategoryControllerTest {
     @DisplayName("카테고리 업데이트 실패")
     void testUpdateCategory_Failed() throws Exception {
 
-        given(categoryService.reviseTitle(anyString(), anyLong())).willThrow(new CategoryUpdateFail("Update Fail"));
+        given(categoryService.reviseTitle(any())).willThrow(new CategoryUpdateFail("Update Fail"));
 
-        String content = objectMapper.writeValueAsString(new CategoryUpdateDTO(1L, "하루종일"));
+        String content = objectMapper.writeValueAsString(new CategoryControllerDto.Update(1L, "하루종일"));
 
         mockMvc.perform(post("/api/{id}/category/update", 1)
                 .accept(MediaType.APPLICATION_JSON)
