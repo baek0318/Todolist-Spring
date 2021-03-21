@@ -1,12 +1,10 @@
 package com.peachberry.todolist.service;
 
 import com.peachberry.todolist.domain.*;
-import com.peachberry.todolist.dto.request.TodoDTO;
+import com.peachberry.todolist.controller.dto.todo.TodoDTO;
 import com.peachberry.todolist.repository.CategoryRepository;
 import com.peachberry.todolist.repository.MemberRepository;
 import com.peachberry.todolist.repository.TodoRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

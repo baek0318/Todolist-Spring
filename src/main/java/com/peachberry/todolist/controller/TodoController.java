@@ -3,9 +3,9 @@ package com.peachberry.todolist.controller;
 import com.peachberry.todolist.domain.Calendar;
 import com.peachberry.todolist.domain.Todo;
 import com.peachberry.todolist.domain.TodoStatus;
-import com.peachberry.todolist.dto.TodoListDTO;
-import com.peachberry.todolist.dto.request.TodoDTO;
-import com.peachberry.todolist.dto.response.SuccessResponseDTO;
+import com.peachberry.todolist.controller.dto.todo.TodoListDTO;
+import com.peachberry.todolist.controller.dto.todo.TodoDTO;
+import com.peachberry.todolist.controller.dto.SuccessResponseDTO;
 import com.peachberry.todolist.service.TodoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,9 +65,10 @@ public class TodoController {
         List<Todo> response = todoService.findTodoByStatus(todoStatus, memberId);
         return ResponseEntity.ok().build();
     }
-
+/*
     @PostMapping("/update/todo")
     public ResponseEntity<?> updateTodoTitle(@RequestBody TodoUpdateTitleDTO updateTitleDTO) {
+
         todoService.reviseTodoByTitle();
     }
 
@@ -85,5 +86,7 @@ public class TodoController {
     public ResponseEntity<?> deleteTodo(@RequestParam("todoId") Long todoId, @PathVariable Long memberId) {
         todoService.deleteTodo(todoId);
     }
+
+ */
 
 }
