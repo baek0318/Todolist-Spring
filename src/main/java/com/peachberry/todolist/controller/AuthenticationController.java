@@ -1,13 +1,13 @@
 package com.peachberry.todolist.controller;
 
-import com.peachberry.todolist.dto.CookieDTO;
-import com.peachberry.todolist.dto.request.SignInDTO;
-import com.peachberry.todolist.dto.response.SuccessResponseDTO;
+import com.peachberry.todolist.controller.dto.auth.CookieDTO;
+import com.peachberry.todolist.controller.dto.auth.SignInDTO;
+import com.peachberry.todolist.controller.dto.SuccessResponseDTO;
 import com.peachberry.todolist.security.cookie.CookieUtil;
 import com.peachberry.todolist.service.exception.SignInFailException;
 import com.peachberry.todolist.service.exception.SignUpFailException;
-import com.peachberry.todolist.dto.request.SignUpDTO;
-import com.peachberry.todolist.dto.response.SignUpSuccessDTO;
+import com.peachberry.todolist.controller.dto.auth.SignUpDTO;
+import com.peachberry.todolist.controller.dto.auth.SignUpSuccessDTO;
 import com.peachberry.todolist.service.AuthenticationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
