@@ -2,10 +2,9 @@ package com.peachberry.todolist.service;
 
 import com.peachberry.todolist.domain.Category;
 import com.peachberry.todolist.domain.Member;
-import com.peachberry.todolist.controller.dto.category.CategorySaveDTO;
 import com.peachberry.todolist.repository.CategoryRepository;
 import com.peachberry.todolist.repository.MemberRepository;
-import com.peachberry.todolist.service.dto.category.CategoryServiceDto;
+import com.peachberry.todolist.service.dto.CategoryServiceDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
