@@ -3,12 +3,10 @@ package com.peachberry.todolist.client;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peachberry.todolist.domain.Calendar;
-import com.peachberry.todolist.domain.Category;
-import com.peachberry.todolist.dto.CategoryDTO;
-import com.peachberry.todolist.dto.TodoListDTO;
-import com.peachberry.todolist.dto.request.SignInDTO;
-import com.peachberry.todolist.dto.request.TodoDTO;
-import com.peachberry.todolist.dto.response.SuccessResponseDTO;
+import com.peachberry.todolist.controller.dto.todo.TodoListDTO;
+import com.peachberry.todolist.controller.dto.auth.SignInDTO;
+import com.peachberry.todolist.controller.dto.todo.TodoDTO;
+import com.peachberry.todolist.controller.dto.SuccessResponseDTO;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
@@ -49,7 +47,7 @@ public class TodoClientTest {
             .title("공부하기")
             .calendar(new Calendar(2021, 2, 23))
             .category("하루일과")
-            .member_id("1")
+            .member_id(1L)
             .build();
 
     private String signin() {

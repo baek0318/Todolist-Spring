@@ -1,10 +1,10 @@
 package com.peachberry.todolist.client;
 
 import com.peachberry.todolist.domain.Role;
-import com.peachberry.todolist.dto.request.SignInDTO;
-import com.peachberry.todolist.dto.request.SignUpDTO;
-import com.peachberry.todolist.dto.response.SignUpSuccessDTO;
-import com.peachberry.todolist.dto.response.SuccessResponseDTO;
+import com.peachberry.todolist.controller.dto.auth.SignInDTO;
+import com.peachberry.todolist.controller.dto.auth.SignUpDTO;
+import com.peachberry.todolist.controller.dto.auth.SignUpSuccessDTO;
+import com.peachberry.todolist.controller.dto.SuccessResponseDTO;
 import com.peachberry.todolist.security.cookie.CookieUtil;
 import com.peachberry.todolist.security.jwt.JwtUtil;
 import org.junit.jupiter.api.*;
