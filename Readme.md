@@ -49,7 +49,7 @@
 펼쳐보기
 </summary>
 
-![DB](./img/Todolist-DB.png)
+![DB](./img/todolist_back.png)
 </details>
 
 ### 백엔드 설계
@@ -66,53 +66,35 @@
 </details>
 
 ## 📡 API
-```
-# Todo API
-## 저장
--POST /api/{id}/todo/save
 
-## 찾기
--GET /api/{id}/todo/search/all
--GET /api/{id}/todo/search/category
--GET /api/{id}/todo/search/calendar
--GET /api/{id}/todo/search/status
+###Todo API
 
-## 업데이트
--POST /api/{id}/todo/update/title
--POST /api/{id}/todo/update/calendar
--POST /api/{id}/todo/update/status
+|HttpMethod|URL|Parameters|
+|---|---|---|
+|POST|/todo/{member-id}/{category-id}|title : String|
+|GET|/todo/{member-id}/all||
+|GET|/todo/{member-id}|datetime : String|
+|GET|/todo/{member-id}|status : boolean|
+|PATCH|/todo/{member-id}|title : String|
+|PATCH|/todo/{member-id}|datetime : String|
+|PATCH|/todo/{member-id}|status : boolean|
+|DELETE|/todo/{member-id}/{todo-id}||
 
-## 삭제
--GET /api/{id}/todo/delete
+### Category API
+|HttpMethod|URL|Parameters|
+|---|---|---|
+|POST|category/{member-id}|title : String|
+|GET|category/{member-id}/all||
+|GET|category/{member-id}|title : String|
+|PATCH|category/{member-id}|title : String|
+|DELETE|category/{member-id}/{category-id}||
 
--------------------------------------------------------
-# Category API
-## 저장
--POST /api/{id}/category
+### Authentication API
+|HttpMethod|URL|Parameters|
+|---|---|---|
+|POST|/auth/signup|member-name : String, email : String, password : String|
+|POST|/auth/signin|email : String, password : String|
+|GET|/auth/signout||
+|GET|/auth/issue-access||
 
-## 찾기
--GET /api/{id}/category/search/all
--GET /api/{id}/category/search
-
-## 업데이트
--GET /api/{id}/category/update
-
-## 삭제
--GET /api/{id}/category/delete
-
--------------------------------------------------------
-# Authentication API
-## 회원가입
--POST /api/auth/signup
-
-## 로그인
--POST /api/auth/signin
-
-## 로그아웃
--GET /api/auth/signout
-
-## 토큰 재발급
--GET /api/auth/issueAccess
-
-```
 ## ❌ 오류 해결
