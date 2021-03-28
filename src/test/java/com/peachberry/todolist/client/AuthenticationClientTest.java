@@ -32,9 +32,9 @@ public class AuthenticationClientTest {
     @Autowired
     private CookieUtil cookieUtil;
 
-    private final SignUpDTO signUpDTO = new SignUpDTO("peachberry@kakao.com", "1234", "peachberry", "USER");
+    private final SignUpDTO signUpDTO = new SignUpDTO("peachberry2@kakao.com", "1234", "peachberry", "USER");
 
-    private final SignInDTO signInDTO = new SignInDTO("peachberry@kakao.com", "1234");
+    private final SignInDTO signInDTO = new SignInDTO("peachberry2@kakao.com", "1234");
 
     private final Logger logger = LoggerFactory.getLogger(AuthenticationClientTest.class);
 
@@ -50,7 +50,7 @@ public class AuthenticationClientTest {
         HttpEntity<SignUpDTO> request = new HttpEntity<>(signUpDTO, headers);
 
         ResponseEntity<SignUpSuccessDTO> response = restTemplate
-                .postForEntity("/api/auth/signup",request ,SignUpSuccessDTO.class);
+                .postForEntity("/auth/signup",request ,SignUpSuccessDTO.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().getRole()).isEqualTo(Role.USER);
@@ -69,7 +69,7 @@ public class AuthenticationClientTest {
         HttpEntity<SignInDTO> request = new HttpEntity<>(signInDTO, headers);
 
         ResponseEntity<SuccessResponseDTO> response = restTemplate
-                .postForEntity("/api/auth/signin", request, SuccessResponseDTO.class);
+                .postForEntity("/auth/signin", request, SuccessResponseDTO.class);
 
         List<String> cookies = response.getHeaders().getValuesAsList(headers.SET_COOKIE);
         String access_header = cookies.get(0).split("=")[0]; //access_header
@@ -89,7 +89,7 @@ public class AuthenticationClientTest {
     void testSignOut() {
 
         ResponseEntity<SuccessResponseDTO> response = restTemplate
-                .getForEntity("/api/auth/signout",SuccessResponseDTO.class);
+                .getForEntity("/auth/signout",SuccessResponseDTO.class);
 
         List<String> cookies = response.getHeaders().getValuesAsList("Set-Cookie");
         String access_header = cookies.get(0).split("=")[0]; //access_header
@@ -112,7 +112,7 @@ public class AuthenticationClientTest {
         HttpEntity<SignInDTO> request = new HttpEntity<>(signInDTO, headers2);
 
         ResponseEntity<SuccessResponseDTO> response2 = restTemplate
-                .postForEntity("/api/auth/signin", request, SuccessResponseDTO.class);
+                .postForEntity("/auth/signin", request, SuccessResponseDTO.class);
 
         List<String> cookies2 = response2.getHeaders().getValuesAsList(headers2.SET_COOKIE);
 
@@ -120,7 +120,7 @@ public class AuthenticationClientTest {
         headers.add("Cookie", cookies2.get(2));
 
         ResponseEntity<SuccessResponseDTO> response = restTemplate
-                .exchange("/api/auth/issueAccess", HttpMethod.GET, new HttpEntity<>(headers) ,SuccessResponseDTO.class);
+                .exchange("/auth/issueAccess", HttpMethod.GET, new HttpEntity<>(headers) ,SuccessResponseDTO.class);
 
         List<String> cookies = response.getHeaders().getValuesAsList("Set-Cookie");
         String access_header = cookies.get(0).split("=")[0]; //access_header
