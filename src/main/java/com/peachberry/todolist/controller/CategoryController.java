@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/api/{id}/category")
+@RequestMapping("/category/{member-id}")
 public class CategoryController {
 
     private final CategoryService categoryService;
@@ -26,7 +26,7 @@ public class CategoryController {
 
     private Logger logger = LoggerFactory.getLogger(CategoryController.class);
 
-    @PostMapping("/save")
+    @PostMapping("")
     public ResponseEntity<?> saveCategory(@Valid @RequestBody CategoryControllerDto.Save saveDto, @PathVariable Long id) {
 
         categoryService.saveCategory(saveDto.toServiceDto(id));
@@ -40,7 +40,7 @@ public class CategoryController {
         logger.error(e.getMessage());
     }
 
-    @GetMapping("/search/all")
+    @GetMapping("/all")
     public ResponseEntity<?> findAllCategory(@PathVariable Long id) {
 
         CategoryControllerDto.CategoryList categoryListDTO = new CategoryControllerDto.CategoryList(categoryService.findAll(id));
@@ -49,7 +49,7 @@ public class CategoryController {
     }
 
 
-    @GetMapping("/search")
+    @GetMapping("")
     public ResponseEntity<?> findCategoryTitle(@RequestParam("title") String title, @PathVariable Long id) {
 
         Category category = categoryService.findByTitle(new CategoryServiceDto.FindByTitle(id, title));
@@ -57,7 +57,7 @@ public class CategoryController {
         return ResponseEntity.ok(CategoryControllerDto.Save.builder().title(category.getTitle()).build());
     }
 
-    @PostMapping("/update")
+    @PatchMapping("")
     public ResponseEntity<?> updateTitle(@Valid @RequestBody CategoryControllerDto.Update updateDto, @PathVariable Long id) {
 
         categoryService.reviseTitle(updateDto.toServiceDto());
@@ -71,8 +71,12 @@ public class CategoryController {
         logger.error(e.getMessage());
     }
 
-    @PostMapping("/delete")
-    public ResponseEntity<?> deleteCategory(@Valid @RequestBody CategoryControllerDto.Delete deleteDto, @PathVariable Long id) {
+    @DeleteMapping("/{category-id}")
+    public ResponseEntity<?> deleteCategory(
+            @Valid @RequestBody CategoryControllerDto.Delete deleteDto,
+            @PathVariable Long member_id,
+            @PathVariable Long category_id)
+    {
 
         categoryService.deleteCategory(deleteDto.getId());
 
