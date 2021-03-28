@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 public class AuthenticationController {
 
     private final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
