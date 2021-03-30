@@ -27,8 +27,11 @@ public class CategoryController {
     private Logger logger = LoggerFactory.getLogger(CategoryController.class);
 
     @PostMapping("")
-    public ResponseEntity<?> saveCategory(@Valid @RequestBody CategoryControllerDto.Save saveDto, @PathVariable Long id) {
-
+    public ResponseEntity<?> saveCategory(
+            @Valid @RequestBody CategoryControllerDto.Save saveDto,
+            @PathVariable(name = "member-id") Long id
+    )
+    {
         categoryService.saveCategory(saveDto.toServiceDto(id));
 
         return ResponseEntity.ok(SuccessResponseDTO.builder().response("Save category success").build());
@@ -41,7 +44,7 @@ public class CategoryController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> findAllCategory(@PathVariable Long id) {
+    public ResponseEntity<?> findAllCategory(@PathVariable(name = "member-id") Long id) {
 
         CategoryControllerDto.CategoryList categoryListDTO = new CategoryControllerDto.CategoryList(categoryService.findAll(id));
 
@@ -50,7 +53,11 @@ public class CategoryController {
 
 
     @GetMapping("")
-    public ResponseEntity<?> findCategoryTitle(@RequestParam("title") String title, @PathVariable Long id) {
+    public ResponseEntity<?> findCategoryTitle(
+            @RequestParam("title") String title,
+            @PathVariable(name = "member-id") Long id
+    )
+    {
 
         Category category = categoryService.findByTitle(new CategoryServiceDto.FindByTitle(id, title));
 
@@ -58,7 +65,11 @@ public class CategoryController {
     }
 
     @PatchMapping("")
-    public ResponseEntity<?> updateTitle(@Valid @RequestBody CategoryControllerDto.Update updateDto, @PathVariable Long id) {
+    public ResponseEntity<?> updateTitle(
+            @Valid @RequestBody CategoryControllerDto.Update updateDto,
+            @PathVariable(name = "member-id") Long id
+    )
+    {
 
         categoryService.reviseTitle(updateDto.toServiceDto());
 
@@ -74,8 +85,9 @@ public class CategoryController {
     @DeleteMapping("/{category-id}")
     public ResponseEntity<?> deleteCategory(
             @Valid @RequestBody CategoryControllerDto.Delete deleteDto,
-            @PathVariable Long member_id,
-            @PathVariable Long category_id)
+            @PathVariable(name = "member-id") Long memberId,
+            @PathVariable(name = "category-id") Long categoryId
+    )
     {
 
         categoryService.deleteCategory(deleteDto.getId());
