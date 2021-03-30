@@ -9,17 +9,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.util.Collections;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class CategoryClientTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
 
-    private final SignInDTO signInDTO = new SignInDTO("peachberry@kakao.com", "1234");
+    private final SignInDTO signInDTO = new SignInDTO("peachberry2@kakao.com", "1234");
 
     private final CategoryControllerDto.Save categorySaveDTO = CategoryControllerDto.Save.builder()
             .title("하루일과")
@@ -35,8 +37,7 @@ public class CategoryClientTest {
         HttpEntity<SignInDTO> request = new HttpEntity<>(signInDTO, headers);
 
         ResponseEntity<SuccessResponseDTO> response = restTemplate
-                .postForEntity("/api/auth/signin", request, SuccessResponseDTO.class);
-
+                .postForEntity("/auth/signin", request, SuccessResponseDTO.class);
         return response.getHeaders().getValuesAsList(headers.SET_COOKIE).get(0);
     }
 
@@ -50,15 +51,15 @@ public class CategoryClientTest {
         this.headers = headers;
     }
 
+
     @Test
-    @Order(1)
     @DisplayName("카테고리 저장하기")
     void testSaveCategory() {
 
         HttpEntity<CategoryControllerDto.Save> request = new HttpEntity<>(categorySaveDTO, headers);
 
         ResponseEntity<SuccessResponseDTO> response = restTemplate
-                .postForEntity("/api/{id}/category/save", request, SuccessResponseDTO.class,1);
+                .postForEntity("/category/{member-id}", request, SuccessResponseDTO.class,1L);
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         Assertions.assertThat(response.getBody().getResponse()).isEqualTo("Save category success");
@@ -71,11 +72,11 @@ public class CategoryClientTest {
         HttpEntity request = new HttpEntity<>(headers);
 
         ResponseEntity<CategoryControllerDto.CategoryList> response = restTemplate
-                .exchange("/api/{id}/category/search/all",
+                .exchange("/category/{member-id}/all",
                         HttpMethod.GET,
                         request,
                         CategoryControllerDto.CategoryList.class,
-                        1);
+                        1L);
 
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -89,14 +90,15 @@ public class CategoryClientTest {
         HttpEntity request = new HttpEntity<>(headers);
 
         ResponseEntity<CategoryControllerDto.CategoryList> response = restTemplate
-                .exchange("/api/{id}/category/search/all",
+                .exchange("/category/{member-id}?title=하루일과",
                         HttpMethod.GET,
                         request,
                         CategoryControllerDto.CategoryList.class,
                         1);
 
-    }
 
+    }
+/*
     @Test
     @DisplayName("해당 카테고리 업데이트하기")
     void testUpdateCategory() {
@@ -108,5 +110,6 @@ public class CategoryClientTest {
     void testDeleteCategory() {
 
     }
+ */
 
 }
