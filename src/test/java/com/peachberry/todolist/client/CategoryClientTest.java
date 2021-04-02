@@ -24,7 +24,7 @@ public class CategoryClientTest {
     private final SignInDTO signInDTO = new SignInDTO("peachberry2@kakao.com", "1234");
 
     private final CategoryControllerDto.Save categorySaveDTO = CategoryControllerDto.Save.builder()
-            .title("하루일과")
+            .title("하루일과2")
             .build();
 
     private HttpHeaders headers;
@@ -89,14 +89,16 @@ public class CategoryClientTest {
 
         HttpEntity request = new HttpEntity<>(headers);
 
-        ResponseEntity<CategoryControllerDto.CategoryList> response = restTemplate
+        ResponseEntity<CategoryControllerDto.CategoryInfo> responseEntity = restTemplate
                 .exchange("/category/{member-id}?title=하루일과",
                         HttpMethod.GET,
                         request,
-                        CategoryControllerDto.CategoryList.class,
+                        CategoryControllerDto.CategoryInfo.class,
                         1);
 
-
+        CategoryControllerDto.CategoryInfo info = responseEntity.getBody();
+        Assertions.assertThat(info.getTitle()).isEqualTo("하루일과");
+        Assertions.assertThat(info.getId()).isEqualTo(1L);
     }
 /*
     @Test
