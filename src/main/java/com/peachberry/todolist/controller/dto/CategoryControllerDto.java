@@ -4,6 +4,7 @@ import com.peachberry.todolist.domain.Category;
 import com.peachberry.todolist.service.dto.CategoryServiceDto;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -18,6 +19,19 @@ public class CategoryControllerDto {
         }
 
         protected Delete() {}
+    }
+
+    @Getter
+    @NoArgsConstructor
+    public static class CategoryInfo {
+
+        private Long id;
+        private String title;
+
+        public CategoryInfo(Long id, String title) {
+            this.id = id;
+            this.title = title;
+        }
     }
 
     @Getter

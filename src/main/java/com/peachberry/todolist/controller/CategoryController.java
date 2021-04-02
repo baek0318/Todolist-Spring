@@ -61,7 +61,7 @@ public class CategoryController {
 
         Category category = categoryService.findByTitle(new CategoryServiceDto.FindByTitle(id, title));
 
-        return ResponseEntity.ok(CategoryControllerDto.Save.builder().title(category.getTitle()).build());
+        return ResponseEntity.ok(category.toInfoResponse());
     }
 
     @PatchMapping("")
