@@ -1,6 +1,7 @@
 package com.peachberry.todolist.controller;
 
 import com.peachberry.todolist.controller.dto.CategoryControllerDto;
+import com.peachberry.todolist.controller.dto.CategoryResponse;
 import com.peachberry.todolist.domain.Category;
 import com.peachberry.todolist.controller.dto.SuccessResponseDTO;
 import com.peachberry.todolist.service.CategoryService;
@@ -73,7 +74,7 @@ public class CategoryController {
 
         categoryService.reviseTitle(updateDto.toServiceDto());
 
-        return ResponseEntity.ok(SuccessResponseDTO.builder().response("Update Complete").build());
+        return ResponseEntity.ok(new CategoryResponse.Update(1L));
     }
 
     @ExceptionHandler

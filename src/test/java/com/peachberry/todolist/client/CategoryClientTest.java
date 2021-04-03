@@ -1,6 +1,7 @@
 package com.peachberry.todolist.client;
 
 import com.peachberry.todolist.controller.dto.CategoryControllerDto;
+import com.peachberry.todolist.controller.dto.CategoryResponse;
 import com.peachberry.todolist.controller.dto.auth.SignInDTO;
 import com.peachberry.todolist.controller.dto.SuccessResponseDTO;
 import org.assertj.core.api.Assertions;
@@ -100,13 +101,25 @@ public class CategoryClientTest {
         Assertions.assertThat(info.getTitle()).isEqualTo("하루일과");
         Assertions.assertThat(info.getId()).isEqualTo(1L);
     }
-/*
+
     @Test
     @DisplayName("해당 카테고리 업데이트하기")
     void testUpdateCategory() {
+        CategoryControllerDto.Update update = new CategoryControllerDto.Update(1L, "하루일과3");
+        HttpEntity<CategoryControllerDto.Update> request = new HttpEntity<>(update, headers);
+
+        ResponseEntity<CategoryResponse.Update> responseEntity = restTemplate
+                .exchange("/category/{member-id}",
+                        HttpMethod.PATCH,
+                        request,
+                        CategoryResponse.Update.class,
+                        1L);
+
+        CategoryResponse.Update updated = responseEntity.getBody();
+        Assertions.assertThat(updated.getId()).isEqualTo(1L);
 
     }
-
+/*
     @Test
     @DisplayName("해당 카테고리 삭제하기")
     void testDeleteCategory() {
