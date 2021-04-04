@@ -105,19 +105,19 @@ public class CategoryClientTest {
     @Test
     @DisplayName("해당 카테고리 업데이트하기")
     void testUpdateCategory() {
-        CategoryControllerDto.Update update = new CategoryControllerDto.Update(1L, "하루일과3");
+        CategoryControllerDto.Update update = new CategoryControllerDto.Update(1L, null);
         HttpEntity<CategoryControllerDto.Update> request = new HttpEntity<>(update, headers);
 
         ResponseEntity<CategoryResponse.Update> responseEntity = restTemplate
                 .exchange("/category/{member-id}",
-                        HttpMethod.PATCH,
+                        HttpMethod.PUT,
                         request,
                         CategoryResponse.Update.class,
                         1L);
 
         CategoryResponse.Update updated = responseEntity.getBody();
         Assertions.assertThat(updated.getId()).isEqualTo(1L);
-
+        Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 /*
     @Test

@@ -65,16 +65,16 @@ public class CategoryController {
         return ResponseEntity.ok(category.toInfoResponse());
     }
 
-    @PatchMapping("")
+    @PutMapping
     public ResponseEntity<?> updateTitle(
             @Valid @RequestBody CategoryControllerDto.Update updateDto,
             @PathVariable(name = "member-id") Long id
     )
     {
 
-        categoryService.reviseTitle(updateDto.toServiceDto());
+        Long resultId = categoryService.reviseTitle(updateDto.toServiceDto());
 
-        return ResponseEntity.ok(new CategoryResponse.Update(1L));
+        return ResponseEntity.ok(new CategoryResponse.Update(resultId));
     }
 
     @ExceptionHandler
