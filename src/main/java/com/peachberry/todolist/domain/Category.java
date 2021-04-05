@@ -3,6 +3,7 @@ package com.peachberry.todolist.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.peachberry.todolist.controller.dto.CategoryResponse;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class Category {
 
     @Id
@@ -18,25 +20,18 @@ public class Category {
     @Column(name = "category_id")
     private Long id;
 
-    @NotBlank
     private String title;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "category")
     private List<Todo> todos = new ArrayList<>();
 
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public Category(@NotBlank String title, Member member) {
+    public Category(String title, Member member) {
         this.title = title;
         this.member = member;
-    }
-
-    protected Category() {
-
     }
 
     public CategoryResponse.CategoryInfo toInfoResponse() {
