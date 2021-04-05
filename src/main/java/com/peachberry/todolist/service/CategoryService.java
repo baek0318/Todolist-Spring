@@ -62,8 +62,8 @@ public class CategoryService {
     }
 
     @Transactional
-    public void deleteCategory(Long category_id) {
+    public Long deleteCategory(Long category_id) {
         //해당아이디의 특정 카테고리 삭제
-        categoryRepository.deleteById(category_id);
+        return categoryRepository.deleteById(category_id);
     }
 }

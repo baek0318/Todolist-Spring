@@ -1,7 +1,7 @@
 package com.peachberry.todolist.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.peachberry.todolist.controller.dto.CategoryControllerDto;
+import com.peachberry.todolist.controller.dto.CategoryResponse;
 import lombok.Getter;
 
 import javax.persistence.*;
@@ -39,8 +39,8 @@ public class Category {
 
     }
 
-    public CategoryControllerDto.CategoryInfo toInfoResponse() {
-        return new CategoryControllerDto.CategoryInfo(
+    public CategoryResponse.CategoryInfo toInfoResponse() {
+        return new CategoryResponse.CategoryInfo(
                 this.id,
                 this.title
         );

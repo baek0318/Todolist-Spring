@@ -55,9 +55,10 @@ public class CategoryRepository {
         return category.getId();
     }
 
-    public void deleteById(Long category_id) {
+    public Long deleteById(Long category_id) {
         Category category = findById(category_id);
         em.remove(category);
+        return category_id;
     }
 
 }

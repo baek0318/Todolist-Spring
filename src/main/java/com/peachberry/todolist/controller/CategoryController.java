@@ -3,7 +3,6 @@ package com.peachberry.todolist.controller;
 import com.peachberry.todolist.controller.dto.CategoryControllerDto;
 import com.peachberry.todolist.controller.dto.CategoryResponse;
 import com.peachberry.todolist.domain.Category;
-import com.peachberry.todolist.controller.dto.SuccessResponseDTO;
 import com.peachberry.todolist.service.CategoryService;
 import com.peachberry.todolist.service.dto.CategoryServiceDto;
 import com.peachberry.todolist.service.exception.CategoryUpdateFail;
@@ -14,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/category/{member-id}")
@@ -33,9 +34,9 @@ public class CategoryController {
             @PathVariable(name = "member-id") Long id
     )
     {
-        categoryService.saveCategory(saveDto.toServiceDto(id));
+        Long result = categoryService.saveCategory(saveDto.toServiceDto(id));
 
-        return ResponseEntity.ok(SuccessResponseDTO.builder().response("Save category success").build());
+        return ResponseEntity.ok(new CategoryResponse.Save(result));
     }
 
     @ExceptionHandler
@@ -47,7 +48,12 @@ public class CategoryController {
     @GetMapping("/all")
     public ResponseEntity<?> findAllCategory(@PathVariable(name = "member-id") Long id) {
 
-        CategoryControllerDto.CategoryList categoryListDTO = new CategoryControllerDto.CategoryList(categoryService.findAll(id));
+        List<CategoryResponse.CategoryInfo> result = categoryService.findAll(id)
+                .stream()
+                .map(it -> new CategoryResponse.CategoryInfo(it.getId(), it.getTitle()))
+                .collect(Collectors.toList());
+
+        CategoryResponse.CategoryList categoryListDTO = new CategoryResponse.CategoryList(result);
 
         return ResponseEntity.ok(categoryListDTO);
     }
@@ -91,8 +97,8 @@ public class CategoryController {
     )
     {
 
-        categoryService.deleteCategory(deleteDto.getId());
+        Long result = categoryService.deleteCategory(deleteDto.getId());
 
-        return ResponseEntity.ok(SuccessResponseDTO.builder().response("Update Complete").build());
+        return ResponseEntity.ok(new CategoryResponse.Delete(result));
     }
 }
