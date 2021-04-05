@@ -51,6 +51,12 @@ public class InitDb {
                     member
             ) ;
             em.persist(category);
+
+            Category category3 = new Category(
+                    "하루일과3",
+                    member
+            ) ;
+            em.persist(category3);
         }
     }
 }
