@@ -28,7 +28,7 @@ public class CategoryController {
 
     private Logger logger = LoggerFactory.getLogger(CategoryController.class);
 
-    @PostMapping("")
+    @PostMapping
     public ResponseEntity<?> saveCategory(
             @Valid @RequestBody CategoryControllerDto.Save saveDto,
             @PathVariable(name = "member-id") Long id
@@ -59,7 +59,7 @@ public class CategoryController {
     }
 
 
-    @GetMapping("")
+    @GetMapping
     public ResponseEntity<?> findCategoryTitle(
             @RequestParam("title") String title,
             @PathVariable(name = "member-id") Long id
@@ -73,8 +73,7 @@ public class CategoryController {
 
     @PutMapping
     public ResponseEntity<?> updateTitle(
-            @Valid @RequestBody CategoryControllerDto.Update updateDto,
-            @PathVariable(name = "member-id") Long id
+            @Valid @RequestBody CategoryControllerDto.Update updateDto
     )
     {
 
@@ -89,11 +88,9 @@ public class CategoryController {
         logger.error(e.getMessage());
     }
 
-    @DeleteMapping("/{category-id}")
+    @DeleteMapping
     public ResponseEntity<?> deleteCategory(
-            @Valid @RequestBody CategoryControllerDto.Delete deleteDto,
-            @PathVariable(name = "member-id") Long memberId,
-            @PathVariable(name = "category-id") Long categoryId
+            @Valid @RequestBody CategoryControllerDto.Delete deleteDto
     )
     {
 

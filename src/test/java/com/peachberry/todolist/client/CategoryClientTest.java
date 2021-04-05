@@ -130,11 +130,11 @@ public class CategoryClientTest {
         HttpEntity<CategoryControllerDto.Delete> request = new HttpEntity<>(delete, headers);
 
         ResponseEntity<CategoryResponse.Delete> responseEntity = restTemplate.exchange(
-                "/category/{member-id}/{category-id}",
+                "/category/{member-id}",
                 HttpMethod.DELETE,
                 request,
                 CategoryResponse.Delete.class,
-                1L, 1L);
+                1L);
 
         CategoryResponse.Delete response = responseEntity.getBody();
 
