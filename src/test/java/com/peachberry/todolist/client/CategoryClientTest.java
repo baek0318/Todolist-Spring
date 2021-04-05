@@ -23,10 +23,6 @@ public class CategoryClientTest {
 
     private final SignInDTO signInDTO = new SignInDTO("peachberry2@kakao.com", "1234");
 
-    private final CategoryControllerDto.Save categorySaveDTO = CategoryControllerDto.Save.builder()
-            .title("하루일과2")
-            .build();
-
     private HttpHeaders headers;
 
     private String signin() {
@@ -55,6 +51,9 @@ public class CategoryClientTest {
     @Test
     @DisplayName("카테고리 저장하기")
     void testSaveCategory() {
+        CategoryControllerDto.Save categorySaveDTO = CategoryControllerDto.Save.builder()
+                .title("하루일과2")
+                .build();
 
         HttpEntity<CategoryControllerDto.Save> request = new HttpEntity<>(categorySaveDTO, headers);
 
