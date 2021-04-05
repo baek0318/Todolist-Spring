@@ -39,7 +39,6 @@ public class CategoryClientTest {
 
     @BeforeEach
     void setUp() {
-        String token = signin();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
