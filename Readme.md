@@ -75,9 +75,9 @@
 |GET|/todo/{member-id}/all||
 |GET|/todo/{member-id}|datetime : String|
 |GET|/todo/{member-id}|status : boolean|
-|PATCH|/todo/{member-id}|title : String|
-|PATCH|/todo/{member-id}|datetime : String|
-|PATCH|/todo/{member-id}|status : boolean|
+|PUT|/todo/{member-id}|title : String|
+|PUT|/todo/{member-id}|datetime : String|
+|PUT|/todo/{member-id}|status : boolean|
 |DELETE|/todo/{member-id}/{todo-id}||
 
 ### Category API
@@ -86,7 +86,7 @@
 |POST|category/{member-id}|title : String|
 |GET|category/{member-id}/all||
 |GET|category/{member-id}|title : String|
-|PATCH|category/{member-id}|title : String|
+|PUT|category/{member-id}|title : String|
 |DELETE|category/{member-id}/{category-id}||
 
 ### Authentication API
