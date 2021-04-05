@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
-import org.springframework.security.test.context.support.WithMockUser;
 
 import java.util.Collections;
 
@@ -59,11 +58,11 @@ public class CategoryClientTest {
 
         HttpEntity<CategoryControllerDto.Save> request = new HttpEntity<>(categorySaveDTO, headers);
 
-        ResponseEntity<SuccessResponseDTO> response = restTemplate
-                .postForEntity("/category/{member-id}", request, SuccessResponseDTO.class,1L);
+        ResponseEntity<CategoryResponse.Save> response = restTemplate
+                .postForEntity("/category/{member-id}", request, CategoryResponse.Save.class,1L);
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Assertions.assertThat(response.getBody().getResponse()).isEqualTo("Save category success");
+        Assertions.assertThat(response.getBody().getId()).isEqualTo(3L);
     }
 
     @Test
@@ -72,16 +71,20 @@ public class CategoryClientTest {
 
         HttpEntity request = new HttpEntity<>(headers);
 
-        ResponseEntity<CategoryControllerDto.CategoryList> response = restTemplate
+        ResponseEntity<CategoryResponse.CategoryList> responseEntity = restTemplate
                 .exchange("/category/{member-id}/all",
                         HttpMethod.GET,
                         request,
-                        CategoryControllerDto.CategoryList.class,
+                        CategoryResponse.CategoryList.class,
                         1L);
 
+        CategoryResponse.CategoryList response = responseEntity.getBody();
 
-        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Assertions.assertThat(response.getBody()).isNotNull();
+        for(CategoryResponse.CategoryInfo info : response.getCategoryList()) {
+            System.out.println("info id : "+info.getId() +" info title : "+ info.getTitle());
+        }
+        Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(responseEntity.getBody()).isNotNull();
     }
 
     @Test
@@ -90,22 +93,22 @@ public class CategoryClientTest {
 
         HttpEntity request = new HttpEntity<>(headers);
 
-        ResponseEntity<CategoryControllerDto.CategoryInfo> responseEntity = restTemplate
-                .exchange("/category/{member-id}?title=하루일과",
+        ResponseEntity<CategoryResponse.CategoryInfo> responseEntity = restTemplate
+                .exchange("/category/{member-id}?title=하루일과3",
                         HttpMethod.GET,
                         request,
-                        CategoryControllerDto.CategoryInfo.class,
+                        CategoryResponse.CategoryInfo.class,
                         1);
 
-        CategoryControllerDto.CategoryInfo info = responseEntity.getBody();
-        Assertions.assertThat(info.getTitle()).isEqualTo("하루일과");
-        Assertions.assertThat(info.getId()).isEqualTo(1L);
+        CategoryResponse.CategoryInfo info = responseEntity.getBody();
+        Assertions.assertThat(info.getTitle()).isEqualTo("하루일과3");
+        Assertions.assertThat(info.getId()).isEqualTo(2L);
     }
 
     @Test
     @DisplayName("해당 카테고리 업데이트하기")
     void testUpdateCategory() {
-        CategoryControllerDto.Update update = new CategoryControllerDto.Update(1L, null);
+        CategoryControllerDto.Update update = new CategoryControllerDto.Update(2L, "하루일과4");
         HttpEntity<CategoryControllerDto.Update> request = new HttpEntity<>(update, headers);
 
         ResponseEntity<CategoryResponse.Update> responseEntity = restTemplate
@@ -116,15 +119,29 @@ public class CategoryClientTest {
                         1L);
 
         CategoryResponse.Update updated = responseEntity.getBody();
-        Assertions.assertThat(updated.getId()).isEqualTo(1L);
+        Assertions.assertThat(updated.getId()).isEqualTo(2L);
         Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
-/*
+
     @Test
     @DisplayName("해당 카테고리 삭제하기")
     void testDeleteCategory() {
+        CategoryControllerDto.Delete delete = new CategoryControllerDto.Delete(1L);
+        HttpEntity<CategoryControllerDto.Delete> request = new HttpEntity<>(delete, headers);
+
+        ResponseEntity<CategoryResponse.Delete> responseEntity = restTemplate.exchange(
+                "/category/{member-id}/{category-id}",
+                HttpMethod.DELETE,
+                request,
+                CategoryResponse.Delete.class,
+                1L, 1L);
+
+        CategoryResponse.Delete response = responseEntity.getBody();
+
+        Assertions.assertThat(response.getId()).isEqualTo(1L);
+        Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
     }
- */
+
 
 }
