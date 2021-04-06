@@ -71,7 +71,7 @@
 
 |HttpMethod|URL|Parameters|
 |---|---|---|
-|POST|/todo/{member-id}/{category-id}|title : String|
+|POST|/todo/{member-id}|title : String, status : Enum, category-id : Long|
 |GET|/todo/{member-id}/all||
 |GET|/todo/{member-id}|datetime : String|
 |GET|/todo/{member-id}|status : boolean|
