@@ -29,6 +29,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -62,7 +63,7 @@ public class TodoControllerTest {
     private final Todo todo = Todo.builder()
             .title("밥 먹기")
             .category(new Category("매일하루", null))
-            .calendar(new Calendar(2021, 2, 18))
+            .dateTime(LocalDateTime.now())
             .member(null)
             .status(TodoStatus.ING).build();
 
@@ -101,9 +102,9 @@ public class TodoControllerTest {
         TodoListDTO todoListDTO = objectMapper.readValue(result.getResponse().getContentAsString(), TodoListDTO.class);
         logger.info(result.getResponse().getContentAsString()+"\n");
         Assertions.assertThat(todoListDTO.getTodoList().get(0).getTitle()).isEqualTo("밥 먹기");
-        Assertions.assertThat(todoListDTO.getTodoList().get(0).getCalendar().getYear()).isEqualTo(2021);
-        Assertions.assertThat(todoListDTO.getTodoList().get(0).getCalendar().getDay()).isEqualTo(18);
-        Assertions.assertThat(todoListDTO.getTodoList().get(0).getCalendar().getMonth()).isEqualTo(2);
+        Assertions.assertThat(todoListDTO.getTodoList().get(0).getDateTime().getYear()).isEqualTo(2021);
+        Assertions.assertThat(todoListDTO.getTodoList().get(0).getDateTime().getDayOfMonth()).isEqualTo(18);
+        Assertions.assertThat(todoListDTO.getTodoList().get(0).getDateTime().getMonth()).isEqualTo(2);
         verify(todoService, times(1)).findAllTodo(anyLong());
     }
 
