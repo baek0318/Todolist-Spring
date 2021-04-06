@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -65,13 +66,13 @@ public class TodoRepository {
 
     /**
      * 날짜 정보를 가지고 todo를 찾는다
-     * @param date 찾고 싶은 날짜
+     * @param dateTime 찾고 싶은 날짜
      * @param member_id 현재 로그인된 member
      * @return 해당하는 todo를 list로 반환한다
      */
-    public List<Todo> findByCalendar(Calendar date, Long member_id) {
-        return em.createQuery("select td from Todo td where td.calendar =:date and td.member.id = :id", Todo.class)
-                .setParameter("date", date)
+    public List<Todo> findByDateTime(LocalDateTime dateTime, Long member_id) {
+        return em.createQuery("select td from Todo td where td.dateTime =:date and td.member.id = :id", Todo.class)
+                .setParameter("date", dateTime)
                 .setParameter("id", member_id)
                 .getResultList();
     }
@@ -86,10 +87,10 @@ public class TodoRepository {
     /**
      * Todo status를 변경할 수 있다
      * @param status 변경할려는 status
-     * @param todo_id 해당하는 id
+     * @param todoId 해당하는 id
      */
-    public Long reviseStatus(TodoStatus status, Long todo_id) {
-        Todo todo = findById(todo_id);
+    public Long reviseStatus(TodoStatus status, Long todoId) {
+        Todo todo = findById(todoId);
         todo.changeStatus(status);
         save(todo);
         return todo.getId();
@@ -98,10 +99,10 @@ public class TodoRepository {
     /**
      * Todo title을 변경할 수 있다
      * @param title 변경할려는 title
-     * @param todo_id 해당하는 id
+     * @param todoId 해당하는 id
      */
-    public Long reviseTodo(String title, Long todo_id) {
-        Todo todo = findById(todo_id);
+    public Long reviseTodo(String title, Long todoId) {
+        Todo todo = findById(todoId);
         todo.changeTitle(title);
         save(todo);
         return todo.getId();
@@ -109,12 +110,12 @@ public class TodoRepository {
 
     /**
      * Todo calendar를 변경할 수 있다
-     * @param date 변경할려는 date
-     * @param todo_id 해당하는 id
+     * @param dateTime 변경할려는 date
+     * @param todoId 해당하는 id
      */
-    public Long reviseCalendar(Calendar date, Long todo_id) {
-        Todo todo = findById(todo_id);
-        todo.changeCalendar(date);
+    public Long reviseCalendar(LocalDateTime dateTime, Long todoId) {
+        Todo todo = findById(todoId);
+        todo.changeDateTime(dateTime);
         save(todo);
         return todo.getId();
     }
