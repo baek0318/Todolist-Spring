@@ -2,13 +2,16 @@ package com.peachberry.todolist.domain;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class Todo {
 
     @Id
@@ -24,32 +27,28 @@ public class Todo {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @Embedded
-    private Calendar calendar;
+    private LocalDateTime dateTime;
 
-    @NotBlank
     private String title;
 
     @Enumerated(EnumType.STRING)
     private TodoStatus status; //COMPLELETE, ING
 
     @Builder
-    public Todo(Member member, Category category, Calendar calendar, @NotBlank String title, TodoStatus status) {
+    public Todo(Member member, Category category, LocalDateTime dateTime, String title, TodoStatus status) {
         this.member = member;
         this.category = category;
-        this.calendar = calendar;
+        this.dateTime = dateTime;
         this.title = title;
         this.status = status;
     }
-
-    protected Todo() {}
 
     public void changeTitle(String title) {
         this.title = title;
     }
 
-    public void changeCalendar(Calendar calendar) {
-        this.calendar = calendar;
+    public void changeDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
     }
 
     public void changeStatus(TodoStatus status) {
