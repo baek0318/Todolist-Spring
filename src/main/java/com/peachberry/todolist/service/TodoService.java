@@ -8,6 +8,7 @@ import com.peachberry.todolist.repository.TodoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -26,16 +27,14 @@ public class TodoService {
     }
 
     @Transactional
-    public Long saveTodo(TodoDTO todoDTO) {
-        List<Category> category = categoryRepository.findByTitle(todoDTO.getCategory(), todoDTO.getMember_id());
-        Member member = memberRepository.findById(todoDTO.getMember_id());
-        Todo todo = Todo.builder()
-                .calendar(todoDTO.getCalendar())
-                .category(category.get(0))
-                .title(todoDTO.getTitle())
-                .member(member)
-                .status(TodoStatus.ING)
-                .build();
+    public Long saveTodo(Todo todo, Long memberId, Long categoryId) {
+        if(categoryId != null) {
+            Category category = categoryRepository.findById(categoryId);
+            todo.setCategory(category);
+        }
+        Member member = memberRepository.findById(memberId);
+        todo.setMember(member);
+
         return todoRepository.save(todo);
     }
 
@@ -55,8 +54,8 @@ public class TodoService {
     }
 
     @Transactional
-    public List<Todo> findTodoByCalendar(Calendar calendar, Long member_id) {
-        return todoRepository.findByCalendar(calendar, member_id);
+    public List<Todo> findTodoByCalendar(LocalDateTime dateTime, Long member_id) {
+        return todoRepository.findByDateTime(dateTime, member_id);
     }
 
     @Transactional
@@ -75,8 +74,8 @@ public class TodoService {
     }
 
     @Transactional
-    public void reviseTodoByCalendar(Calendar calendar, Long todo_id) {
-        todoRepository.reviseCalendar(calendar, todo_id);
+    public void reviseTodoByCalendar(LocalDateTime dateTime, Long todo_id) {
+        todoRepository.reviseCalendar(dateTime, todo_id);
     }
 
     @Transactional

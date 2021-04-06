@@ -1,9 +1,7 @@
 package com.peachberry.todolist;
 
-import com.peachberry.todolist.domain.Authority;
-import com.peachberry.todolist.domain.Category;
-import com.peachberry.todolist.domain.Member;
-import com.peachberry.todolist.domain.Role;
+import com.peachberry.todolist.controller.dto.TodoRequest;
+import com.peachberry.todolist.domain.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -11,6 +9,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
@@ -57,6 +56,24 @@ public class InitDb {
                     member
             ) ;
             em.persist(category3);
+
+            Todo todo1 = new Todo(
+                    member,
+                    category,
+                    LocalDateTime.now(),
+                    "밥먹기",
+                    TodoStatus.ING
+            );
+            em.persist(todo1);
+
+            Todo todo2 = new Todo(
+                    member,
+                    category,
+                    LocalDateTime.now(),
+                    "학교가기",
+                    TodoStatus.ING
+            );
+            em.persist(todo2);
         }
     }
 }

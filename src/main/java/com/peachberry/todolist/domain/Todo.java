@@ -43,6 +43,14 @@ public class Todo {
         this.status = status;
     }
 
+    public void setMember(Member member) {
+        this.member = member;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
     public void changeTitle(String title) {
         this.title = title;
     }

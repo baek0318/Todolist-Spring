@@ -1,5 +1,7 @@
 package com.peachberry.todolist.controller;
 
+import com.peachberry.todolist.controller.dto.TodoRequest;
+import com.peachberry.todolist.controller.dto.TodoResponse;
 import com.peachberry.todolist.domain.Calendar;
 import com.peachberry.todolist.domain.Todo;
 import com.peachberry.todolist.domain.TodoStatus;
@@ -13,10 +15,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/{id}/todo")
+@RequestMapping("/todo/{member-id}")
 public class TodoController {
 
     private final TodoService todoService;
@@ -27,12 +30,15 @@ public class TodoController {
 
     private Logger logger = LoggerFactory.getLogger(TodoController.class);
 
-    @PostMapping("/save")
-    public ResponseEntity<?> save(@Valid @RequestBody TodoDTO todoDTO, @PathVariable String id) {
+    @PostMapping
+    public ResponseEntity<?> save(
+            @Valid @RequestBody TodoRequest.Save saveDto,
+            @PathVariable(name = "member-id") Long memberId)
+    {
 
-        todoService.saveTodo(todoDTO);
+        Long result = todoService.saveTodo(saveDto.toEntity(), memberId, saveDto.getCategoryId());
 
-        return ResponseEntity.ok(SuccessResponseDTO.builder().response("Save todo success").build());
+        return ResponseEntity.ok(new TodoResponse.Save(result));
     }
 
     @GetMapping("/search/all")
@@ -54,7 +60,7 @@ public class TodoController {
     @GetMapping("/search/calendar")
     public ResponseEntity<?> getTodoByCalendar(@RequestParam("calendar") Calendar calendar, @PathVariable Long memberId) {
 
-        List<Todo> response = todoService.findTodoByCalendar(calendar, memberId);
+        List<Todo> response = todoService.findTodoByCalendar(LocalDateTime.now(), memberId);
 
         return ResponseEntity.ok().build();
     }
