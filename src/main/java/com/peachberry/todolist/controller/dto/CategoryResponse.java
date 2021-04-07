@@ -1,5 +1,6 @@
 package com.peachberry.todolist.controller.dto;
 
+import com.peachberry.todolist.domain.Category;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -46,6 +47,11 @@ public class CategoryResponse {
         public CategoryInfo(Long id, String title) {
             this.id = id;
             this.title = title;
+        }
+
+        public CategoryInfo(Category category) {
+            this.id = category.getId();
+            this.title = category.getTitle();
         }
     }
 

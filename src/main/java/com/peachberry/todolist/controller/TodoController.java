@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/todo/{member-id}")
@@ -31,7 +33,7 @@ public class TodoController {
     private Logger logger = LoggerFactory.getLogger(TodoController.class);
 
     @PostMapping
-    public ResponseEntity<?> save(
+    public ResponseEntity<TodoResponse.Save> save(
             @Valid @RequestBody TodoRequest.Save saveDto,
             @PathVariable(name = "member-id") Long memberId)
     {
@@ -41,36 +43,27 @@ public class TodoController {
         return ResponseEntity.ok(new TodoResponse.Save(result));
     }
 
-    @GetMapping("/search/all")
-    public ResponseEntity<?> getAllTodo(@PathVariable String id) {
+    @GetMapping("/all")
+    public ResponseEntity<TodoResponse.TodoInfoList> getAllTodo(@PathVariable(name = "member-id") Long id) {
 
-        List<Todo> todoList =  todoService.findAllTodo(Long.parseLong(id));
+        List<TodoResponse.TodoInfo> todoList = todoService.findAllTodo(id)
+                .stream()
+                .map(TodoResponse.TodoInfo::new)
+                .collect(Collectors.toList());
 
-        return ResponseEntity.ok(new TodoListDTO(todoList));
+        return ResponseEntity.ok(new TodoResponse.TodoInfoList(todoList));
     }
 
-    @GetMapping("/search/cateogry")
-    public ResponseEntity<?> getTodoByCategory(@RequestParam("category_id") Long category_id, @PathVariable Long member_id) {
-
-        List<Todo> response = todoService.findTodoByCategory(category_id, member_id);
+    @GetMapping("")
+    public ResponseEntity<?> getTodoByParam(
+            @RequestParam Map<String, String> param,
+            @PathVariable Long memberId)
+    {
+        System.out.println("=============="+param.get("status"));
 
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/search/calendar")
-    public ResponseEntity<?> getTodoByCalendar(@RequestParam("calendar") Calendar calendar, @PathVariable Long memberId) {
-
-        List<Todo> response = todoService.findTodoByCalendar(LocalDateTime.now(), memberId);
-
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/search/status")
-    public ResponseEntity<?> getTodoByStatus(@RequestParam("status") String status, @PathVariable Long memberId) {
-        TodoStatus todoStatus = TodoStatus.valueOf(status);
-        List<Todo> response = todoService.findTodoByStatus(todoStatus, memberId);
-        return ResponseEntity.ok().build();
-    }
 /*
     @PostMapping("/update/todo")
     public ResponseEntity<?> updateTodoTitle(@RequestBody TodoUpdateTitleDTO updateTitleDTO) {

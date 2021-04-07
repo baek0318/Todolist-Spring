@@ -80,33 +80,66 @@ public class TodoClientTest {
 
     @Test
     @DisplayName("전체 Todo 목록 가져오기")
-    void test_Load_AllData() {
+    void testLoadAllData() {
 
         HttpEntity request = new HttpEntity(headers);
 
-        ResponseEntity<TodoListDTO> response = restTemplate
-                .exchange("/todo/{member-id}/all", HttpMethod.GET, request , TodoListDTO.class, 1);
+        ResponseEntity<TodoResponse.TodoInfoList> response = restTemplate
+                .exchange("/todo/{member-id}/all",
+                        HttpMethod.GET,
+                        request,
+                        TodoResponse.TodoInfoList.class,
+                        1);
+
+        TodoResponse.TodoInfoList result = response.getBody();
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         Assertions.assertThat(response.getBody()).isNotNull();
     }
 
-/*
+
     @Test
     @DisplayName("특정 Todo 하나만 가져오기")
     void testGetOneTodo() {
 
-    }
+        HttpEntity request = new HttpEntity(headers);
 
-    @Test
-    @DisplayName("일치하는 날짜 Todo 가져오기")
-    void testGetCalendarTodo() {
+        ResponseEntity<TodoResponse.TodoInfo> responseEntity = restTemplate.exchange(
+                "/todo/{member-id}?title=하루일과",
+                HttpMethod.GET,
+                request,
+                TodoResponse.TodoInfo.class,
+                1L);
+
+        TodoResponse.TodoInfo response = responseEntity.getBody();
+
+        Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(response.getTitle()).isEqualTo("하루일과");
 
     }
 
     @Test
     @DisplayName("일치하는 상태 Todo 가져오기")
     void testGetStatusTodo() {
+
+        HttpEntity request = new HttpEntity(headers);
+
+        ResponseEntity<TodoResponse.TodoInfoList> responseEntity = restTemplate.exchange(
+                "/todo/{member-id}?status=ING",
+                HttpMethod.GET,
+                request,
+                TodoResponse.TodoInfoList.class,
+                1L);
+
+        TodoResponse.TodoInfoList response = responseEntity.getBody();
+
+        Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(response).isNotNull();
+    }
+/*
+    @Test
+    @DisplayName("일치하는 날짜 Todo 가져오기")
+    void testGetCalendarTodo() {
 
     }
 
