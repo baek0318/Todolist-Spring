@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Component
@@ -60,7 +61,7 @@ public class InitDb {
             Todo todo1 = new Todo(
                     member,
                     category,
-                    LocalDateTime.now(),
+                    LocalDate.now(),
                     "밥먹기",
                     TodoStatus.ING
             );
@@ -69,7 +70,7 @@ public class InitDb {
             Todo todo2 = new Todo(
                     member,
                     category,
-                    LocalDateTime.now(),
+                    LocalDate.now(),
                     "학교가기",
                     TodoStatus.ING
             );

@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,17 +32,17 @@ public class TodoResponse {
 
         private CategoryResponse.CategoryInfo category;
 
-        private LocalDateTime dateTime;
+        private LocalDate date;
 
         private String title;
 
         private TodoStatus status;
 
         @Builder
-        public TodoInfo(Long id, CategoryResponse.CategoryInfo category, LocalDateTime dateTime, String title, TodoStatus status) {
+        public TodoInfo(Long id, CategoryResponse.CategoryInfo category, LocalDate date, String title, TodoStatus status) {
             this.id = id;
             this.category = category;
-            this.dateTime = dateTime;
+            this.date = date;
             this.title = title;
             this.status = status;
         }
@@ -49,7 +50,7 @@ public class TodoResponse {
         public TodoInfo(Todo todo) {
             this.id = todo.getId();
             this.category = new CategoryResponse.CategoryInfo(todo.getCategory());
-            this.dateTime = todo.getDateTime();
+            this.date = todo.getDate();
             this.title = todo.getTitle();
             this.status = todo.getStatus();
         }

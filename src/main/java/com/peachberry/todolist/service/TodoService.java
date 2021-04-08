@@ -1,14 +1,13 @@
 package com.peachberry.todolist.service;
 
 import com.peachberry.todolist.domain.*;
-import com.peachberry.todolist.controller.dto.todo.TodoDTO;
 import com.peachberry.todolist.repository.CategoryRepository;
 import com.peachberry.todolist.repository.MemberRepository;
 import com.peachberry.todolist.repository.TodoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -54,8 +53,8 @@ public class TodoService {
     }
 
     @Transactional
-    public List<Todo> findTodoByCalendar(LocalDateTime dateTime, Long member_id) {
-        return todoRepository.findByDateTime(dateTime, member_id);
+    public List<Todo> findTodoByCalendar(LocalDate date, Long member_id) {
+        return todoRepository.findByDateTime(date, member_id);
     }
 
     @Transactional
@@ -74,8 +73,8 @@ public class TodoService {
     }
 
     @Transactional
-    public void reviseTodoByCalendar(LocalDateTime dateTime, Long todo_id) {
-        todoRepository.reviseCalendar(dateTime, todo_id);
+    public void reviseTodoByCalendar(LocalDate date, Long todo_id) {
+        todoRepository.reviseCalendar(date, todo_id);
     }
 
     @Transactional

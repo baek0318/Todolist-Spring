@@ -5,6 +5,7 @@ import com.peachberry.todolist.domain.TodoStatus;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class TodoRequest {
@@ -15,13 +16,13 @@ public class TodoRequest {
 
         private String title;
 
-        private LocalDateTime dateTime;
+        private LocalDate date;
 
         private Long categoryId;
 
-        public Save(String title, LocalDateTime dateTime, Long categoryId) {
+        public Save(String title, LocalDate date, Long categoryId) {
             this.title = title;
-            this.dateTime = dateTime;
+            this.date = date;
             this.categoryId = categoryId;
         }
 
@@ -29,7 +30,7 @@ public class TodoRequest {
             return new Todo(
                     null,
                     null,
-                    this.dateTime,
+                    this.date,
                     this.title,
                     TodoStatus.ING
             );

@@ -27,6 +27,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 
@@ -61,7 +62,7 @@ public class TodoControllerTest {
     private final Todo todo = Todo.builder()
             .title("밥 먹기")
             .category(new Category("매일하루", null))
-            .dateTime(LocalDateTime.now())
+            .date(LocalDate.now())
             .member(null)
             .status(TodoStatus.ING).build();
 

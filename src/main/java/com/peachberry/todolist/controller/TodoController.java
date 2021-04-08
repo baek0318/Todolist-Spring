@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Path;
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -81,9 +82,9 @@ public class TodoController {
         }
         if (param.get("datetime") != null) {
             List<Todo> todoList = todoService.findTodoByCalendar(
-                    LocalDateTime.parse(
+                    LocalDate.parse(
                             param.get("datetime"),
-                            DateTimeFormatter.ISO_LOCAL_DATE_TIME
+                            DateTimeFormatter.ISO_LOCAL_DATE
                     ),
                     memberId);
             result = toTodoInfoList(todoList);

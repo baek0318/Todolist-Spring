@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -27,7 +28,7 @@ public class Todo {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    private LocalDateTime dateTime;
+    private LocalDate date;
 
     private String title;
 
@@ -35,10 +36,10 @@ public class Todo {
     private TodoStatus status; //COMPLELETE, ING
 
     @Builder
-    public Todo(Member member, Category category, LocalDateTime dateTime, String title, TodoStatus status) {
+    public Todo(Member member, Category category, LocalDate date, String title, TodoStatus status) {
         this.member = member;
         this.category = category;
-        this.dateTime = dateTime;
+        this.date = date;
         this.title = title;
         this.status = status;
     }
@@ -55,8 +56,8 @@ public class Todo {
         this.title = title;
     }
 
-    public void changeDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime;
+    public void changeDate(LocalDate date) {
+        this.date = date;
     }
 
     public void changeStatus(TodoStatus status) {

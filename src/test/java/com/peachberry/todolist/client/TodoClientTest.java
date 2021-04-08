@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 
@@ -52,7 +53,7 @@ public class TodoClientTest {
     @Test
     @DisplayName("Todo 저장하기")
     void testSaveTodo() {
-        TodoRequest.Save saveDto = new TodoRequest.Save("코딩하기", LocalDateTime.now(), null);
+        TodoRequest.Save saveDto = new TodoRequest.Save("코딩하기", LocalDate.now(), null);
         HttpEntity<TodoRequest.Save> request = new HttpEntity<>(saveDto, headers);
 
         ResponseEntity<TodoResponse.Save> responseEntity = restTemplate

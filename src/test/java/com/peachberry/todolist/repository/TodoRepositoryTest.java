@@ -14,6 +14,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,7 +45,7 @@ class TodoRepositoryTest {
         //given
         String title = "밥 먹기";
         TodoStatus status = TodoStatus.ING;
-        Todo todo = new Todo(null,null,LocalDateTime.now(), title, status);
+        Todo todo = new Todo(null,null, LocalDate.now(), title, status);
 
         //when
         Long id = todoRepository.save(todo);
@@ -61,9 +62,9 @@ class TodoRepositoryTest {
         Authority authority = new Authority(Role.USER);
         Member member1 = new Member("baek0318@icloud.com","1234","baek", authority);
         Member member2 = new Member("peachberry@icloud.com","1234","seung", authority);
-        Todo todo1 = new Todo(member1, null, LocalDateTime.now(), "밥 먹기", TodoStatus.COMPLETE);
-        Todo todo2 = new Todo(member2, null, LocalDateTime.now(), "화장실 가기", TodoStatus.COMPLETE);
-        Todo todo3 = new Todo(member2, null, LocalDateTime.now(), "학교가기", TodoStatus.ING);
+        Todo todo1 = new Todo(member1, null, LocalDate.now(), "밥 먹기", TodoStatus.COMPLETE);
+        Todo todo2 = new Todo(member2, null, LocalDate.now(), "화장실 가기", TodoStatus.COMPLETE);
+        Todo todo3 = new Todo(member2, null, LocalDate.now(), "학교가기", TodoStatus.ING);
 
         //when
         authorityRepository.save(authority);
@@ -87,9 +88,9 @@ class TodoRepositoryTest {
         Authority authority = new Authority(Role.USER);
         Member member1 = new Member("baek0318@icloud.com","1234","baek", authority);
         Member member2 = new Member("peachberry@icloud.com","1234","seung", authority);
-        Todo todo1 = new Todo(member1, null, LocalDateTime.now(), "밥 먹기", TodoStatus.COMPLETE);
-        Todo todo2 = new Todo(member1, null, LocalDateTime.now(), "화장실 가기", TodoStatus.COMPLETE);
-        Todo todo3 = new Todo(member2, null, LocalDateTime.now(), "학교가기", TodoStatus.ING);
+        Todo todo1 = new Todo(member1, null, LocalDate.now(), "밥 먹기", TodoStatus.COMPLETE);
+        Todo todo2 = new Todo(member1, null, LocalDate.now(), "화장실 가기", TodoStatus.COMPLETE);
+        Todo todo3 = new Todo(member2, null, LocalDate.now(), "학교가기", TodoStatus.ING);
 
         //when
         authorityRepository.save(authority);
@@ -117,10 +118,10 @@ class TodoRepositoryTest {
         Member member1 = new Member("baek0318@icloud.com","1234","baek", authority);
         Member member2 = new Member("peachberry@icloud.com","1234","seung", authority);
         Calendar calendar = new Calendar(2021, 1, 26);
-        LocalDateTime dateTime = LocalDateTime.now();
-        Todo todo1 = new Todo(member1, null, dateTime, "밥 먹기", TodoStatus.COMPLETE);
-        Todo todo2 = new Todo(member2, null, dateTime, "화장실 가기", TodoStatus.COMPLETE);
-        Todo todo3 = new Todo(member2, null, dateTime, "학교가기", TodoStatus.ING);
+        LocalDate date = LocalDate.now();
+        Todo todo1 = new Todo(member1, null, date, "밥 먹기", TodoStatus.COMPLETE);
+        Todo todo2 = new Todo(member2, null, date, "화장실 가기", TodoStatus.COMPLETE);
+        Todo todo3 = new Todo(member2, null, date, "학교가기", TodoStatus.ING);
 
         //when
         authorityRepository.save(authority);
@@ -130,7 +131,7 @@ class TodoRepositoryTest {
         todoRepository.save(todo2);
         todoRepository.save(todo3);
 
-        List<Todo> result = todoRepository.findByDateTime(dateTime, member1.getId());
+        List<Todo> result = todoRepository.findByDateTime(date, member1.getId());
 
         //then
         Assertions.assertThat(result).isEqualTo(Arrays.asList(todo1));
@@ -145,8 +146,8 @@ class TodoRepositoryTest {
         Member member1 = new Member("baek0318@icloud.com","1234","baek", authority);
         Member member2 = new Member("peachberry@icloud.com","1234","seung", authority);
         Calendar calendar = new Calendar(2021, 1, 26);
-        Todo todo1 = new Todo(member1, null, LocalDateTime.now(), "밥 먹기", TodoStatus.COMPLETE);
-        Todo todo2 = new Todo(member2, null, LocalDateTime.now(), "화장실 가기", TodoStatus.COMPLETE);
+        Todo todo1 = new Todo(member1, null, LocalDate.now(), "밥 먹기", TodoStatus.COMPLETE);
+        Todo todo2 = new Todo(member2, null, LocalDate.now(), "화장실 가기", TodoStatus.COMPLETE);
 
         //when
         authorityRepository.save(authority);
@@ -172,8 +173,8 @@ class TodoRepositoryTest {
         Member member1 = new Member("baek0318@icloud.com","1234","baek", authority);
         Member member2 = new Member("peachberry@icloud.com","1234","seung", authority);
         Calendar calendar = new Calendar(2021, 1, 26);
-        Todo todo1 = new Todo(member1, null, LocalDateTime.now(), "밥 먹기", TodoStatus.COMPLETE);
-        Todo todo2 = new Todo(member2, null, LocalDateTime.now(), "화장실 가기", TodoStatus.COMPLETE);
+        Todo todo1 = new Todo(member1, null, LocalDate.now(), "밥 먹기", TodoStatus.COMPLETE);
+        Todo todo2 = new Todo(member2, null, LocalDate.now(), "화장실 가기", TodoStatus.COMPLETE);
 
         //when
         authorityRepository.save(authority);
@@ -198,8 +199,8 @@ class TodoRepositoryTest {
         Member member1 = new Member("baek0318@icloud.com","1234","baek", authority);
         Member member2 = new Member("peachberry@icloud.com","1234","seung", authority);
         Calendar calendar = new Calendar(2021, 1, 26);
-        Todo todo1 = new Todo(member1, null, LocalDateTime.now(), "밥 먹기", TodoStatus.COMPLETE);
-        Todo todo2 = new Todo(member2, null, LocalDateTime.now(), "화장실 가기", TodoStatus.COMPLETE);
+        Todo todo1 = new Todo(member1, null, LocalDate.now(), "밥 먹기", TodoStatus.COMPLETE);
+        Todo todo2 = new Todo(member2, null, LocalDate.now(), "화장실 가기", TodoStatus.COMPLETE);
 
         //when
         authorityRepository.save(authority);
@@ -208,12 +209,12 @@ class TodoRepositoryTest {
         Long id1 = todoRepository.save(todo1);
         todoRepository.save(todo2);
 
-        LocalDateTime dateTime = LocalDateTime.now();
-        todoRepository.reviseCalendar(dateTime, id1);
-        List<Todo> yes = todoRepository.findByDateTime(dateTime, member1.getId());
+        LocalDate date = LocalDate.now();
+        todoRepository.reviseCalendar(date, id1);
+        List<Todo> yes = todoRepository.findByDateTime(date, member1.getId());
 
         //then
-        Assertions.assertThat(yes.get(0).getDateTime()).isEqualTo(dateTime);
+        Assertions.assertThat(yes.get(0).getDate()).isEqualTo(date);
     }
 
     @Test
@@ -223,7 +224,7 @@ class TodoRepositoryTest {
         Authority authority = new Authority(Role.USER);
         Member member1 = new Member("baek0318@icloud.com","1234","baek", authority);
         Calendar calendar = new Calendar(2021, 1, 26);
-        Todo todo1 = new Todo(member1, null, LocalDateTime.now(), "밥 먹기", TodoStatus.COMPLETE);
+        Todo todo1 = new Todo(member1, null, LocalDate.now(), "밥 먹기", TodoStatus.COMPLETE);
 
         //when
         authorityRepository.save(authority);
@@ -246,7 +247,7 @@ class TodoRepositoryTest {
         Authority authority = new Authority(Role.USER);
         Member member1 = new Member("baek0318@icloud.com","1234","baek", authority);
         Category category = new Category("하루일과", member1);
-        Todo todo1 = new Todo(member1, category, LocalDateTime.now(), "밥 먹기", TodoStatus.COMPLETE);
+        Todo todo1 = new Todo(member1, category, LocalDate.now(), "밥 먹기", TodoStatus.COMPLETE);
 
         //when
         authorityRepository.save(authority);

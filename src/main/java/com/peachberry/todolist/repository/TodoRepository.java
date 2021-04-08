@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -66,13 +67,13 @@ public class TodoRepository {
 
     /**
      * 날짜 정보를 가지고 todo를 찾는다
-     * @param dateTime 찾고 싶은 날짜
+     * @param date 찾고 싶은 날짜
      * @param member_id 현재 로그인된 member
      * @return 해당하는 todo를 list로 반환한다
      */
-    public List<Todo> findByDateTime(LocalDateTime dateTime, Long member_id) {
-        return em.createQuery("select td from Todo td where td.dateTime =:date and td.member.id = :id", Todo.class)
-                .setParameter("date", dateTime)
+    public List<Todo> findByDateTime(LocalDate date, Long member_id) {
+        return em.createQuery("select td from Todo td where td.date =:date and td.member.id = :id", Todo.class)
+                .setParameter("date", date)
                 .setParameter("id", member_id)
                 .getResultList();
     }
@@ -110,12 +111,12 @@ public class TodoRepository {
 
     /**
      * Todo calendar를 변경할 수 있다
-     * @param dateTime 변경할려는 date
+     * @param date 변경할려는 date
      * @param todoId 해당하는 id
      */
-    public Long reviseCalendar(LocalDateTime dateTime, Long todoId) {
+    public Long reviseCalendar(LocalDate date, Long todoId) {
         Todo todo = findById(todoId);
-        todo.changeDateTime(dateTime);
+        todo.changeDate(date);
         save(todo);
         return todo.getId();
     }
