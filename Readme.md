@@ -73,6 +73,7 @@
 |---|---|---|
 |POST|/todo/{member-id}|title : String, status : Enum, category-id : Long|
 |GET|/todo/{member-id}/all||
+|GET|/todo/{member-id}/{todo-id}||
 |GET|/todo/{member-id}|datetime : String|
 |GET|/todo/{member-id}|status : boolean|
 |PUT|/todo/{member-id}|title : String|
@@ -98,3 +99,4 @@
 |GET|/auth/issue-access||
 
 ## ❌ 오류 해결
+- PathVariable 사용할때에 name 명시해주기
