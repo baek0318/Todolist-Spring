@@ -14,7 +14,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Collections;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -53,7 +52,7 @@ public class TodoClientTest {
     @Test
     @DisplayName("Todo 저장하기")
     void testSaveTodo() {
-        TodoRequest.Save saveDto = new TodoRequest.Save("코딩하기", LocalDate.now(), null);
+        TodoRequest.Save saveDto = new TodoRequest.Save("코딩하기", LocalDate.now(), 1L);
         HttpEntity<TodoRequest.Save> request = new HttpEntity<>(saveDto, headers);
 
         ResponseEntity<TodoResponse.Save> responseEntity = restTemplate
@@ -132,7 +131,7 @@ public class TodoClientTest {
         HttpEntity request = new HttpEntity(headers);
 
         ResponseEntity<TodoResponse.TodoInfoList> responseEntity = restTemplate.exchange(
-                "/todo/{member-id}?datetime=2021-04-06",
+                "/todo/{member-id}?datetime=2021-04-09",
                 HttpMethod.GET,
                 request,
                 TodoResponse.TodoInfoList.class,
@@ -142,19 +141,8 @@ public class TodoClientTest {
 
         Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         Assertions.assertThat(response).isNotNull();
+        for(TodoResponse.TodoInfo info : response.getTodoInfoList()) {
+            System.out.println(info);
+        }
     }
-/*
-    @Test
-    @DisplayName("일치하는 날짜 Todo 가져오기")
-    void testGetCalendarTodo() {
-
-    }
-
-    @Test
-    @DisplayName("일치하는 카테고리 Todo 가져오기")
-    void testGetCategoryTodo() {
-
-    }
-
- */
 }

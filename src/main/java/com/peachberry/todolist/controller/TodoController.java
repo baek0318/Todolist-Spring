@@ -75,6 +75,7 @@ public class TodoController {
         List<TodoResponse.TodoInfo> result = new ArrayList<>();
 
         if(param.get("status") != null) {
+            System.out.println(param.get("status")+"========");
             List<Todo> todoList = todoService.findTodoByStatus(
                     TodoStatus.valueOf(param.get("status")),
                     memberId);
