@@ -1,13 +1,8 @@
 package com.peachberry.todolist.client;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peachberry.todolist.controller.dto.TodoRequest;
 import com.peachberry.todolist.controller.dto.TodoResponse;
-import com.peachberry.todolist.domain.Calendar;
-import com.peachberry.todolist.controller.dto.todo.TodoListDTO;
 import com.peachberry.todolist.controller.dto.auth.SignInDTO;
-import com.peachberry.todolist.controller.dto.todo.TodoDTO;
 import com.peachberry.todolist.controller.dto.SuccessResponseDTO;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
@@ -18,7 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 
@@ -33,13 +27,6 @@ public class TodoClientTest {
     private final SignInDTO signInDTO = new SignInDTO("peachberry2@kakao.com", "1234");
 
     private HttpHeaders headers;
-
-    private final TodoDTO todoDTO = TodoDTO.builder()
-            .title("공부하기")
-            .calendar(new Calendar(2021, 2, 23))
-            .category("하루일과")
-            .member_id(1L)
-            .build();
 
     private String signin() {
         HttpHeaders headers = new HttpHeaders();
@@ -105,16 +92,17 @@ public class TodoClientTest {
         HttpEntity request = new HttpEntity(headers);
 
         ResponseEntity<TodoResponse.TodoInfo> responseEntity = restTemplate.exchange(
-                "/todo/{member-id}?title=하루일과",
+                "/todo/{member-id}/{todo-id}",
                 HttpMethod.GET,
                 request,
                 TodoResponse.TodoInfo.class,
-                1L);
+                1L,1L);
 
         TodoResponse.TodoInfo response = responseEntity.getBody();
 
         Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Assertions.assertThat(response.getTitle()).isEqualTo("하루일과");
+        Assertions.assertThat(response.getId()).isEqualTo(1L);
+        Assertions.assertThat(response.getTitle()).isEqualTo("밥먹기");
 
     }
 
@@ -126,6 +114,24 @@ public class TodoClientTest {
 
         ResponseEntity<TodoResponse.TodoInfoList> responseEntity = restTemplate.exchange(
                 "/todo/{member-id}?status=ING",
+                HttpMethod.GET,
+                request,
+                TodoResponse.TodoInfoList.class,
+                1L);
+
+        TodoResponse.TodoInfoList response = responseEntity.getBody();
+
+        Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(response).isNotNull();
+    }
+
+    @Test
+    @DisplayName("일치하는 날짜로 Todo 가져오기")
+    void testGetDateTimeTodo() {
+        HttpEntity request = new HttpEntity(headers);
+
+        ResponseEntity<TodoResponse.TodoInfoList> responseEntity = restTemplate.exchange(
+                "/todo/{member-id}?datetime=2021-04-06",
                 HttpMethod.GET,
                 request,
                 TodoResponse.TodoInfoList.class,

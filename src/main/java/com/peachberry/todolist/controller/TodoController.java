@@ -2,20 +2,20 @@ package com.peachberry.todolist.controller;
 
 import com.peachberry.todolist.controller.dto.TodoRequest;
 import com.peachberry.todolist.controller.dto.TodoResponse;
-import com.peachberry.todolist.domain.Calendar;
 import com.peachberry.todolist.domain.Todo;
 import com.peachberry.todolist.domain.TodoStatus;
-import com.peachberry.todolist.controller.dto.todo.TodoListDTO;
-import com.peachberry.todolist.controller.dto.todo.TodoDTO;
-import com.peachberry.todolist.controller.dto.SuccessResponseDTO;
 import com.peachberry.todolist.service.TodoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Path;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -54,16 +54,50 @@ public class TodoController {
         return ResponseEntity.ok(new TodoResponse.TodoInfoList(todoList));
     }
 
-    @GetMapping("")
-    public ResponseEntity<?> getTodoByParam(
-            @RequestParam Map<String, String> param,
-            @PathVariable Long memberId)
-    {
-        System.out.println("=============="+param.get("status"));
+    @GetMapping("/{todo-id}")
+    public ResponseEntity<TodoResponse.TodoInfo> getTodoById(
+            @PathVariable(name = "member-id") Long memberId,
+            @PathVariable(name = "todo-id") Long todoId
+    ) {
 
-        return ResponseEntity.ok().build();
+        Todo todo = todoService.findTodoById(todoId);
+
+        return ResponseEntity.ok(new TodoResponse.TodoInfo(todo));
     }
 
+
+    @GetMapping("")
+    public ResponseEntity<?> getTodoByStatus(
+            @RequestParam Map<String, String> param,
+            @PathVariable(name = "member-id") Long memberId)
+    {
+        List<TodoResponse.TodoInfo> result = new ArrayList<>();
+
+        if(param.get("status") != null) {
+            List<Todo> todoList = todoService.findTodoByStatus(
+                    TodoStatus.valueOf(param.get("status")),
+                    memberId);
+            result = toTodoInfoList(todoList);
+        }
+        if (param.get("datetime") != null) {
+            List<Todo> todoList = todoService.findTodoByCalendar(
+                    LocalDateTime.parse(
+                            param.get("datetime"),
+                            DateTimeFormatter.ISO_LOCAL_DATE_TIME
+                    ),
+                    memberId);
+            result = toTodoInfoList(todoList);
+        }
+
+        return ResponseEntity.ok(new TodoResponse.TodoInfoList(result));
+    }
+
+    private List<TodoResponse.TodoInfo> toTodoInfoList(List<Todo> todoList) {
+        return todoList
+                .stream()
+                .map(TodoResponse.TodoInfo::new)
+                .collect(Collectors.toList());
+    }
 /*
     @PostMapping("/update/todo")
     public ResponseEntity<?> updateTodoTitle(@RequestBody TodoUpdateTitleDTO updateTitleDTO) {
