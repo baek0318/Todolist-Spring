@@ -86,42 +86,6 @@ public class TodoRepository {
     }
 
     /**
-     * Todo status를 변경할 수 있다
-     * @param status 변경할려는 status
-     * @param todoId 해당하는 id
-     */
-    public Long reviseStatus(TodoStatus status, Long todoId) {
-        Todo todo = findById(todoId);
-        todo.changeStatus(status);
-        save(todo);
-        return todo.getId();
-    }
-
-    /**
-     * Todo title을 변경할 수 있다
-     * @param title 변경할려는 title
-     * @param todoId 해당하는 id
-     */
-    public Long reviseTodo(String title, Long todoId) {
-        Todo todo = findById(todoId);
-        todo.changeTitle(title);
-        save(todo);
-        return todo.getId();
-    }
-
-    /**
-     * Todo calendar를 변경할 수 있다
-     * @param date 변경할려는 date
-     * @param todoId 해당하는 id
-     */
-    public Long reviseCalendar(LocalDate date, Long todoId) {
-        Todo todo = findById(todoId);
-        todo.changeDate(date);
-        save(todo);
-        return todo.getId();
-    }
-
-    /**
      * Todo를 삭제할 수 있다
      * @param todo_id 해당하는 id
      */
@@ -131,4 +95,13 @@ public class TodoRepository {
         logger.info("todo delete success");
     }
 
+    /**
+     * Todo를 Update
+     * @param todo 값이 바뀐 객체
+     * @return 바뀐 객체의 아이디 값을 반환
+     */
+    public Long update(Todo todo) {
+        save(todo);
+        return todo.getId();
+    }
 }

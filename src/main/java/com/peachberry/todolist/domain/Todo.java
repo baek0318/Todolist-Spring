@@ -44,6 +44,8 @@ public class Todo {
         this.status = status;
     }
 
+    public void setId(Long id) {this.id = id;}
+
     public void setMember(Member member) {
         this.member = member;
     }

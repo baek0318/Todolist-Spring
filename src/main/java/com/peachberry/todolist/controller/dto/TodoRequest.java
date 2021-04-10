@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class TodoRequest {
 
@@ -34,6 +35,43 @@ public class TodoRequest {
                     this.title,
                     TodoStatus.ING
             );
+        }
+    }
+
+    @Data
+    @NoArgsConstructor
+    public static class Update {
+
+        private Long id;
+
+        private CategoryControllerDto.CategoryInfo category;
+
+        private String title;
+
+        private String date;
+
+        private String status;
+
+        public Update(Long id, CategoryControllerDto.CategoryInfo category, String title, String date, String status) {
+            this.id = id;
+            this.category = category;
+            this.title = title;
+            this.date = date;
+            this.status = status;
+        }
+
+        public Todo toEntity() {
+            Todo todo = new Todo(
+                    null,
+                    null,
+                    LocalDate.parse(
+                            this.date,
+                            DateTimeFormatter.ISO_LOCAL_DATE),
+                    this.title,
+                    TodoStatus.valueOf(this.status)
+            );
+            todo.setId(this.id);
+            return todo;
         }
     }
 }

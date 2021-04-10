@@ -1,5 +1,6 @@
 package com.peachberry.todolist.client;
 
+import com.peachberry.todolist.controller.dto.CategoryControllerDto;
 import com.peachberry.todolist.controller.dto.TodoRequest;
 import com.peachberry.todolist.controller.dto.TodoResponse;
 import com.peachberry.todolist.controller.dto.auth.SignInDTO;
@@ -96,13 +97,13 @@ public class TodoClientTest {
                 HttpMethod.GET,
                 request,
                 TodoResponse.TodoInfo.class,
-                1L,1L);
+                1L,2L);
 
         TodoResponse.TodoInfo response = responseEntity.getBody();
 
         Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Assertions.assertThat(response.getId()).isEqualTo(1L);
-        Assertions.assertThat(response.getTitle()).isEqualTo("밥먹기");
+        Assertions.assertThat(response.getId()).isEqualTo(2L);
+        Assertions.assertThat(response.getTitle()).isEqualTo("학교가기");
 
     }
 
@@ -131,7 +132,7 @@ public class TodoClientTest {
         HttpEntity request = new HttpEntity(headers);
 
         ResponseEntity<TodoResponse.TodoInfoList> responseEntity = restTemplate.exchange(
-                "/todo/{member-id}?datetime=2021-04-09",
+                "/todo/{member-id}?datetime=2021-04-10",
                 HttpMethod.GET,
                 request,
                 TodoResponse.TodoInfoList.class,
@@ -145,4 +146,35 @@ public class TodoClientTest {
             System.out.println(info);
         }
     }
+
+    @Test
+    @DisplayName("Todo 날짜 수정하기")
+    void testUpdateDate() {
+        CategoryControllerDto.CategoryInfo categoryInfo = new CategoryControllerDto.CategoryInfo(2L);
+        TodoRequest.Update updateDto = new TodoRequest.Update(
+                1L,
+                categoryInfo,
+                "밥먹기2",
+                "2021-04-10",
+                "ING");
+
+        HttpEntity<TodoRequest.Update> request = new HttpEntity<>(updateDto, headers);
+
+        ResponseEntity<TodoResponse.Update> responseEntity = restTemplate
+                .exchange("/todo/",
+                        HttpMethod.PUT,
+                        request,
+                        TodoResponse.Update.class);
+
+        Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(responseEntity.getBody().getId()).isEqualTo(1L);
+    }
+/*
+    @Test
+    @DisplayName("Todo 삭제하기")
+    void testDeleteTodo() {
+
+    }
+ */
+
 }

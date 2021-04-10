@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/todo/{member-id}")
+@RequestMapping("/todo")
 public class TodoController {
 
     private final TodoService todoService;
@@ -31,9 +31,7 @@ public class TodoController {
         this.todoService = todoService;
     }
 
-    private Logger logger = LoggerFactory.getLogger(TodoController.class);
-
-    @PostMapping
+    @PostMapping("/{member-id}")
     public ResponseEntity<TodoResponse.Save> save(
             @Valid @RequestBody TodoRequest.Save saveDto,
             @PathVariable(name = "member-id") Long memberId)
@@ -44,20 +42,16 @@ public class TodoController {
         return ResponseEntity.ok(new TodoResponse.Save(result));
     }
 
-    @GetMapping("/all")
+    @GetMapping("{member-id}/all")
     public ResponseEntity<TodoResponse.TodoInfoList> getAllTodo(@PathVariable(name = "member-id") Long id) {
 
-        List<TodoResponse.TodoInfo> todoList = todoService.findAllTodo(id)
-                .stream()
-                .map(TodoResponse.TodoInfo::new)
-                .collect(Collectors.toList());
+        List<Todo> todoList = todoService.findAllTodo(id);
 
-        return ResponseEntity.ok(new TodoResponse.TodoInfoList(todoList));
+        return ResponseEntity.ok(new TodoResponse.TodoInfoList(toTodoInfoList(todoList)));
     }
 
-    @GetMapping("/{todo-id}")
+    @GetMapping("{member-id}/{todo-id}")
     public ResponseEntity<TodoResponse.TodoInfo> getTodoById(
-            @PathVariable(name = "member-id") Long memberId,
             @PathVariable(name = "todo-id") Long todoId
     ) {
 
@@ -67,15 +61,14 @@ public class TodoController {
     }
 
 
-    @GetMapping("")
-    public ResponseEntity<?> getTodoByStatus(
+    @GetMapping("/{member-id}")
+    public ResponseEntity<TodoResponse.TodoInfoList> getTodoByParam(
             @RequestParam Map<String, String> param,
             @PathVariable(name = "member-id") Long memberId)
     {
         List<TodoResponse.TodoInfo> result = new ArrayList<>();
 
         if(param.get("status") != null) {
-            System.out.println(param.get("status")+"========");
             List<Todo> todoList = todoService.findTodoByStatus(
                     TodoStatus.valueOf(param.get("status")),
                     memberId);
@@ -100,28 +93,24 @@ public class TodoController {
                 .map(TodoResponse.TodoInfo::new)
                 .collect(Collectors.toList());
     }
-/*
-    @PostMapping("/update/todo")
-    public ResponseEntity<?> updateTodoTitle(@RequestBody TodoUpdateTitleDTO updateTitleDTO) {
 
-        todoService.reviseTodoByTitle();
+    @PutMapping("")
+    public ResponseEntity<TodoResponse.Update> updateTodoTitle(
+            @Valid @RequestBody TodoRequest.Update updateDto) {
+
+        Long result = todoService.updateTodo(updateDto.toEntity(), updateDto.getCategory().getId());
+
+        return ResponseEntity.ok(new TodoResponse.Update(result));
     }
-
-    @PostMapping("/update/status")
-    public ResponseEntity<?> updateTodoStatus(@RequestBody TodoUpdateStatusDTO updateStatusDTO) {
-        todoService.reviseTodoByStatus();
-    }
-
-    @PostMapping("/update/Calendar")
-    public ResponseEntity<?> updateTodoCalendar(@RequestBody TodoUpdateCalendarDTO updateCalendarDTO) {
-        todoService.reviseTodoByCalendar();
-    }
-
+    /*
     @GetMapping("/delete")
-    public ResponseEntity<?> deleteTodo(@RequestParam("todoId") Long todoId, @PathVariable Long memberId) {
+    public ResponseEntity<?> deleteTodo(@RequestParam("todoId") Long todoId) {
         todoService.deleteTodo(todoId);
+
+        return ResponseEntity.ok();
     }
 
- */
+     */
+
 
 }

@@ -54,4 +54,15 @@ public class CategoryControllerDto {
             return new CategoryServiceDto.UpdateTitle(id, changedTitle);
         }
     }
+
+    @Getter
+    @NoArgsConstructor
+    public static class CategoryInfo {
+
+        private Long id;
+
+        public CategoryInfo(Long id) {
+            this.id = id;
+        }
+    }
 }

@@ -139,85 +139,6 @@ class TodoRepositoryTest {
     }
 
     @Test
-    @DisplayName("완료 상태 변경하기")
-    void reviseStatus() {
-        //given
-        Authority authority = new Authority(Role.USER);
-        Member member1 = new Member("baek0318@icloud.com","1234","baek", authority);
-        Member member2 = new Member("peachberry@icloud.com","1234","seung", authority);
-        Calendar calendar = new Calendar(2021, 1, 26);
-        Todo todo1 = new Todo(member1, null, LocalDate.now(), "밥 먹기", TodoStatus.COMPLETE);
-        Todo todo2 = new Todo(member2, null, LocalDate.now(), "화장실 가기", TodoStatus.COMPLETE);
-
-        //when
-        authorityRepository.save(authority);
-        memberRepository.save(member1);
-        memberRepository.save(member2);
-        Long id1 = todoRepository.save(todo1);
-        todoRepository.save(todo2);
-
-        todoRepository.reviseStatus(TodoStatus.ING, id1);
-        List<Todo> yes = todoRepository.findByStatus(TodoStatus.ING, member1.getId());
-
-        //then
-        System.out.println(yes.get(0).getStatus());
-        Assertions.assertThat(yes.get(0).getStatus()).isEqualTo(TodoStatus.ING);
-
-    }
-
-    @Test
-    @DisplayName("Todo 수정하기")
-    void reviseTodo() {
-        //given
-        Authority authority = new Authority(Role.USER);
-        Member member1 = new Member("baek0318@icloud.com","1234","baek", authority);
-        Member member2 = new Member("peachberry@icloud.com","1234","seung", authority);
-        Calendar calendar = new Calendar(2021, 1, 26);
-        Todo todo1 = new Todo(member1, null, LocalDate.now(), "밥 먹기", TodoStatus.COMPLETE);
-        Todo todo2 = new Todo(member2, null, LocalDate.now(), "화장실 가기", TodoStatus.COMPLETE);
-
-        //when
-        authorityRepository.save(authority);
-        memberRepository.save(member1);
-        memberRepository.save(member2);
-        Long id1 = todoRepository.save(todo1);
-        todoRepository.save(todo2);
-
-        todoRepository.reviseTodo("운동하기", id1);
-        List<Todo> yes = todoRepository.findAll(member1.getId());
-
-        //then
-        Assertions.assertThat(yes.get(0).getTitle()).isEqualTo("운동하기");
-        Assertions.assertThat(yes.get(0).getTitle()).isNotEqualTo("밥 먹기");
-    }
-
-    @Test
-    @DisplayName("Todo 날짜 수정하기")
-    void reviseCalendar() {
-        //given
-        Authority authority = new Authority(Role.USER);
-        Member member1 = new Member("baek0318@icloud.com","1234","baek", authority);
-        Member member2 = new Member("peachberry@icloud.com","1234","seung", authority);
-        Calendar calendar = new Calendar(2021, 1, 26);
-        Todo todo1 = new Todo(member1, null, LocalDate.now(), "밥 먹기", TodoStatus.COMPLETE);
-        Todo todo2 = new Todo(member2, null, LocalDate.now(), "화장실 가기", TodoStatus.COMPLETE);
-
-        //when
-        authorityRepository.save(authority);
-        memberRepository.save(member1);
-        memberRepository.save(member2);
-        Long id1 = todoRepository.save(todo1);
-        todoRepository.save(todo2);
-
-        LocalDate date = LocalDate.now();
-        todoRepository.reviseCalendar(date, id1);
-        List<Todo> yes = todoRepository.findByDateTime(date, member1.getId());
-
-        //then
-        Assertions.assertThat(yes.get(0).getDate()).isEqualTo(date);
-    }
-
-    @Test
     @DisplayName("Todo 삭제하기")
     void deleteById() {
         //given
@@ -259,5 +180,25 @@ class TodoRepositoryTest {
 
         //then
         Assertions.assertThat(result).isEqualTo(Arrays.asList(todo1));
+    }
+
+    @Test
+    @DisplayName("todo update 하기")
+    void testUpdateTodo() {
+        Authority authority = new Authority(Role.USER);
+        Member member1 = new Member("baek0318@icloud.com","1234","baek", authority);
+        Category category = new Category("하루일과", member1);
+        Todo todo1 = new Todo(member1, category, LocalDate.now(), "밥 먹기", TodoStatus.COMPLETE);
+        Todo todo = new Todo(member1, category, LocalDate.now(), "학교가기", TodoStatus.ING);
+
+        authorityRepository.save(authority);
+        memberRepository.save(member1);
+        categoryRepository.save(category);
+        Long id = todoRepository.save(todo1);
+        todo.setId(id);
+
+        Long result = todoRepository.update(todo);
+
+        Assertions.assertThat(result).isEqualTo(id);
     }
 }

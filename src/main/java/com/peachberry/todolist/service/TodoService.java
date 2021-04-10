@@ -63,18 +63,26 @@ public class TodoService {
     }
 
     @Transactional
-    public void reviseTodoByStatus(TodoStatus status, Long todo_id) {
-        todoRepository.reviseStatus(status, todo_id);
+    public Long updateTodo(Todo todo, Long categoryId) {
+        Todo found = todoRepository.findById(todo.getId());
+        Category category = categoryRepository.findById(categoryId);
+
+        return todoRepository.update(changeProperty(todo, found, category));
     }
 
-    @Transactional
-    public void reviseTodoByTitle(String change_title, Long todo_id) {
-        todoRepository.reviseTodo(change_title, todo_id);
-    }
+    private Todo changeProperty(Todo todo, Todo found, Category category) {
+        if(todo.getTitle() != null) {
+            found.changeTitle(todo.getTitle());
+        }
+        if(todo.getDate() != null) {
+            found.changeDate(todo.getDate());
+        }
+        if(todo.getStatus() != null) {
+            found.changeStatus(todo.getStatus());
+        }
+        found.setCategory(category);
 
-    @Transactional
-    public void reviseTodoByCalendar(LocalDate date, Long todo_id) {
-        todoRepository.reviseCalendar(date, todo_id);
+        return found;
     }
 
     @Transactional

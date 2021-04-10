@@ -26,6 +26,16 @@ public class TodoResponse {
 
     @Data
     @NoArgsConstructor
+    public static class Update {
+        private Long id;
+
+        public Update(Long id) {
+            this.id = id;
+        }
+    }
+
+    @Data
+    @NoArgsConstructor
     public static class TodoInfo {
 
         private Long id;
