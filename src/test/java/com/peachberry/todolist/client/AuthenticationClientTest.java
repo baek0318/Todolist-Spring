@@ -32,7 +32,7 @@ public class AuthenticationClientTest {
     @Autowired
     private CookieUtil cookieUtil;
 
-    private final SignUpDTO signUpDTO = new SignUpDTO("peachberry2@kakao.com", "1234", "peachberry", "USER");
+    private final SignUpDTO signUpDTO = new SignUpDTO("peachberry3@kakao.com", "1234", "peachberry", "USER");
 
     private final SignInDTO signInDTO = new SignInDTO("peachberry2@kakao.com", "1234");
 
