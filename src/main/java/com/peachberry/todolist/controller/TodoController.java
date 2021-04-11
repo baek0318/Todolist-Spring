@@ -1,5 +1,6 @@
 package com.peachberry.todolist.controller;
 
+import com.peachberry.todolist.controller.dto.SuccessResponseDTO;
 import com.peachberry.todolist.controller.dto.TodoRequest;
 import com.peachberry.todolist.controller.dto.TodoResponse;
 import com.peachberry.todolist.domain.Todo;
@@ -51,9 +52,7 @@ public class TodoController {
     }
 
     @GetMapping("{member-id}/{todo-id}")
-    public ResponseEntity<TodoResponse.TodoInfo> getTodoById(
-            @PathVariable(name = "todo-id") Long todoId
-    ) {
+    public ResponseEntity<TodoResponse.TodoInfo> getTodoById( @PathVariable(name = "todo-id") Long todoId) {
 
         Todo todo = todoService.findTodoById(todoId);
 
@@ -102,15 +101,12 @@ public class TodoController {
 
         return ResponseEntity.ok(new TodoResponse.Update(result));
     }
-    /*
-    @GetMapping("/delete")
-    public ResponseEntity<?> deleteTodo(@RequestParam("todoId") Long todoId) {
-        todoService.deleteTodo(todoId);
 
-        return ResponseEntity.ok();
+    @DeleteMapping("")
+    public ResponseEntity<?> deleteTodo(@Valid @RequestBody TodoRequest.Delete deleteDto) {
+
+        todoService.deleteTodo(deleteDto.getId());
+
+        return ResponseEntity.ok(new SuccessResponseDTO("DELETE"));
     }
-
-     */
-
-
 }

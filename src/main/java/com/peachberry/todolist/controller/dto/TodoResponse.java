@@ -77,4 +77,5 @@ public class TodoResponse {
             this.todoInfoList = todoInfoList;
         }
     }
+
 }

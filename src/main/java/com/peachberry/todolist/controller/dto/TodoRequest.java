@@ -74,4 +74,15 @@ public class TodoRequest {
             return todo;
         }
     }
+
+    @Data
+    @NoArgsConstructor
+    public static class Delete {
+
+        private Long id;
+
+        public Delete(Long id) {
+            this.id = id;
+        }
+    }
 }

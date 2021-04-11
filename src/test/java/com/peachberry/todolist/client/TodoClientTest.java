@@ -7,8 +7,6 @@ import com.peachberry.todolist.controller.dto.auth.SignInDTO;
 import com.peachberry.todolist.controller.dto.SuccessResponseDTO;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -18,35 +16,17 @@ import java.time.LocalDate;
 import java.util.Collections;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class TodoClientTest {
+public class TodoClientTest extends SignIn{
 
     @Autowired
     private TestRestTemplate restTemplate;
-
-    private final Logger logger = LoggerFactory.getLogger(TodoClientTest.class);
-
-    private final SignInDTO signInDTO = new SignInDTO("peachberry2@kakao.com", "1234");
-
-    private HttpHeaders headers;
-
-    private String signin() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-
-        HttpEntity<SignInDTO> request = new HttpEntity<>(signInDTO, headers);
-
-        ResponseEntity<SuccessResponseDTO> response = restTemplate
-                .postForEntity("/auth/signin", request, SuccessResponseDTO.class);
-        return response.getHeaders().getValuesAsList(HttpHeaders.SET_COOKIE).get(0);
-    }
 
     @BeforeEach
     void setUp() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.add("Cookie", signin());
+        headers.add("Cookie", signin(restTemplate));
         this.headers = headers;
     }
 
@@ -63,7 +43,7 @@ public class TodoClientTest {
                         1);
 
         Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Assertions.assertThat(responseEntity.getBody().getId()).isEqualTo(3L);
+        Assertions.assertThat(responseEntity.getBody().getId()).isNotNull();
     }
 
     @Test
@@ -169,12 +149,25 @@ public class TodoClientTest {
         Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         Assertions.assertThat(responseEntity.getBody().getId()).isEqualTo(1L);
     }
-/*
+
     @Test
     @DisplayName("Todo 삭제하기")
     void testDeleteTodo() {
 
+        TodoRequest.Delete delete = new TodoRequest.Delete(2L);
+
+        HttpEntity<TodoRequest.Delete> request = new HttpEntity<>(delete, headers);
+
+        ResponseEntity<SuccessResponseDTO> responseEntity = restTemplate
+                .exchange("/todo",
+                        HttpMethod.DELETE,
+                        request,
+                        SuccessResponseDTO.class,
+                        1L);
+
+        Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(responseEntity.getBody().getResponse()).isEqualTo("DELETE");
     }
- */
+
 
 }
