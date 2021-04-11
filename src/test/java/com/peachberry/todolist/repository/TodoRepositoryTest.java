@@ -110,33 +110,7 @@ class TodoRepositoryTest {
         Assertions.assertThat(ing).isNotEqualTo(Arrays.asList(todo1, todo2));
     }
 
-    @Test
-    @DisplayName("날짜로 Todo 찾기")
-    void findByCalendar() {
-        //given
-        Authority authority = new Authority(Role.USER);
-        Member member1 = new Member("baek0318@icloud.com","1234","baek", authority);
-        Member member2 = new Member("peachberry@icloud.com","1234","seung", authority);
-        Calendar calendar = new Calendar(2021, 1, 26);
-        LocalDate date = LocalDate.now();
-        Todo todo1 = new Todo(member1, null, date, "밥 먹기", TodoStatus.COMPLETE);
-        Todo todo2 = new Todo(member2, null, date, "화장실 가기", TodoStatus.COMPLETE);
-        Todo todo3 = new Todo(member2, null, date, "학교가기", TodoStatus.ING);
 
-        //when
-        authorityRepository.save(authority);
-        memberRepository.save(member1);
-        memberRepository.save(member2);
-        todoRepository.save(todo1);
-        todoRepository.save(todo2);
-        todoRepository.save(todo3);
-
-        List<Todo> result = todoRepository.findByDateTime(date, member1.getId());
-
-        //then
-        Assertions.assertThat(result).isEqualTo(Arrays.asList(todo1));
-        Assertions.assertThat(result).isNotEqualTo(Arrays.asList(todo2));
-    }
 
     @Test
     @DisplayName("Todo 삭제하기")
@@ -144,7 +118,6 @@ class TodoRepositoryTest {
         //given
         Authority authority = new Authority(Role.USER);
         Member member1 = new Member("baek0318@icloud.com","1234","baek", authority);
-        Calendar calendar = new Calendar(2021, 1, 26);
         Todo todo1 = new Todo(member1, null, LocalDate.now(), "밥 먹기", TodoStatus.COMPLETE);
 
         //when
