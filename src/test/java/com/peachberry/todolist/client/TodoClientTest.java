@@ -3,7 +3,6 @@ package com.peachberry.todolist.client;
 import com.peachberry.todolist.controller.dto.CategoryControllerDto;
 import com.peachberry.todolist.controller.dto.TodoRequest;
 import com.peachberry.todolist.controller.dto.TodoResponse;
-import com.peachberry.todolist.controller.dto.auth.SignInDTO;
 import com.peachberry.todolist.controller.dto.SuccessResponseDTO;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
@@ -62,7 +61,7 @@ public class TodoClientTest extends SignIn{
         TodoResponse.TodoInfoList result = response.getBody();
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Assertions.assertThat(response.getBody()).isNotNull();
+        Assertions.assertThat(response.getBody().getTodoInfoList().size()).isGreaterThan(1);
     }
 
 

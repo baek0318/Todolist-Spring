@@ -38,7 +38,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -64,9 +63,9 @@ public class AuthenticationControllerTest {
     @Autowired
     private JwtAuthEntryPoint jwtAuthEntryPoint;
 
-    private final SignUpDTO signUpDTO = new SignUpDTO("peachberry@kakao.com", "1234", "peachberry", "USER");
+    private final SignUpDTO signUpDTO = new SignUpDTO("peachberry4@kakao.com", "1234", "peachberry", "USER");
 
-    private final SignInDTO signInDTO = new SignInDTO("peachberry@kakao.com", "1234");
+    private final SignInDTO signInDTO = new SignInDTO("peachberry4@kakao.com", "1234");
 
     @Test
     @DisplayName("회원가입을 진행시에 올바른 응답값이 나오는지 확인")
@@ -75,18 +74,18 @@ public class AuthenticationControllerTest {
 
         given(authenticationService.signup(any()))
                 .willReturn(SignUpSuccessDTO.builder()
-                        .email("peachberry@kakao.com")
+                        .email("peachberry4@kakao.com")
                         .name("peachberry")
                         .role(Role.USER)
                         .id(1L)
                         .build());
 
-        mockMvc.perform(post("/api/auth/signup")
+        mockMvc.perform(post("/auth/signup")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("email").value("peachberry@kakao.com"))
+                .andExpect(jsonPath("email").value("peachberry4@kakao.com"))
                 .andExpect(jsonPath("name").value("peachberry"))
                 .andExpect(jsonPath("role").value("USER"))
                 .andExpect(jsonPath("id").value(1L));
@@ -99,7 +98,7 @@ public class AuthenticationControllerTest {
 
         given(authenticationService.signup(any())).willThrow(new SignUpFailException("해당 이메일이 존재합니다"));
 
-        mockMvc.perform(post("/api/auth/signup")
+        mockMvc.perform(post("/auth/signup")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content))
@@ -118,7 +117,7 @@ public class AuthenticationControllerTest {
         given(authenticationService.signin(any()))
                 .willReturn(new CookieDTO(access, refresh));
 
-        mockMvc.perform(post("/api/auth/signin")
+        mockMvc.perform(post("/auth/signin")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content))
@@ -138,7 +137,7 @@ public class AuthenticationControllerTest {
 
         given(authenticationService.signin(any())).willThrow(new SignInFailException("로그인에 실패했습니다"));
 
-        mockMvc.perform(post("/api/auth/signin")
+        mockMvc.perform(post("/auth/signin")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(content))
@@ -153,7 +152,7 @@ public class AuthenticationControllerTest {
         Cookie refresh = cookieUtil.createLogoutRefreshCookie();
         given(authenticationService.signout()).willReturn(new CookieDTO(access, refresh));
 
-        mockMvc.perform(get("/api/auth/signout")
+        mockMvc.perform(get("/auth/signout")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -168,20 +167,20 @@ public class AuthenticationControllerTest {
     @Test
     @DisplayName("Access 토큰 재발급이 성공한 경우")
     void testIssueAccessToken_Success() throws Exception {
-        String jws = jwtUtil.accessTokenGenerate("peachberry@kakao.com");
+        String jws = jwtUtil.accessTokenGenerate("peachberry4@kakao.com");
         Cookie cookie = cookieUtil.createRefreshCookie(jws);
 
         given(userDetailsService.loadUserByUsername(any()))
                 .willReturn(UserDetailsImpl.build(Member
                         .builder()
-                        .email("peachberry@kakao.com")
+                        .email("peachberry4@kakao.com")
                         .password("1234")
                         .name("peachberry")
                         .authority(new Authority(Role.USER)).build()));
 
         given(authenticationService.issueAccess(any())).willReturn(cookieUtil.createAccessCookie("peachberry@kakao.com"));
 
-        mockMvc.perform(get("/api/auth/issueAccess")
+        mockMvc.perform(get("/auth/issueAccess")
                 .cookie(cookie))
                 .andExpect(status().isOk())
                 .andExpect(cookie().httpOnly("ACCESS-TOKEN", true))
@@ -194,7 +193,7 @@ public class AuthenticationControllerTest {
     @DisplayName("Access 토큰 재발급이 실패한 경우")
     void testIssueAccessToken_Fail() throws Exception {
 
-        mockMvc.perform(get("/api/auth/issueAccess"))
+        mockMvc.perform(get("/auth/issueAccess"))
                 .andExpect(status().isUnauthorized());
     }
 }

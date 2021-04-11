@@ -2,7 +2,6 @@ package com.peachberry.todolist;
 
 import com.peachberry.todolist.controller.dto.TodoRequest;
 import com.peachberry.todolist.domain.*;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -13,10 +12,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Component
-@RequiredArgsConstructor
 public class InitDb {
 
     private final InitMember initMember;
+
+    public InitDb(InitMember initMember) {
+        this.initMember = initMember;
+    }
 
     @PostConstruct
     public void init() {
@@ -25,17 +27,19 @@ public class InitDb {
 
     @Component
     @Transactional
-    @RequiredArgsConstructor
     static class InitMember {
 
         private final PasswordEncoder encoder;
         private final EntityManager em;
 
+        public InitMember(PasswordEncoder encoder, EntityManager em) {
+            this.encoder = encoder;
+            this.em = em;
+        }
+
         public void createMember() {
             Authority userAuth = new Authority(Role.USER);
-            Authority adminAuth = new Authority(Role.ADMIN);
             em.persist(userAuth);
-            em.persist(adminAuth);
 
             Member member = Member.builder()
                     .email("peachberry2@kakao.com")

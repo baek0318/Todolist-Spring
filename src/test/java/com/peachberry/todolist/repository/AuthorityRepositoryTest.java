@@ -1,23 +1,15 @@
 package com.peachberry.todolist.repository;
 
-import com.peachberry.todolist.AppConfig;
 import com.peachberry.todolist.domain.Authority;
 import com.peachberry.todolist.domain.Role;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {AppConfig.class})
-@Transactional
+@RepositoryTest
 public class AuthorityRepositoryTest {
 
     @Autowired
@@ -48,7 +40,7 @@ public class AuthorityRepositoryTest {
         List<Authority> result = authorityRepository.findByRole(Role.USER);
         //then
         Assertions.assertThat(resultEmpty.isEmpty()).isTrue();
-        Assertions.assertThat(result.size()).isEqualTo(1);
+        Assertions.assertThat(result.size()).isEqualTo(2);
         Assertions.assertThat(result.get(0).getRole()).isEqualTo(Role.USER);
     }
 

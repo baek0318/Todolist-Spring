@@ -2,7 +2,6 @@ package com.peachberry.todolist.client;
 
 import com.peachberry.todolist.controller.dto.CategoryControllerDto;
 import com.peachberry.todolist.controller.dto.CategoryResponse;
-import com.peachberry.todolist.controller.dto.auth.SignInDTO;
 import com.peachberry.todolist.controller.dto.SuccessResponseDTO;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
@@ -12,8 +11,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 
 import java.util.Collections;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CategoryClientTest extends SignIn {
@@ -67,7 +64,7 @@ public class CategoryClientTest extends SignIn {
             System.out.println("info id : "+info.getId() +" info title : "+ info.getTitle());
         }
         Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Assertions.assertThat(responseEntity.getBody()).isNotNull();
+        Assertions.assertThat(responseEntity.getBody().getCategoryList().size()).isGreaterThan(1);
     }
 
     @Test

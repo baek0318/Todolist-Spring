@@ -33,8 +33,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -70,7 +69,7 @@ public class CategoryControllerTest {
 
         CategoryControllerDto.Save categorySaveDTO = new CategoryControllerDto.Save("하루일과");
         String content = objectMapper.writeValueAsString(categorySaveDTO);
-        mockMvc.perform(post("/api/{id}/category/save", 1)
+        mockMvc.perform(post("/category/{member-id}", 1)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content))
@@ -84,7 +83,7 @@ public class CategoryControllerTest {
 
         given(categoryService.findAll(anyLong())).willReturn(Collections.emptyList());
 
-        MvcResult result = mockMvc.perform(get("/api/{id}/category/search/all", 1))
+        MvcResult result = mockMvc.perform(get("/category/{member-id}/all", 1))
                 .andExpect(status().isOk())
                 .andDo(print()).andReturn();
     }
@@ -96,7 +95,7 @@ public class CategoryControllerTest {
 
         given(categoryService.findByTitle(any())).willReturn(new Category("하루일과", null));
 
-        mockMvc.perform(get("/api/{id}/category/search", 1 )
+        mockMvc.perform(get("/category/{member-id}", 1 )
                 .param("title", "하루일과"))
                 .andExpect(status().isOk())
                 .andDo(print());
@@ -111,12 +110,12 @@ public class CategoryControllerTest {
 
         String content = objectMapper.writeValueAsString(new CategoryControllerDto.Update(1L, "하루종일"));
 
-        mockMvc.perform(post("/api/{id}/category/update", 1)
+        mockMvc.perform(put("/category/{member-id}", 1)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.response").value("Update Complete"))
+                .andExpect(jsonPath("$.id").value("1"))
                 .andDo(print());
 
         verify(categoryService, times(1)).reviseTitle(any());
@@ -131,7 +130,7 @@ public class CategoryControllerTest {
 
         String content = objectMapper.writeValueAsString(new CategoryControllerDto.Update(1L, "하루종일"));
 
-        mockMvc.perform(post("/api/{id}/category/update", 1)
+        mockMvc.perform(put("/category/{member-id}", 1)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content))
