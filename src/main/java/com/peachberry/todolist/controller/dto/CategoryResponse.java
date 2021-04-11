@@ -21,14 +21,6 @@ public class CategoryResponse {
 
     @Data
     @NoArgsConstructor
-    public static class Delete {
-        Long id;
-
-        public Delete(Long id) {this.id = id;}
-    }
-
-    @Data
-    @NoArgsConstructor
     public static class Save {
         Long id;
 

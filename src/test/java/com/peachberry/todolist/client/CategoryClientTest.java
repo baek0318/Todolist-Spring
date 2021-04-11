@@ -45,7 +45,7 @@ public class CategoryClientTest extends SignIn {
                 .postForEntity("/category/{member-id}", request, CategoryResponse.Save.class,1L);
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Assertions.assertThat(response.getBody().getId()).isEqualTo(3L);
+        Assertions.assertThat(response.getBody().getId()).isNotNull();
     }
 
     @Test
@@ -109,19 +109,19 @@ public class CategoryClientTest extends SignIn {
     @Test
     @DisplayName("해당 카테고리 삭제하기")
     void testDeleteCategory() {
-        CategoryControllerDto.Delete delete = new CategoryControllerDto.Delete(1L);
+        CategoryControllerDto.Delete delete = new CategoryControllerDto.Delete(3L);
         HttpEntity<CategoryControllerDto.Delete> request = new HttpEntity<>(delete, headers);
 
-        ResponseEntity<CategoryResponse.Delete> responseEntity = restTemplate.exchange(
+        ResponseEntity<SuccessResponseDTO> responseEntity = restTemplate.exchange(
                 "/category/{member-id}",
                 HttpMethod.DELETE,
                 request,
-                CategoryResponse.Delete.class,
+                SuccessResponseDTO.class,
                 1L);
 
-        CategoryResponse.Delete response = responseEntity.getBody();
+        SuccessResponseDTO response = responseEntity.getBody();
 
-        Assertions.assertThat(response.getId()).isEqualTo(1L);
+        Assertions.assertThat(response.getResponse()).isEqualTo("DELETE");
         Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
     }

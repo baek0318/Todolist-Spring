@@ -2,6 +2,7 @@ package com.peachberry.todolist.controller;
 
 import com.peachberry.todolist.controller.dto.CategoryControllerDto;
 import com.peachberry.todolist.controller.dto.CategoryResponse;
+import com.peachberry.todolist.controller.dto.SuccessResponseDTO;
 import com.peachberry.todolist.domain.Category;
 import com.peachberry.todolist.service.CategoryService;
 import com.peachberry.todolist.service.dto.CategoryServiceDto;
@@ -29,7 +30,7 @@ public class CategoryController {
     private Logger logger = LoggerFactory.getLogger(CategoryController.class);
 
     @PostMapping
-    public ResponseEntity<?> saveCategory(
+    public ResponseEntity<CategoryResponse.Save> saveCategory(
             @Valid @RequestBody CategoryControllerDto.Save saveDto,
             @PathVariable(name = "member-id") Long id
     )
@@ -46,7 +47,7 @@ public class CategoryController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> findAllCategory(@PathVariable(name = "member-id") Long id) {
+    public ResponseEntity<CategoryResponse.CategoryList> findAllCategory(@PathVariable(name = "member-id") Long id) {
 
         List<CategoryResponse.CategoryInfo> result = categoryService.findAll(id)
                 .stream()
@@ -60,7 +61,7 @@ public class CategoryController {
 
 
     @GetMapping
-    public ResponseEntity<?> findCategoryTitle(
+    public ResponseEntity<CategoryResponse.CategoryInfo> findCategoryTitle(
             @RequestParam("title") String title,
             @PathVariable(name = "member-id") Long id
     )
@@ -72,7 +73,7 @@ public class CategoryController {
     }
 
     @PutMapping
-    public ResponseEntity<?> updateTitle(
+    public ResponseEntity<CategoryResponse.Update> updateTitle(
             @Valid @RequestBody CategoryControllerDto.Update updateDto
     )
     {
@@ -89,13 +90,13 @@ public class CategoryController {
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deleteCategory(
+    public ResponseEntity<SuccessResponseDTO> deleteCategory(
             @Valid @RequestBody CategoryControllerDto.Delete deleteDto
     )
     {
 
-        Long result = categoryService.deleteCategory(deleteDto.getId());
+        categoryService.deleteCategory(deleteDto.getId());
 
-        return ResponseEntity.ok(new CategoryResponse.Delete(result));
+        return ResponseEntity.ok(new SuccessResponseDTO("DELETE"));
     }
 }
