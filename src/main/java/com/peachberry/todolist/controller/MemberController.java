@@ -1,13 +1,13 @@
 package com.peachberry.todolist.controller;
 
+import com.peachberry.todolist.controller.dto.MemberResponse;
+import com.peachberry.todolist.domain.Member;
 import com.peachberry.todolist.service.MemberService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/member")
+@RequestMapping("/member")
 public class MemberController {
 
     private final MemberService memberService;
@@ -16,10 +16,11 @@ public class MemberController {
         this.memberService = memberService;
     }
 
-    @PostMapping("/detail")
-    public ResponseEntity<?> findMemberDetail() {
-        //memberService.findMember();
+    @GetMapping("/{member-id}")
+    public ResponseEntity<?> findMemberDetail(@PathVariable(name = "member-id") Long id) {
 
-        return ResponseEntity.ok().build();
+        Member member = memberService.findById(id);
+
+        return ResponseEntity.ok(new MemberResponse.MemberInfo(member));
     }
 }

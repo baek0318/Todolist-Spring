@@ -41,6 +41,11 @@ public class MemberService {
     }
 
     @Transactional
+    public Member findById(Long id) {
+        return memberRepository.findById(id);
+    }
+
+    @Transactional
     public Member findByEmail(String email) {
         List<Member> members = memberRepository.findByEmail(email);
         validateList(members);
