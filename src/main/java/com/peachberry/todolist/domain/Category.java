@@ -44,4 +44,8 @@ public class Category {
     public void changeTitle(String title) {
         this.title = title;
     }
+
+    public void setMember(Member member) {
+        this.member = member;
+    }
 }
