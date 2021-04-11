@@ -58,6 +58,12 @@ public class InitDb {
             ) ;
             em.persist(category3);
 
+            Category category2 = new Category(
+                    "하루일과3",
+                    member
+            ) ;
+            em.persist(category2);
+
             Todo todo1 = new Todo(
                     member,
                     category,
