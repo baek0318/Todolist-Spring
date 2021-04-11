@@ -12,24 +12,20 @@ import java.util.List;
 @Getter
 public class Member {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long id;
 
-    @Email
-    @NotBlank
     private String email;
 
-    @NotBlank
     @Size(min = 4)
     private String password;
 
     @Column(name = "member_name")
-    @NotBlank
     private String name;
 
     @ManyToOne
-    @NotNull
     @JoinColumn(name = "authority_id")
     private Authority authority;
 
