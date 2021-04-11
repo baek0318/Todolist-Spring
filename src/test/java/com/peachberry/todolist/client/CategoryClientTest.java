@@ -16,33 +16,18 @@ import java.util.Collections;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class CategoryClientTest {
+public class CategoryClientTest extends SignIn {
 
     @Autowired
     private TestRestTemplate restTemplate;
 
-    private final SignInDTO signInDTO = new SignInDTO("peachberry2@kakao.com", "1234");
-
-    private HttpHeaders headers;
-
-    private String signin() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-
-        HttpEntity<SignInDTO> request = new HttpEntity<>(signInDTO, headers);
-
-        ResponseEntity<SuccessResponseDTO> response = restTemplate
-                .postForEntity("/auth/signin", request, SuccessResponseDTO.class);
-        return response.getHeaders().getValuesAsList(headers.SET_COOKIE).get(0);
-    }
-
     @BeforeEach
+    @Override
     void setUp() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.add("Cookie", signin());
+        headers.add("Cookie", signin(restTemplate));
         this.headers = headers;
     }
 
