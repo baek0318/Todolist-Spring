@@ -79,7 +79,7 @@
 |PUT|/todo/{member-id}|title : String|
 |PUT|/todo/{member-id}|datetime : String|
 |PUT|/todo/{member-id}|status : boolean|
-|DELETE|/todo/{member-id}/{todo-id}||
+|DELETE|/todo/|todoId : Long|
 
 ### Category API
 |HttpMethod|URL|Parameters|
@@ -97,6 +97,12 @@
 |POST|/auth/signin|email : String, password : String|
 |GET|/auth/signout||
 |GET|/auth/issue-access||
+
+### Member API
+|HttpMethod|URL|Parameters|
+|---|---|---|
+|GET|/member/{member-id}||
+
 
 ## ❌ 오류 해결
 - PathVariable 사용할때에 name 명시해주기
