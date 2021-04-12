@@ -104,7 +104,7 @@
 |GET|/member/{member-id}||
 
 
-## ❌ 오류 해결
+## 오류 해결 & 개선사항
 - PathVariable 사용할때에 name 명시해주기
 <details>
 <summary>
@@ -134,3 +134,5 @@ test 상황을 보여주는 index.html에 들어가보면 어디서 에러가 �
 위의 사진과 같이 Run tests using 부분을 Gradle -> IntelliJ 로 변경해주면 문제없이 작동되는 것을 볼 수 있다  
 
 </details>
+
+- [controller layer 커스텀 필터 끼고 테스트](https://peachberry0318.tistory.com/32)
