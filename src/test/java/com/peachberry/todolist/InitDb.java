@@ -1,6 +1,5 @@
 package com.peachberry.todolist;
 
-import com.peachberry.todolist.controller.dto.TodoRequest;
 import com.peachberry.todolist.domain.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -9,7 +8,6 @@ import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Component
 public class InitDb {
