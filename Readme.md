@@ -1,4 +1,4 @@
-# Todolist-Spring
+# Todolist-Spring ![deploy](https://travis-ci.com/baek0318/Todolist-Spring.svg?branch=main)
 
 ## 💡 주제
 ### Todolist
