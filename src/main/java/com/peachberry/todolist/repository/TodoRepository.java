@@ -52,32 +52,6 @@ public class TodoRepository {
         return em.find(Todo.class, id);
     }
 
-    /**
-     * 완료상태를 가지고 값을 찾는다
-     * @param status 찾고 싶은 상태
-     * @param member_id 현재 로그인된 member
-     * @return 해당하는 todo를 list로 반환한다
-     */
-    public List<Todo> findByStatus(TodoStatus status, Long member_id) {
-        return em.createQuery("select td from Todo td where td.status = :status and td.member.id = :id", Todo.class)
-                .setParameter("status", status)
-                .setParameter("id", member_id)
-                .getResultList();
-    }
-
-    /**
-     * 날짜 정보를 가지고 todo를 찾는다
-     * @param date 찾고 싶은 날짜
-     * @param member_id 현재 로그인된 member
-     * @return 해당하는 todo를 list로 반환한다
-     */
-    public List<Todo> findByDateTime(LocalDate date, Long member_id) {
-        return em.createQuery("select td from Todo td where td.date =:date and td.member.id = :id", Todo.class)
-                .setParameter("date", date)
-                .setParameter("id", member_id)
-                .getResultList();
-    }
-
     public List<Todo> findByCategory(Long category_id, Long member_id) {
         return em.createQuery("select td from Todo td where td.category.id = :category_id and td.member.id = :member_id", Todo.class)
                 .setParameter("category_id", category_id)

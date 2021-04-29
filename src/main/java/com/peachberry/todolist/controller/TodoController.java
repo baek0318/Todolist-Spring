@@ -65,25 +65,10 @@ public class TodoController {
             @RequestParam Map<String, String> param,
             @PathVariable(name = "member-id") Long memberId)
     {
-        List<TodoResponse.TodoInfo> result = new ArrayList<>();
 
-        if(param.get("status") != null) {
-            List<Todo> todoList = todoService.findTodoByStatus(
-                    TodoStatus.valueOf(param.get("status")),
-                    memberId);
-            result = toTodoInfoList(todoList);
-        }
-        if (param.get("datetime") != null) {
-            List<Todo> todoList = todoService.findTodoByCalendar(
-                    LocalDate.parse(
-                            param.get("datetime"),
-                            DateTimeFormatter.ISO_LOCAL_DATE
-                    ),
-                    memberId);
-            result = toTodoInfoList(todoList);
-        }
+        List <Todo> result = todoService.findByDynamicParam(param.get("status"), param.get("datetime"), memberId);
 
-        return ResponseEntity.ok(new TodoResponse.TodoInfoList(result));
+        return ResponseEntity.ok(new TodoResponse.TodoInfoList(toTodoInfoList(result)));
     }
 
     private List<TodoResponse.TodoInfo> toTodoInfoList(List<Todo> todoList) {

@@ -14,6 +14,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -22,9 +24,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = AppConfig.class)
-@Transactional
+@RepositoryTest
 class TodoRepositoryTest {
 
     @Autowired
@@ -38,6 +38,9 @@ class TodoRepositoryTest {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private TodoRepositorySupport todoRepositorySupport;
 
     @Test
     @DisplayName("저장이 제대로 되는지 확인")
@@ -100,8 +103,8 @@ class TodoRepositoryTest {
         todoRepository.save(todo2);
         todoRepository.save(todo3);
 
-        List<Todo> complete = todoRepository.findByStatus(TodoStatus.COMPLETE, member1.getId());
-        List<Todo> ing = todoRepository.findByStatus(TodoStatus.ING, member2.getId());
+        List<Todo> complete = todoRepositorySupport.findDynamicQuery(null, "COMPLETE", member1.getId());
+        List<Todo> ing = todoRepositorySupport.findDynamicQuery(null, "ING", member2.getId());
 
         //then
         Assertions.assertThat(complete).isEqualTo(Arrays.asList(todo1, todo2));
@@ -126,7 +129,7 @@ class TodoRepositoryTest {
         Long id = todoRepository.save(todo1);
 
         todoRepository.deleteById(id);
-        List<Todo> result2 = todoRepository.findByStatus(TodoStatus.COMPLETE, member1.getId());
+        List<Todo> result2 = todoRepositorySupport.findDynamicQuery(null, "COMPLETE", member1.getId());
         Todo result3 = todoRepository.findById(id);
 
         //then

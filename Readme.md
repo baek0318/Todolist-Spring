@@ -142,4 +142,191 @@ test 상황을 보여주는 index.html에 들어가보면 어디서 에러가 �
 동적 쿼리를 위해 querydsl 도입하기
 </summary>
 
+### 기존 코드
+
+- **기존 컨트롤러 코드**
+```java
+@RestController
+@RequestMapping("/todo")
+public class TodoController {
+        
+    @GetMapping("/{member-id}")
+    public ResponseEntity<TodoResponse.TodoInfoList> getTodoByParam(
+            @RequestParam Map<String, String> param,
+            @PathVariable(name = "member-id") Long memberId) {
+        List<TodoResponse.TodoInfo> result = new ArrayList<>();
+
+        if (param.get("status") != null) {
+            List<Todo> todoList = todoService.findTodoByStatus(
+                    TodoStatus.valueOf(param.get("status")),
+                    memberId);
+            result = toTodoInfoList(todoList);
+        }
+        if (param.get("datetime") != null) {
+            List<Todo> todoList = todoService.findTodoByCalendar(
+                    LocalDate.parse(
+                            param.get("datetime"),
+                            DateTimeFormatter.ISO_LOCAL_DATE
+                    ),
+                    memberId);
+            result = toTodoInfoList(todoList);
+        }
+
+        return ResponseEntity.ok(new TodoResponse.TodoInfoList(result));
+    }
+}
+```
+- **기존 service 코드**
+```java
+@Service
+public class TodoService {
+
+    @Transactional
+    public List<Todo> findTodoByStatus(TodoStatus status, Long member_id) {
+        return todoRepository.findByStatus(status, member_id);
+    }
+
+    @Transactional
+    public List<Todo> findTodoByCalendar(LocalDate date, Long member_id) {
+        return todoRepository.findByDateTime(date, member_id);
+    }
+}
+```
+- **기존 repository 코드**
+```java
+@Repository
+public class TodoRepository {
+    /**
+     * 완료상태를 가지고 값을 찾는다
+     * @param status 찾고 싶은 상태
+     * @param member_id 현재 로그인된 member
+     * @return 해당하는 todo를 list로 반환한다
+     */
+    public List<Todo> findByStatus(TodoStatus status, Long member_id) {
+        return em.createQuery("select td from Todo td where td.status = :status and td.member.id = :id", Todo.class)
+                .setParameter("status", status)
+                .setParameter("id", member_id)
+                .getResultList();
+    }
+
+    /**
+     * 날짜 정보를 가지고 todo를 찾는다
+     * @param date 찾고 싶은 날짜
+     * @param member_id 현재 로그인된 member
+     * @return 해당하는 todo를 list로 반환한다
+     */
+    public List<Todo> findByDateTime(LocalDate date, Long member_id) {
+        return em.createQuery("select td from Todo td where td.date =:date and td.member.id = :id", Todo.class)
+                .setParameter("date", date)
+                .setParameter("id", member_id)
+                .getResultList();
+    }
+}
+```
+위에 코드를 보시면 아시겠지만 controller 계층에서 null체크를 하고 조건에 따라서 service 계층의 메서드를 부르는 것을 볼 수 있다
+조건 별로 service 계층에서 따로 메서드를 분리해서 사용하는 모습도 보인다
+이 코드를 한번 querydsl로 동적쿼리를 만들어보고자 한다
+
+### build.gradle 의존성 설치 (gradle 5.0 이상)
+```groovy
+dependencies {
+	compile 'com.querydsl:querydsl-core'
+	compile 'com.querydsl:querydsl-jpa'
+	annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jpa"
+	annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
+	annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
+}
+
+// 아래로는 QClass들을 담을 패키지 생성을 해주는 코드 
+def generated='src/main/generated'
+sourceSets {
+	main.java.srcDirs += [ generated ]
+}
+
+tasks.withType(JavaCompile) {
+	options.annotationProcessorGeneratedSourcesDirectory = file(generated)
+}
+
+clean.doLast {
+	file(generated).deleteDir()
+}
+```
+
+### 변경 후 코드
+- **변경 후 controller 코드**
+```java
+@RestController
+@RequestMapping("/todo")
+public class TodoController {
+
+    private final TodoService todoService;
+
+    public TodoController(TodoService todoService) {
+        this.todoService = todoService;
+    }
+
+    @GetMapping("/{member-id}")
+    public ResponseEntity<TodoResponse.TodoInfoList> getTodoByParam(
+            @RequestParam Map<String, String> param,
+            @PathVariable(name = "member-id") Long memberId) {
+
+        List<Todo> result = todoService.findByDynamicParam(param.get("status"), param.get("datetime"), memberId);
+
+        return ResponseEntity.ok(new TodoResponse.TodoInfoList(toTodoInfoList(result)));
+    }
+}
+```
+- **변경 후 service 코드**
+```java
+@Service
+public class TodoService {
+    @Transactional
+    public List<Todo> findByDynamicParam(String status, String datetime, Long memberId) {
+
+        return todoRepositorySupport.findDynamicQuery(datetime, status, memberId);
+    }
+}
+```
+- **변경 후 repository 코드**
+```java
+@Repository
+public class TodoRepositorySupport extends QuerydslRepositorySupport {
+
+    private final JPAQueryFactory queryFactory;
+
+    public TodoRepositorySupport(JPAQueryFactory queryFactory) {
+        super(Todo.class);
+        this.queryFactory = queryFactory;
+    }
+
+    public List<Todo> findDynamicQuery(String date, String status, Long memberId) {
+        return queryFactory
+                .selectFrom(todo)
+                .where(
+                        getStatus(status),
+                        getDate(date),
+                        todo.member.id.eq(memberId)
+                )
+                .fetch();
+    }
+
+    private BooleanExpression getDate(String date) {
+        if(date == null) {
+            return null;
+        }
+        return todo.date.eq(LocalDate.parse(date));
+    }
+
+    private BooleanExpression getStatus(String status) {
+        if(status == null) {
+            return null;
+        }
+        return todo.status.eq(TodoStatus.valueOf(status));
+    }
+}
+```
+기존에는 controller에서 null체크를 해주었고 조건에 따라 분리된 service 계층 메서드가 존재했다  
+querydsl을 적용한 다음에는 별도의 로직을 controller와 serive에서 해줄 필요없이 마지막 repository에서 처리가 가능하다  
+
+
 </details>

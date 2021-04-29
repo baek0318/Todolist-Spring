@@ -4,6 +4,7 @@ import com.peachberry.todolist.domain.*;
 import com.peachberry.todolist.repository.CategoryRepository;
 import com.peachberry.todolist.repository.MemberRepository;
 import com.peachberry.todolist.repository.TodoRepository;
+import com.peachberry.todolist.repository.TodoRepositorySupport;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,12 +16,19 @@ public class TodoService {
 
     private final TodoRepository todoRepository;
 
+    private final TodoRepositorySupport todoRepositorySupport;
+
     private final MemberRepository memberRepository;
 
     private final CategoryRepository categoryRepository;
 
-    public TodoService(TodoRepository todoRepository, MemberRepository memberRepository, CategoryRepository categoryRepository) {
+    public TodoService(TodoRepository todoRepository,
+                       TodoRepositorySupport todoRepositorySupport,
+                       MemberRepository memberRepository,
+                       CategoryRepository categoryRepository
+    ) {
         this.todoRepository = todoRepository;
+        this.todoRepositorySupport = todoRepositorySupport;
         this.memberRepository = memberRepository;
         this.categoryRepository = categoryRepository;
     }
@@ -45,16 +53,6 @@ public class TodoService {
     @Transactional
     public Todo findTodoById(Long todo_id) {
         return todoRepository.findById(todo_id);
-    }
-
-    @Transactional
-    public List<Todo> findTodoByStatus(TodoStatus status, Long member_id) {
-        return todoRepository.findByStatus(status, member_id);
-    }
-
-    @Transactional
-    public List<Todo> findTodoByCalendar(LocalDate date, Long member_id) {
-        return todoRepository.findByDateTime(date, member_id);
     }
 
     @Transactional
@@ -88,5 +86,11 @@ public class TodoService {
     @Transactional
     public void deleteTodo(Long todo_id) {
         todoRepository.deleteById(todo_id);
+    }
+
+    @Transactional
+    public List<Todo> findByDynamicParam(String status, String datetime, Long memberId) {
+
+        return todoRepositorySupport.findDynamicQuery(datetime, status, memberId);
     }
 }
