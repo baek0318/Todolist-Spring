@@ -136,3 +136,10 @@ test 상황을 보여주는 index.html에 들어가보면 어디서 에러가 �
 </details>
 
 - [controller layer 커스텀 필터 끼고 테스트](https://peachberry0318.tistory.com/32)
+
+<details>
+<summary>
+동적 쿼리를 위해 querydsl 도입하기
+</summary>
+
+</details>
