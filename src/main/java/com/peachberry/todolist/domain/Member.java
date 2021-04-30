@@ -1,7 +1,9 @@
 package com.peachberry.todolist.domain;
 
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -10,6 +12,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
 
     @Id
@@ -43,8 +46,11 @@ public class Member {
         this.authority = authority;
     }
 
-    protected Member() {
+   public void setEncryptPassword(String password) {
+        this.password = password;
+   }
 
-    }
-
+   public void setAuthority(Authority authority) {
+        this.authority = authority;
+   }
 }
