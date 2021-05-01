@@ -1,7 +1,10 @@
 package com.peachberry.todolist.controller.dto.auth;
 
+import com.peachberry.todolist.domain.Member;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -10,26 +13,30 @@ import javax.validation.constraints.Size;
 
 @Getter
 @Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SignUpDTO {
 
     @Email
     @NotBlank
-    private final String email;
+    private String email;
 
     @NotBlank
     @Size(min = 4)
-    private final String password;
+    private String password;
 
     @NotBlank
-    private final String authority;
+    private String name;
 
-    @NotBlank
-    private final String name;
-
-    public SignUpDTO(String email, String password, String name, String authority) {
+    public SignUpDTO(String email, String password, String name) {
         this.email = email;
         this.name = name;
         this.password = password;
-        this.authority = authority;
+    }
+
+    public Member toEntity() {
+        return Member.builder()
+                .name(this.name)
+                .email(this.email)
+                .build();
     }
 }

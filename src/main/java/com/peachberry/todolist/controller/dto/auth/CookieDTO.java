@@ -1,15 +1,19 @@
 package com.peachberry.todolist.controller.dto.auth;
 
+import lombok.AccessLevel;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.servlet.http.Cookie;
 
-@Getter
+@Data
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CookieDTO {
 
-    private final Cookie accessCookie;
+    private Cookie accessCookie;
 
-    private final Cookie refreshCookie;
+    private Cookie refreshCookie;
 
     public CookieDTO(Cookie accessCookie, Cookie refreshCookie) {
         this.accessCookie = accessCookie;
