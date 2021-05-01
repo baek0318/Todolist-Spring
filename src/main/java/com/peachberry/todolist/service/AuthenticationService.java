@@ -53,17 +53,18 @@ public class AuthenticationService {
     }
 
     @Transactional
-    public SignUpSuccessDTO signup(SignUpDTO signUpDTO) {
+    public SignUpSuccessDTO signup(String email, String password, String name) {
 
-        emailDuplication(signUpDTO.getEmail());
+        emailDuplication(email);
 
-        Authority authority = authorityService.saveAuthority(Role.valueOf(signUpDTO.getAuthority()));
+        Authority authority = authorityService.findAuthority(Role.USER);
 
         Member member = Member.builder()
-                .name(signUpDTO.getName())
-                .email(signUpDTO.getEmail())
-                .password(encoder.encode(signUpDTO.getPassword()))
-                .authority(authority).build();
+                .name(name)
+                .email(email)
+                .password(encoder.encode(password))
+                .authority(authority)
+                .build();
 
         Long id = memberRepository.save(member);
 

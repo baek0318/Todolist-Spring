@@ -12,6 +12,7 @@ import javax.persistence.PersistenceContext;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class AuthorityRepository {
@@ -36,10 +37,11 @@ public class AuthorityRepository {
      * @param role 찾고자하는 Role
      * @return 찾았다면 Authority 객체를 넘겨준다 아니면 null을 넘긴다
      */
-    public List<Authority> findByRole(Role role) {
+    public Optional<Authority> findByRole(Role role) {
         return em.createQuery("select a from Authority a where a.role = :role", Authority.class)
                 .setParameter("role", role)
-                .getResultList();
+                .getResultStream()
+                .findFirst();
     }
 
     public Authority findById(Long id) {

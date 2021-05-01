@@ -1,6 +1,8 @@
 package com.peachberry.todolist.domain;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -9,6 +11,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Authority {
 
     @Id
@@ -30,10 +33,6 @@ public class Authority {
     public Authority(Long id, Role role) {
         this.id = id;
         this.role = role;
-    }
-
-    protected Authority() {
-
     }
 
     @Override

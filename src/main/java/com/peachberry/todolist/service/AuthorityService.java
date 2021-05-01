@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AuthorityService {
@@ -18,13 +19,19 @@ public class AuthorityService {
     }
 
     @Transactional
-    public Authority saveAuthority(Role role) {
-        List<Authority> authorities = authorityRepository.findByRole(role);
-        if(!authorities.isEmpty()){
-            return authorities.get(0);
-        }else {
-            Authority authority = new Authority(role);
-            return authorityRepository.findById(authorityRepository.save(authority));
+    public Authority findAuthority(Role role) {
+        Optional<Authority> optionalAuthority = authorityRepository.findByRole(role);
+        nullCheck(optionalAuthority, role);
+        return optionalAuthority.get();
+    }
+
+    private void nullCheck(Optional<Authority> optionalAuthority, Role role) {
+        if(optionalAuthority.isEmpty()) {
+            saveAuthority(role);
         }
+    }
+
+    private void saveAuthority(Role role) {
+        authorityRepository.save(new Authority(role));
     }
 }
