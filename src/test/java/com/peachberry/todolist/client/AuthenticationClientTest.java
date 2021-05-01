@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
+import org.springframework.security.core.parameters.P;
 
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class AuthenticationClientTest {
     @Autowired
     private CookieUtil cookieUtil;
 
-    private final SignUpDTO signUpDTO = new SignUpDTO("peachberry3@kakao.com", "1234", "peachberry", "USER");
+    private final SignUpDTO signUpDTO = new SignUpDTO("peachberry3@kakao.com", "1234", "peachberry");
 
     private final SignInDTO signInDTO = new SignInDTO("peachberry2@kakao.com", "1234");
 

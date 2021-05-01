@@ -7,6 +7,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @RepositoryTest
@@ -18,30 +19,23 @@ public class AuthorityRepositoryTest {
     @Test
     @DisplayName("값을 저장후 저장 확인")
     void authoritySaveNFind() {
-        //given
-        Authority authority = new Authority(Role.USER);
-        authorityRepository.save(authority);
         //when
-        List<Authority> result = authorityRepository.findByRole(Role.USER);
+        Optional<Authority> result = authorityRepository.findByRole(Role.USER);
 
         //then
-        Assertions.assertThat(result.get(0).getRole()).isEqualTo(Role.USER);
+        Assertions.assertThat(result.get().getRole()).isEqualTo(Role.USER);
     }
 
     @Test
     @DisplayName("없는 권한을 찾을 때")
     void authorityNoName() {
-        //given
-        Authority authority = new Authority(Role.USER);
-        authorityRepository.save(authority);
 
         //when
-        List<Authority> resultEmpty = authorityRepository.findByRole(Role.ADMIN);
-        List<Authority> result = authorityRepository.findByRole(Role.USER);
+        Optional<Authority> resultEmpty = authorityRepository.findByRole(Role.ADMIN);
+        Optional<Authority> result = authorityRepository.findByRole(Role.USER);
         //then
         Assertions.assertThat(resultEmpty.isEmpty()).isTrue();
-        Assertions.assertThat(result.size()).isEqualTo(2);
-        Assertions.assertThat(result.get(0).getRole()).isEqualTo(Role.USER);
+        Assertions.assertThat(result.get().getRole()).isEqualTo(Role.USER);
     }
 
 }

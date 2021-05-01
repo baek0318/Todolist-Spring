@@ -63,7 +63,7 @@ public class AuthenticationServiceTest {
     private AuthenticationService authenticationService;
 
     private final Logger logger = LoggerFactory.getLogger(AuthenticationServiceTest.class);
-    private final SignUpDTO signUpDTO = new SignUpDTO("peachberry@kakao.com", "1234", "peachberry", "USER");
+    private final SignUpDTO signUpDTO = new SignUpDTO("peachberry@kakao.com", "1234", "peachberry");
     private final Authority authority = new Authority(Role.USER);
     private final Member member = Member.builder().email("peachberry@kakao.com").name("peachberry").authority(authority).password("1234").build();
     private final SignInDTO signInDTO = new SignInDTO("peachberry@kakao.com", "1234");
@@ -73,9 +73,10 @@ public class AuthenticationServiceTest {
     void testSignUp() {
         given(memberRepository.findByEmail(any())).willReturn(Collections.emptyList());
         given(memberRepository.save(any())).willReturn(1L);
-        given(authorityService.saveAuthority(any())).willReturn(authority);
+        given(authorityService.findAuthority(any())).willReturn(authority);
 
-        SignUpSuccessDTO success = authenticationService.signup(signUpDTO);
+        SignUpSuccessDTO success = authenticationService
+                .signup(signUpDTO.getEmail(), signUpDTO.getPassword(), signUpDTO.getName());
 
         Assertions.assertThat(success.getId()).isEqualTo(1L);
         Assertions.assertThat(success.getEmail()).isEqualTo(member.getEmail());
@@ -88,8 +89,9 @@ public class AuthenticationServiceTest {
     void testSignUp_Failed() {
         given(memberRepository.findByEmail(any())).willReturn(Collections.singletonList(member));
 
-        Assertions.assertThatThrownBy(() -> authenticationService.signup(signUpDTO))
-                .isInstanceOf(SignUpFailException.class);
+        Assertions.assertThatThrownBy(
+                () -> authenticationService.signup(signUpDTO.getEmail(), signUpDTO.getPassword(), signUpDTO.getName())
+        ).isInstanceOf(SignUpFailException.class);
     }
 
     @Test

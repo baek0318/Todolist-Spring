@@ -63,7 +63,7 @@ public class AuthenticationControllerTest {
     @Autowired
     private JwtAuthEntryPoint jwtAuthEntryPoint;
 
-    private final SignUpDTO signUpDTO = new SignUpDTO("peachberry4@kakao.com", "1234", "peachberry", "USER");
+    private final SignUpDTO signUpDTO = new SignUpDTO("peachberry4@kakao.com", "1234", "peachberry");
 
     private final SignInDTO signInDTO = new SignInDTO("peachberry4@kakao.com", "1234");
 
@@ -72,7 +72,7 @@ public class AuthenticationControllerTest {
     void testSignUp() throws Exception {
         String content = objectMapper.writeValueAsString(signUpDTO);
 
-        given(authenticationService.signup(any()))
+        given(authenticationService.signup(anyString(), anyString(), anyString()))
                 .willReturn(SignUpSuccessDTO.builder()
                         .email("peachberry4@kakao.com")
                         .name("peachberry")
@@ -96,7 +96,8 @@ public class AuthenticationControllerTest {
     void testSignUp_if_signup_fail() throws Exception {
         String content = objectMapper.writeValueAsString(signUpDTO);
 
-        given(authenticationService.signup(any())).willThrow(new SignUpFailException("해당 이메일이 존재합니다"));
+        given(authenticationService.signup(anyString(), anyString(), anyString()))
+                .willThrow(new SignUpFailException("해당 이메일이 존재합니다"));
 
         mockMvc.perform(post("/auth/signup")
                 .accept(MediaType.APPLICATION_JSON)
