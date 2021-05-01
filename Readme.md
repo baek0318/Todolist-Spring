@@ -91,10 +91,10 @@
 |DELETE|category/{member-id}/{category-id}||
 
 ### Authentication API
-|HttpMethod|URL|Parameters|
-|---|---|---|
-|POST|/auth/signup|name : String, email : String, password : String|
-|POST|/auth/signin|email : String, password : String|
+|HttpMethod|URL|Parameters|Return|
+|---|---|---|---|
+|POST|/auth/signup|name : String</br> email : String</br> password : String|id : Long </br> email : String </br> name : String|
+|POST|/auth/signin|email : String</br> password : String||
 |GET|/auth/signout||
 |GET|/auth/issue-access||
 
