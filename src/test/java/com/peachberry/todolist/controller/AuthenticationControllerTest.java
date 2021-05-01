@@ -115,7 +115,7 @@ public class AuthenticationControllerTest {
         Cookie access = cookieUtil.createAccessCookie("");
         Cookie refresh = cookieUtil.createRefreshCookie("");
 
-        given(authenticationService.signin(any()))
+        given(authenticationService.signin(anyString(), anyString()))
                 .willReturn(new CookieDTO(access, refresh));
 
         mockMvc.perform(post("/auth/signin")
@@ -136,7 +136,7 @@ public class AuthenticationControllerTest {
     void testSignIn_Failed() throws Exception {
         String content = objectMapper.writeValueAsString(signInDTO);
 
-        given(authenticationService.signin(any())).willThrow(new SignInFailException("로그인에 실패했습니다"));
+        given(authenticationService.signin(anyString(), anyString())).willThrow(new SignInFailException("로그인에 실패했습니다"));
 
         mockMvc.perform(post("/auth/signin")
                 .contentType(MediaType.APPLICATION_JSON)

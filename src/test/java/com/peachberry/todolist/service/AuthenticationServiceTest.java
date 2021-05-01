@@ -103,7 +103,7 @@ public class AuthenticationServiceTest {
         given(cookieUtil.createAccessCookie(anyString())).willReturn(new Cookie("ACCESS-TOKEN", "peachberry@kakao.com"));
         given(cookieUtil.createRefreshCookie(anyString())).willReturn(new Cookie("REFRESH-TOKEN", "peachberry@kakao.com"));
 
-        CookieDTO cookies = authenticationService.signin(signInDTO);
+        CookieDTO cookies = authenticationService.signin(signInDTO.getEmail(), signInDTO.getPassword());
 
         String access = cookies.getAccessCookie().getValue();
         String refresh = cookies.getRefreshCookie().getValue();
@@ -118,7 +118,10 @@ public class AuthenticationServiceTest {
     void testSignInt_Failed() {
         given(authenticationManager.authenticate(any())).willThrow(new DisabledException("인증이 올바르지 않습니다"));
 
-        Assertions.assertThatThrownBy(() -> authenticationService.signin(signInDTO)).isInstanceOf(SignInFailException.class);
+        Assertions
+                .assertThatThrownBy(
+                () -> authenticationService.signin(signInDTO.getEmail(), signInDTO.getPassword()))
+                .isInstanceOf(SignInFailException.class);
     }
 
     @Test
