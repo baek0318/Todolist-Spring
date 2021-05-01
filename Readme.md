@@ -93,7 +93,7 @@
 ### Authentication API
 |HttpMethod|URL|Parameters|
 |---|---|---|
-|POST|/auth/signup|member-name : String, email : String, password : String|
+|POST|/auth/signup|name : String, email : String, password : String|
 |POST|/auth/signin|email : String, password : String|
 |GET|/auth/signout||
 |GET|/auth/issue-access||
