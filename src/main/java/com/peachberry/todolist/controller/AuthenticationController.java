@@ -54,9 +54,9 @@ public class AuthenticationController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<?> memberSignIn(@Valid @RequestBody SignInDTO user, HttpServletResponse response) {
+    public ResponseEntity<?> memberSignIn(@Valid @RequestBody SignInDTO signInDTO, HttpServletResponse response) {
 
-        CookieDTO cookieDTO = authenticationService.signin(user);
+        CookieDTO cookieDTO = authenticationService.signin(signInDTO.getEmail(), signInDTO.getPassword());
 
         response.addCookie(cookieDTO.getAccessCookie());
         response.addCookie(cookieDTO.getRefreshCookie());

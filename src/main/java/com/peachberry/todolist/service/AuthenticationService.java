@@ -83,10 +83,10 @@ public class AuthenticationService {
         }
     }
 
-    public CookieDTO signin(SignInDTO signInDTO) {
+    public CookieDTO signin(String email, String password) {
         try {
             Authentication authentication = authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(signInDTO.getEmail(), signInDTO.getPassword()));
+                    .authenticate(new UsernamePasswordAuthenticationToken(email, password));
 
             String access_token = jwtUtil.accessTokenGenerate(authentication);
             String refresh_token = jwtUtil.refreshTokenGenerate(authentication);
