@@ -93,9 +93,9 @@
 ### Authentication API
 |HttpMethod|URL|Parameters|Return|
 |---|---|---|---|
-|POST|/auth/signup|name : String</br> email : String</br> password : String|id : Long </br> email : String </br> name : String|
-|POST|/auth/signin|email : String</br> password : String||
-|GET|/auth/signout||
+|POST|/auth/signup|name : String</br> email : String</br> password : String|id : Long|
+|POST|/auth/signin|email : String</br> password : String|login : true|
+|GET|/auth/signout| |login : false|
 |GET|/auth/issue-access||
 
 ### Member API
