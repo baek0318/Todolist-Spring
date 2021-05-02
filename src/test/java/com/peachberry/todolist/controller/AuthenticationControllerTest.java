@@ -4,14 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peachberry.todolist.domain.Authority;
 import com.peachberry.todolist.domain.Member;
 import com.peachberry.todolist.controller.dto.auth.CookieDTO;
-import com.peachberry.todolist.controller.dto.auth.SignInDTO;
+import com.peachberry.todolist.controller.dto.auth.SignInRequest;
 import com.peachberry.todolist.security.cookie.CookieUtil;
 import com.peachberry.todolist.security.domain.UserDetailsImpl;
 import com.peachberry.todolist.service.exception.SignInFailException;
 import com.peachberry.todolist.service.exception.SignUpFailException;
 import com.peachberry.todolist.domain.Role;
-import com.peachberry.todolist.controller.dto.auth.SignUpDTO;
-import com.peachberry.todolist.controller.dto.auth.SignUpSuccessDTO;
+import com.peachberry.todolist.controller.dto.auth.SignUpRequest;
+import com.peachberry.todolist.controller.dto.auth.SignUpResponse;
 import com.peachberry.todolist.security.cookie.CookieUtilImpl;
 import com.peachberry.todolist.security.jwt.JwtAuthEntryPoint;
 import com.peachberry.todolist.security.jwt.JwtAuthTokenFilter;
@@ -63,38 +63,30 @@ public class AuthenticationControllerTest {
     @Autowired
     private JwtAuthEntryPoint jwtAuthEntryPoint;
 
-    private final SignUpDTO signUpDTO = new SignUpDTO("peachberry4@kakao.com", "1234", "peachberry");
+    private final SignUpRequest signUpRequest = new SignUpRequest("peachberry4@kakao.com", "1234", "peachberry");
 
-    private final SignInDTO signInDTO = new SignInDTO("peachberry4@kakao.com", "1234");
+    private final SignInRequest signInRequest = new SignInRequest("peachberry4@kakao.com", "1234");
 
     @Test
     @DisplayName("회원가입을 진행시에 올바른 응답값이 나오는지 확인")
     void testSignUp() throws Exception {
-        String content = objectMapper.writeValueAsString(signUpDTO);
+        String content = objectMapper.writeValueAsString(signUpRequest);
 
         given(authenticationService.signup(anyString(), anyString(), anyString()))
-                .willReturn(SignUpSuccessDTO.builder()
-                        .email("peachberry4@kakao.com")
-                        .name("peachberry")
-                        .role(Role.USER)
-                        .id(1L)
-                        .build());
+                .willReturn(1L);
 
         mockMvc.perform(post("/auth/signup")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("email").value("peachberry4@kakao.com"))
-                .andExpect(jsonPath("name").value("peachberry"))
-                .andExpect(jsonPath("role").value("USER"))
                 .andExpect(jsonPath("id").value(1L));
     }
 
     @Test
     @DisplayName("회원가입이 실패한 경우")
     void testSignUp_if_signup_fail() throws Exception {
-        String content = objectMapper.writeValueAsString(signUpDTO);
+        String content = objectMapper.writeValueAsString(signUpRequest);
 
         given(authenticationService.signup(anyString(), anyString(), anyString()))
                 .willThrow(new SignUpFailException("해당 이메일이 존재합니다"));
@@ -110,7 +102,7 @@ public class AuthenticationControllerTest {
     @DisplayName("로그인이 성공한 경우")
     void testSignIn() throws Exception {
 
-        String content = objectMapper.writeValueAsString(signInDTO);
+        String content = objectMapper.writeValueAsString(signInRequest);
 
         Cookie access = cookieUtil.createAccessCookie("");
         Cookie refresh = cookieUtil.createRefreshCookie("");
@@ -122,7 +114,7 @@ public class AuthenticationControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content))
-                .andExpect(jsonPath("response").value("SignIn Success"))
+                .andExpect(jsonPath("login").value("true"))
                 .andExpect(status().isOk())
                 .andExpect(cookie().httpOnly("ACCESS-TOKEN", true))
                 .andExpect(cookie().httpOnly("REFRESH-TOKEN", true))
@@ -134,7 +126,7 @@ public class AuthenticationControllerTest {
     @Test
     @DisplayName("로그인이 실패한 경우")
     void testSignIn_Failed() throws Exception {
-        String content = objectMapper.writeValueAsString(signInDTO);
+        String content = objectMapper.writeValueAsString(signInRequest);
 
         given(authenticationService.signin(anyString(), anyString())).willThrow(new SignInFailException("로그인에 실패했습니다"));
 

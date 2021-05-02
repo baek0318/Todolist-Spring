@@ -5,9 +5,7 @@ import com.peachberry.todolist.domain.Authority;
 import com.peachberry.todolist.domain.Member;
 import com.peachberry.todolist.domain.Role;
 import com.peachberry.todolist.controller.dto.auth.CookieDTO;
-import com.peachberry.todolist.controller.dto.auth.SignInDTO;
-import com.peachberry.todolist.controller.dto.auth.SignUpDTO;
-import com.peachberry.todolist.controller.dto.auth.SignUpSuccessDTO;
+import com.peachberry.todolist.controller.dto.auth.SignUpResponse;
 import com.peachberry.todolist.repository.MemberRepository;
 import com.peachberry.todolist.security.cookie.CookieUtil;
 import com.peachberry.todolist.security.jwt.JwtUtil;
@@ -53,7 +51,7 @@ public class AuthenticationService {
     }
 
     @Transactional
-    public SignUpSuccessDTO signup(String email, String password, String name) {
+    public Long signup(String email, String password, String name) {
 
         emailDuplication(email);
 
@@ -68,12 +66,7 @@ public class AuthenticationService {
 
         Long id = memberRepository.save(member);
 
-        return SignUpSuccessDTO.builder()
-                .id(id)
-                .role(member.getAuthority().getRole())
-                .email(member.getEmail())
-                .name(member.getName())
-                .build();
+        return id;
     }
 
     private void emailDuplication(String email) {

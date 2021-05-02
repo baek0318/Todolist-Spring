@@ -1,16 +1,15 @@
 package com.peachberry.todolist.controller;
 
-import com.peachberry.todolist.controller.dto.auth.CookieDTO;
-import com.peachberry.todolist.controller.dto.auth.SignInDTO;
+import com.peachberry.todolist.controller.dto.auth.*;
 import com.peachberry.todolist.controller.dto.SuccessResponseDTO;
 import com.peachberry.todolist.security.cookie.CookieUtil;
 import com.peachberry.todolist.service.exception.SignInFailException;
 import com.peachberry.todolist.service.exception.SignUpFailException;
-import com.peachberry.todolist.controller.dto.auth.SignUpDTO;
-import com.peachberry.todolist.controller.dto.auth.SignUpSuccessDTO;
 import com.peachberry.todolist.service.AuthenticationService;
+import org.apache.coyote.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +23,8 @@ import javax.validation.Valid;
 @RequestMapping("/auth")
 public class AuthenticationController {
 
+    private final String COOKIE = "Cookie";
+
     private final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
 
     private final AuthenticationService authenticationService;
@@ -36,15 +37,15 @@ public class AuthenticationController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> memberSignUp(@Valid @RequestBody SignUpDTO signUpDto) {
+    public ResponseEntity<SignUpResponse> memberSignUp(@Valid @RequestBody SignUpRequest signUpRequest) {
 
-        SignUpSuccessDTO response = authenticationService.signup(
-                signUpDto.getEmail(),
-                signUpDto.getPassword(),
-                signUpDto.getName()
+        Long response = authenticationService.signup(
+                signUpRequest.getEmail(),
+                signUpRequest.getPassword(),
+                signUpRequest.getName()
         );
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(new SignUpResponse(response));
     }
 
     @ExceptionHandler
@@ -54,13 +55,16 @@ public class AuthenticationController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<?> memberSignIn(@Valid @RequestBody SignInDTO signInDTO, HttpServletResponse response) {
+    public ResponseEntity<SignInResponse> memberSignIn(
+            @Valid @RequestBody SignInRequest signInRequest,
+            HttpServletResponse response
+    ) {
 
-        CookieDTO cookieDTO = authenticationService.signin(signInDTO.getEmail(), signInDTO.getPassword());
+        CookieDTO cookieDTO = authenticationService.signin(signInRequest.getEmail(), signInRequest.getPassword());
 
         response.addCookie(cookieDTO.getAccessCookie());
         response.addCookie(cookieDTO.getRefreshCookie());
-        return ResponseEntity.ok(SuccessResponseDTO.builder().response("SignIn Success").build());
+        return ResponseEntity.ok(new SignInResponse(true));
     }
 
     @ExceptionHandler
@@ -70,17 +74,17 @@ public class AuthenticationController {
     }
 
     @GetMapping("/signout")
-    public ResponseEntity<?> memberSignOut(HttpServletResponse response) {
+    public ResponseEntity<SignOutResponse> memberSignOut(HttpServletResponse response) {
 
         CookieDTO cookies = authenticationService.signout();
 
         response.addCookie(cookies.getAccessCookie());
         response.addCookie(cookies.getRefreshCookie());
-        return ResponseEntity.ok(SuccessResponseDTO.builder().response("SignOut Success").build());
+        return ResponseEntity.ok(new SignOutResponse(false));
     }
 
     @GetMapping("/issueAccess")
-    public ResponseEntity<?> issueAccess(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<SuccessResponseDTO> issueAccess(HttpServletRequest request, HttpServletResponse response) {
 
         Cookie refreshCookie = cookieUtil.getRefreshCookie(request);
 

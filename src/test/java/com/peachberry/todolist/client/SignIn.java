@@ -1,8 +1,7 @@
 package com.peachberry.todolist.client;
 
 import com.peachberry.todolist.controller.dto.SuccessResponseDTO;
-import com.peachberry.todolist.controller.dto.auth.SignInDTO;
-import org.junit.jupiter.api.BeforeEach;
+import com.peachberry.todolist.controller.dto.auth.SignInRequest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -13,7 +12,7 @@ import java.util.Collections;
 
 public abstract class SignIn {
 
-    private final SignInDTO signInDTO = new SignInDTO("peachberry2@kakao.com", "1234");
+    private final SignInRequest signInRequest = new SignInRequest("peachberry2@kakao.com", "1234");
 
     protected HttpHeaders headers;
 
@@ -22,7 +21,7 @@ public abstract class SignIn {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 
-        HttpEntity<SignInDTO> request = new HttpEntity<>(signInDTO, headers);
+        HttpEntity<SignInRequest> request = new HttpEntity<>(signInRequest, headers);
 
         ResponseEntity<SuccessResponseDTO> response = restTemplate
                 .postForEntity("/auth/signin", request, SuccessResponseDTO.class);

@@ -4,9 +4,9 @@ import com.peachberry.todolist.domain.Authority;
 import com.peachberry.todolist.domain.Member;
 import com.peachberry.todolist.domain.Role;
 import com.peachberry.todolist.controller.dto.auth.CookieDTO;
-import com.peachberry.todolist.controller.dto.auth.SignInDTO;
-import com.peachberry.todolist.controller.dto.auth.SignUpDTO;
-import com.peachberry.todolist.controller.dto.auth.SignUpSuccessDTO;
+import com.peachberry.todolist.controller.dto.auth.SignInRequest;
+import com.peachberry.todolist.controller.dto.auth.SignUpRequest;
+import com.peachberry.todolist.controller.dto.auth.SignUpResponse;
 import com.peachberry.todolist.repository.MemberRepository;
 import com.peachberry.todolist.security.cookie.CookieUtil;
 import com.peachberry.todolist.security.jwt.JwtUtil;
@@ -63,10 +63,10 @@ public class AuthenticationServiceTest {
     private AuthenticationService authenticationService;
 
     private final Logger logger = LoggerFactory.getLogger(AuthenticationServiceTest.class);
-    private final SignUpDTO signUpDTO = new SignUpDTO("peachberry@kakao.com", "1234", "peachberry");
+    private final SignUpRequest signUpRequest = new SignUpRequest("peachberry@kakao.com", "1234", "peachberry");
     private final Authority authority = new Authority(Role.USER);
     private final Member member = Member.builder().email("peachberry@kakao.com").name("peachberry").authority(authority).password("1234").build();
-    private final SignInDTO signInDTO = new SignInDTO("peachberry@kakao.com", "1234");
+    private final SignInRequest signInRequest = new SignInRequest("peachberry@kakao.com", "1234");
 
     @Test
     @DisplayName("회원가입 부르기")
@@ -75,13 +75,10 @@ public class AuthenticationServiceTest {
         given(memberRepository.save(any())).willReturn(1L);
         given(authorityService.findAuthority(any())).willReturn(authority);
 
-        SignUpSuccessDTO success = authenticationService
-                .signup(signUpDTO.getEmail(), signUpDTO.getPassword(), signUpDTO.getName());
+        Long result = authenticationService
+                .signup(signUpRequest.getEmail(), signUpRequest.getPassword(), signUpRequest.getName());
 
-        Assertions.assertThat(success.getId()).isEqualTo(1L);
-        Assertions.assertThat(success.getEmail()).isEqualTo(member.getEmail());
-        Assertions.assertThat(success.getRole()).isEqualTo(member.getAuthority().getRole());
-        Assertions.assertThat(success.getName()).isEqualTo(member.getName());
+        Assertions.assertThat(result).isEqualTo(1L);
     }
 
     @Test
@@ -90,7 +87,7 @@ public class AuthenticationServiceTest {
         given(memberRepository.findByEmail(any())).willReturn(Collections.singletonList(member));
 
         Assertions.assertThatThrownBy(
-                () -> authenticationService.signup(signUpDTO.getEmail(), signUpDTO.getPassword(), signUpDTO.getName())
+                () -> authenticationService.signup(signUpRequest.getEmail(), signUpRequest.getPassword(), signUpRequest.getName())
         ).isInstanceOf(SignUpFailException.class);
     }
 
@@ -103,14 +100,14 @@ public class AuthenticationServiceTest {
         given(cookieUtil.createAccessCookie(anyString())).willReturn(new Cookie("ACCESS-TOKEN", "peachberry@kakao.com"));
         given(cookieUtil.createRefreshCookie(anyString())).willReturn(new Cookie("REFRESH-TOKEN", "peachberry@kakao.com"));
 
-        CookieDTO cookies = authenticationService.signin(signInDTO.getEmail(), signInDTO.getPassword());
+        CookieDTO cookies = authenticationService.signin(signInRequest.getEmail(), signInRequest.getPassword());
 
         String access = cookies.getAccessCookie().getValue();
         String refresh = cookies.getRefreshCookie().getValue();
 
         //실제에서는 jwtUtil를 가지고 parsing을 진행해야한다
-        Assertions.assertThat(access).isEqualTo(signInDTO.getEmail());
-        Assertions.assertThat(refresh).isEqualTo(signInDTO.getEmail());
+        Assertions.assertThat(access).isEqualTo(signInRequest.getEmail());
+        Assertions.assertThat(refresh).isEqualTo(signInRequest.getEmail());
     }
 
     @Test
@@ -120,7 +117,7 @@ public class AuthenticationServiceTest {
 
         Assertions
                 .assertThatThrownBy(
-                () -> authenticationService.signin(signInDTO.getEmail(), signInDTO.getPassword()))
+                () -> authenticationService.signin(signInRequest.getEmail(), signInRequest.getPassword()))
                 .isInstanceOf(SignInFailException.class);
     }
 

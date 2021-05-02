@@ -1,9 +1,9 @@
 package com.peachberry.todolist.client;
 
 import com.peachberry.todolist.domain.Role;
-import com.peachberry.todolist.controller.dto.auth.SignInDTO;
-import com.peachberry.todolist.controller.dto.auth.SignUpDTO;
-import com.peachberry.todolist.controller.dto.auth.SignUpSuccessDTO;
+import com.peachberry.todolist.controller.dto.auth.SignInRequest;
+import com.peachberry.todolist.controller.dto.auth.SignUpRequest;
+import com.peachberry.todolist.controller.dto.auth.SignUpResponse;
 import com.peachberry.todolist.controller.dto.SuccessResponseDTO;
 import com.peachberry.todolist.security.cookie.CookieUtil;
 import com.peachberry.todolist.security.jwt.JwtUtil;
@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
-import org.springframework.security.core.parameters.P;
 
 import java.util.List;
 
@@ -33,9 +32,9 @@ public class AuthenticationClientTest {
     @Autowired
     private CookieUtil cookieUtil;
 
-    private final SignUpDTO signUpDTO = new SignUpDTO("peachberry3@kakao.com", "1234", "peachberry");
+    private final SignUpRequest signUpRequest = new SignUpRequest("peachberry3@kakao.com", "1234", "peachberry");
 
-    private final SignInDTO signInDTO = new SignInDTO("peachberry2@kakao.com", "1234");
+    private final SignInRequest signInRequest = new SignInRequest("peachberry2@kakao.com", "1234");
 
     private final Logger logger = LoggerFactory.getLogger(AuthenticationClientTest.class);
 
@@ -48,16 +47,13 @@ public class AuthenticationClientTest {
 
         HttpHeaders headers = new HttpHeaders();
 
-        HttpEntity<SignUpDTO> request = new HttpEntity<>(signUpDTO, headers);
+        HttpEntity<SignUpRequest> request = new HttpEntity<>(signUpRequest, headers);
 
-        ResponseEntity<SignUpSuccessDTO> response = restTemplate
-                .postForEntity("/auth/signup",request ,SignUpSuccessDTO.class);
+        ResponseEntity<SignUpResponse> response = restTemplate
+                .postForEntity("/auth/signup",request , SignUpResponse.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getRole()).isEqualTo(Role.USER);
-        assertThat(response.getBody().getName()).isEqualTo(signUpDTO.getName());
-        assertThat(response.getBody().getEmail()).isEqualTo(signUpDTO.getEmail());
-        assertThat(response.getBody().getId()).isNotNull();
+        assertThat(response.getBody().getId()).isEqualTo(2L);
     }
 
     @Test
@@ -67,7 +63,7 @@ public class AuthenticationClientTest {
 
         HttpHeaders headers = new HttpHeaders();
 
-        HttpEntity<SignInDTO> request = new HttpEntity<>(signInDTO, headers);
+        HttpEntity<SignInRequest> request = new HttpEntity<>(signInRequest, headers);
 
         ResponseEntity<SuccessResponseDTO> response = restTemplate
                 .postForEntity("/auth/signin", request, SuccessResponseDTO.class);
@@ -81,8 +77,8 @@ public class AuthenticationClientTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(access_header).isEqualTo("ACCESS-TOKEN");
         assertThat(refresh_header).isEqualTo("REFRESH-TOKEN");
-        assertThat(jwtUtil.getEmailFromJwtToken(access_token)).isEqualTo(signInDTO.getEmail());
-        assertThat(jwtUtil.getEmailFromJwtToken(refresh_token)).isEqualTo(signInDTO.getEmail());
+        assertThat(jwtUtil.getEmailFromJwtToken(access_token)).isEqualTo(signInRequest.getEmail());
+        assertThat(jwtUtil.getEmailFromJwtToken(refresh_token)).isEqualTo(signInRequest.getEmail());
     }
 
     @Test
@@ -110,7 +106,7 @@ public class AuthenticationClientTest {
 
         HttpHeaders headers2 = new HttpHeaders();
 
-        HttpEntity<SignInDTO> request = new HttpEntity<>(signInDTO, headers2);
+        HttpEntity<SignInRequest> request = new HttpEntity<>(signInRequest, headers2);
 
         ResponseEntity<SuccessResponseDTO> response2 = restTemplate
                 .postForEntity("/auth/signin", request, SuccessResponseDTO.class);
