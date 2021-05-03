@@ -54,9 +54,7 @@ public class CategoryController {
                 .map(it -> new CategoryResponse.CategoryInfo(it.getId(), it.getTitle()))
                 .collect(Collectors.toList());
 
-        CategoryResponse.CategoryList categoryListDTO = new CategoryResponse.CategoryList(result);
-
-        return ResponseEntity.ok(categoryListDTO);
+        return ResponseEntity.ok(new CategoryResponse.CategoryList(result));
     }
 
 
