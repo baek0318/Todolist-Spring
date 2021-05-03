@@ -69,26 +69,26 @@
 
 ### Todo API
 
-|HttpMethod|URL|Parameters|
-|---|---|---|
-|POST|/todo/{member-id}|title : String, status : Enum, category-id : Long|
-|GET|/todo/{member-id}/all||
-|GET|/todo/{member-id}/{todo-id}||
-|GET|/todo/{member-id}|datetime : String|
-|GET|/todo/{member-id}|status : boolean|
-|PUT|/todo/{member-id}|title : String|
-|PUT|/todo/{member-id}|datetime : String|
-|PUT|/todo/{member-id}|status : boolean|
-|DELETE|/todo/|todoId : Long|
+|HttpMethod|URL|Parameters|Return|
+|---|---|---|---|
+|POST|/todo/{member-id}|title : String, status : Enum, category-id : Long|id : Long|
+|GET|/todo/{member-id}/all| |[id : Long, </br> date : LocalDate, </br> title : String, </br> status : TodoStatus, </br> category-id : Long, </br>, category-title : String]
+|GET|/todo/{member-id}/{todo-id}| |id : Long, </br> date : LocalDate, </br> title : String, </br> status : TodoStatus, </br> category-id : Long, </br>, category-title : String| 
+|GET|/todo/{member-id}|datetime : String|[id : Long, </br> date : LocalDate, </br> title : String, </br> status : TodoStatus, </br> category-id : Long, </br>, category-title : String]|
+|GET|/todo/{member-id}|status : boolean|[id : Long, </br> date : LocalDate, </br> title : String, </br> status : TodoStatus, </br> category-id : Long, </br>, category-title : String]|
+|PUT|/todo/{member-id}|title : String|id : Long|
+|PUT|/todo/{member-id}|datetime : String|id : Long|
+|PUT|/todo/{member-id}|status : boolean|id : Long|
+|DELETE|/todo/|todoId : Long|message : DELETE|
 
 ### Category API
-|HttpMethod|URL|Parameters|
-|---|---|---|
-|POST|category/{member-id}|title : String|
-|GET|category/{member-id}/all||
-|GET|category/{member-id}|title : String|
-|PUT|category/{member-id}|title : String|
-|DELETE|category/{member-id}/{category-id}||
+|HttpMethod|URL|Parameters|Return|
+|---|---|---|---|
+|POST|category/{member-id}|title : String|id : Long|
+|GET|category/{member-id}/all| |[id : Long, </br> title : String </br>]|
+|GET|category/{member-id}|title : String|id : Long, </br> title : String </br>|
+|PUT|category/{member-id}|title : String|id : Long|
+|DELETE|category/{member-id}/{category-id}| |message : DELETE|
 
 ### Authentication API
 |HttpMethod|URL|Parameters|Return|
@@ -99,9 +99,9 @@
 |GET|/auth/issue-access||
 
 ### Member API
-|HttpMethod|URL|Parameters|
-|---|---|---|
-|GET|/member/{member-id}||
+|HttpMethod|URL|Parameters|Return|
+|---|---|---|---|
+|GET|/member/{member-id}| |id : Long, </br> email : String, </br> name : String, </br> authName : String|
 
 
 ## 오류 해결 & 개선사항
