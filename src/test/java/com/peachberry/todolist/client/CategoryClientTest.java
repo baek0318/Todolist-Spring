@@ -1,8 +1,11 @@
 package com.peachberry.todolist.client;
 
+import com.peachberry.todolist.data.AuthorityData;
+import com.peachberry.todolist.data.DatabaseCleanup;
 import com.peachberry.todolist.controller.dto.CategoryControllerDto;
 import com.peachberry.todolist.controller.dto.CategoryResponse;
 import com.peachberry.todolist.controller.dto.SuccessResponseDTO;
+import com.peachberry.todolist.domain.Role;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +21,17 @@ public class CategoryClientTest extends SignIn {
     @Autowired
     private TestRestTemplate restTemplate;
 
+    @Autowired
+    private DatabaseCleanup databaseCleanup;
+
+    @Autowired
+    private AuthorityData authorityData;
+
     @BeforeEach
     @Override
     void setUp() {
+        authorityData.saveAuthority(Role.USER);
+        signUp(restTemplate);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
@@ -28,6 +39,10 @@ public class CategoryClientTest extends SignIn {
         this.headers = headers;
     }
 
+    @AfterEach
+    void tearDown() {
+        databaseCleanup.execute();
+    }
 
     @Test
     @DisplayName("카테고리 저장하기")
@@ -39,7 +54,11 @@ public class CategoryClientTest extends SignIn {
         HttpEntity<CategoryControllerDto.Save> request = new HttpEntity<>(categorySaveDTO, headers);
 
         ResponseEntity<CategoryResponse.Save> response = restTemplate
-                .postForEntity("/category/{member-id}", request, CategoryResponse.Save.class,1L);
+                .postForEntity(
+                        "/category/{member-id}",
+                        request,
+                        CategoryResponse.Save.class,
+                        1L);
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         Assertions.assertThat(response.getBody().getId()).isNotNull();
@@ -52,7 +71,8 @@ public class CategoryClientTest extends SignIn {
         HttpEntity request = new HttpEntity<>(headers);
 
         ResponseEntity<CategoryResponse.CategoryList> responseEntity = restTemplate
-                .exchange("/category/{member-id}/all",
+                .exchange(
+                        "/category/{member-id}/all",
                         HttpMethod.GET,
                         request,
                         CategoryResponse.CategoryList.class,
