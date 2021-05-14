@@ -1,6 +1,7 @@
 package com.peachberry.todolist.client;
 
 import com.peachberry.todolist.data.AuthorityData;
+import com.peachberry.todolist.data.CategoryData;
 import com.peachberry.todolist.data.DatabaseCleanup;
 import com.peachberry.todolist.controller.dto.CategoryControllerDto;
 import com.peachberry.todolist.controller.dto.CategoryResponse;
@@ -16,7 +17,7 @@ import org.springframework.http.*;
 import java.util.Collections;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class CategoryClientTest extends SignIn {
+public class CategoryClientTest extends AuthUtil {
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -27,11 +28,14 @@ public class CategoryClientTest extends SignIn {
     @Autowired
     private AuthorityData authorityData;
 
+    @Autowired
+    private CategoryData categoryData;
+
     @BeforeEach
     @Override
     void setUp() {
         authorityData.saveAuthority(Role.USER);
-        signUp(restTemplate);
+        userId = signUp(restTemplate);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
@@ -67,7 +71,8 @@ public class CategoryClientTest extends SignIn {
     @Test
     @DisplayName("모든 카테고리 검색하기")
     void testFindAllCategory() {
-
+        Long categoryId1 = categoryData.saveCategory("하루일과", userId);
+        Long categoryId2 = categoryData.saveCategory("하루일과2", userId);
         HttpEntity request = new HttpEntity<>(headers);
 
         ResponseEntity<CategoryResponse.CategoryList> responseEntity = restTemplate
@@ -80,35 +85,36 @@ public class CategoryClientTest extends SignIn {
 
         CategoryResponse.CategoryList response = responseEntity.getBody();
 
-        for(CategoryResponse.CategoryInfo info : response.getCategoryList()) {
-            System.out.println("info id : "+info.getId() +" info title : "+ info.getTitle());
-        }
         Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Assertions.assertThat(responseEntity.getBody().getCategoryList().size()).isGreaterThan(1);
+        for(int i = 1; i <= response.getCategoryList().size(); i++) {
+            Assertions.assertThat(response.getCategoryList().get(i-1).getId()).isEqualTo(i);
+        }
+        Assertions.assertThat(responseEntity.getBody().getCategoryList()).isNotNull();
     }
 
     @Test
     @DisplayName("특정 제목으로 카테고리 검색하기")
     void testFindCategoryByTitle() {
-
+        Long categoryId = categoryData.saveCategory("하루일과", userId);
         HttpEntity request = new HttpEntity<>(headers);
 
         ResponseEntity<CategoryResponse.CategoryInfo> responseEntity = restTemplate
-                .exchange("/category/{member-id}?title=하루일과3",
+                .exchange("/category/{member-id}?title=하루일과",
                         HttpMethod.GET,
                         request,
                         CategoryResponse.CategoryInfo.class,
-                        1);
+                        userId);
 
         CategoryResponse.CategoryInfo info = responseEntity.getBody();
-        Assertions.assertThat(info.getTitle()).isEqualTo("하루일과3");
-        Assertions.assertThat(info.getId()).isEqualTo(2L);
+        Assertions.assertThat(info.getTitle()).isEqualTo("하루일과");
+        Assertions.assertThat(info.getId()).isEqualTo(categoryId);
     }
 
     @Test
     @DisplayName("해당 카테고리 업데이트하기")
     void testUpdateCategory() {
-        CategoryControllerDto.Update update = new CategoryControllerDto.Update(2L, "하루일과4");
+        Long categoryId = categoryData.saveCategory("하루일과", userId);
+        CategoryControllerDto.Update update = new CategoryControllerDto.Update(categoryId, "하루일과4");
         HttpEntity<CategoryControllerDto.Update> request = new HttpEntity<>(update, headers);
 
         ResponseEntity<CategoryResponse.Update> responseEntity = restTemplate
@@ -116,17 +122,18 @@ public class CategoryClientTest extends SignIn {
                         HttpMethod.PUT,
                         request,
                         CategoryResponse.Update.class,
-                        1L);
+                        userId);
 
         CategoryResponse.Update updated = responseEntity.getBody();
-        Assertions.assertThat(updated.getId()).isEqualTo(2L);
+        Assertions.assertThat(updated.getId()).isEqualTo(categoryId);
         Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
     @DisplayName("해당 카테고리 삭제하기")
     void testDeleteCategory() {
-        CategoryControllerDto.Delete delete = new CategoryControllerDto.Delete(3L);
+        Long categoryId = categoryData.saveCategory("하루일과", userId);
+        CategoryControllerDto.Delete delete = new CategoryControllerDto.Delete(categoryId);
         HttpEntity<CategoryControllerDto.Delete> request = new HttpEntity<>(delete, headers);
 
         ResponseEntity<SuccessResponseDTO> responseEntity = restTemplate.exchange(
@@ -134,7 +141,7 @@ public class CategoryClientTest extends SignIn {
                 HttpMethod.DELETE,
                 request,
                 SuccessResponseDTO.class,
-                1L);
+                userId);
 
         SuccessResponseDTO response = responseEntity.getBody();
 
