@@ -17,7 +17,6 @@ public class Todo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "todo_id")
     private Long id;
 
     @ManyToOne

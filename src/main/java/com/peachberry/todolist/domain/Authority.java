@@ -16,7 +16,6 @@ public class Authority {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "authority_id")
     private Long id;
 
     @Enumerated(EnumType.STRING)
