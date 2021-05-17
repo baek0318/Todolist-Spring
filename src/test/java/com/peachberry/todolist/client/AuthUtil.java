@@ -15,7 +15,7 @@ public abstract class AuthUtil {
 
     private final SignInRequest signInRequest = new SignInRequest("peachberry2@kakao.com", "1234");
 
-    private final SignUpRequest signUpRequest = new SignUpRequest(
+    protected final SignUpRequest signUpRequest = new SignUpRequest(
             "peachberry2@kakao.com",
             "peach",
             "1234");
