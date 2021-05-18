@@ -4,6 +4,12 @@ import com.peachberry.todolist.controller.dto.CategoryControllerDto;
 import com.peachberry.todolist.controller.dto.TodoRequest;
 import com.peachberry.todolist.controller.dto.TodoResponse;
 import com.peachberry.todolist.controller.dto.SuccessResponseDTO;
+import com.peachberry.todolist.data.AuthorityData;
+import com.peachberry.todolist.data.CategoryData;
+import com.peachberry.todolist.data.DatabaseCleanup;
+import com.peachberry.todolist.data.TodoData;
+import com.peachberry.todolist.domain.Role;
+import com.peachberry.todolist.domain.TodoStatus;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,18 +21,37 @@ import java.time.LocalDate;
 import java.util.Collections;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class TodoClientTest extends SignIn{
+public class TodoClientTest extends AuthUtil {
 
     @Autowired
     private TestRestTemplate restTemplate;
 
+    @Autowired
+    private AuthorityData authorityData;
+
+    @Autowired
+    private CategoryData categoryData;
+
+    @Autowired
+    private TodoData todoData;
+
+    @Autowired
+    private DatabaseCleanup dbCleanUp;
+
     @BeforeEach
     void setUp() {
+        authorityData.saveAuthority(Role.USER);
+        userId = signUp(restTemplate);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.add("Cookie", signin(restTemplate));
         this.headers = headers;
+    }
+
+    @AfterEach
+    void tearDown() {
+        dbCleanUp.execute();
     }
 
     @Test
@@ -48,6 +73,9 @@ public class TodoClientTest extends SignIn{
     @Test
     @DisplayName("전체 Todo 목록 가져오기")
     void testLoadAllData() {
+        Long categoryId = categoryData.saveCategory("하루일과", userId);
+        todoData.saveTodo(userId, categoryId, LocalDate.now(), "밥 먹기", TodoStatus.ING);
+        todoData.saveTodo(userId, categoryId, LocalDate.now(), "학교가기", TodoStatus.ING);
 
         HttpEntity request = new HttpEntity(headers);
 
@@ -68,6 +96,9 @@ public class TodoClientTest extends SignIn{
     @Test
     @DisplayName("특정 Todo 하나만 가져오기")
     void testGetOneTodo() {
+        Long categoryId = categoryData.saveCategory("하루일과", userId);
+        Long todoId1 = todoData.saveTodo(userId, categoryId, LocalDate.now(), "밥 먹기", TodoStatus.ING);
+        Long todoId2 = todoData.saveTodo(userId, categoryId, LocalDate.now(), "학교가기", TodoStatus.ING);
 
         HttpEntity request = new HttpEntity(headers);
 
@@ -76,12 +107,12 @@ public class TodoClientTest extends SignIn{
                 HttpMethod.GET,
                 request,
                 TodoResponse.TodoInfo.class,
-                1L,2L);
+                userId, todoId2);
 
         TodoResponse.TodoInfo response = responseEntity.getBody();
 
         Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Assertions.assertThat(response.getId()).isEqualTo(2L);
+        Assertions.assertThat(response.getId()).isEqualTo(todoId2);
         Assertions.assertThat(response.getTitle()).isEqualTo("학교가기");
 
     }
@@ -129,9 +160,14 @@ public class TodoClientTest extends SignIn{
     @Test
     @DisplayName("Todo 날짜 수정하기")
     void testUpdateDate() {
+        Long categoryId = categoryData.saveCategory("하루일과", userId);
+        Long todoId1 = todoData.saveTodo(userId, categoryId, LocalDate.now(), "밥 먹기", TodoStatus.ING);
+        Long todoId2 = todoData.saveTodo(userId, categoryId, LocalDate.now(), "학교가기", TodoStatus.ING);
+
         CategoryControllerDto.CategoryInfo categoryInfo = new CategoryControllerDto.CategoryInfo(2L);
+
         TodoRequest.Update updateDto = new TodoRequest.Update(
-                1L,
+                todoId1,
                 categoryInfo,
                 "밥먹기2",
                 "2021-04-10",
@@ -146,14 +182,17 @@ public class TodoClientTest extends SignIn{
                         TodoResponse.Update.class);
 
         Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Assertions.assertThat(responseEntity.getBody().getId()).isEqualTo(1L);
+        Assertions.assertThat(responseEntity.getBody().getId()).isEqualTo(todoId1);
     }
 
     @Test
     @DisplayName("Todo 삭제하기")
     void testDeleteTodo() {
+        Long categoryId = categoryData.saveCategory("하루일과", userId);
+        Long todoId1 = todoData.saveTodo(userId, categoryId, LocalDate.now(), "밥 먹기", TodoStatus.ING);
+        Long todoId2 = todoData.saveTodo(userId, categoryId, LocalDate.now(), "학교가기", TodoStatus.ING);
 
-        TodoRequest.Delete delete = new TodoRequest.Delete(2L);
+        TodoRequest.Delete delete = new TodoRequest.Delete(todoId1);
 
         HttpEntity<TodoRequest.Delete> request = new HttpEntity<>(delete, headers);
 
@@ -161,8 +200,7 @@ public class TodoClientTest extends SignIn{
                 .exchange("/todo",
                         HttpMethod.DELETE,
                         request,
-                        SuccessResponseDTO.class,
-                        1L);
+                        SuccessResponseDTO.class);
 
         Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         Assertions.assertThat(responseEntity.getBody().getResponse()).isEqualTo("DELETE");
