@@ -1,30 +1,26 @@
 package com.peachberry.todolist.repository;
 
-import com.peachberry.todolist.AppConfig;
+import com.peachberry.todolist.QueryDslConfig;
 import com.peachberry.todolist.domain.*;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.context.annotation.Import;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-@RepositoryTest
+@DataJpaTest
+@Import({TodoRepository.class,
+        MemberRepository.class,
+        AuthorityRepository.class,
+        CategoryRepository.class,
+        TodoRepositorySupport.class,
+        QueryDslConfig.class})
 class TodoRepositoryTest {
 
     @Autowired
