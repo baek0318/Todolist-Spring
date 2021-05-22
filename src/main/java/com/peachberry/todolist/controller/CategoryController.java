@@ -12,10 +12,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
+import org.springframework.web.util.UriComponents;
 
 import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 
 @RestController
 @RequestMapping("/category/{member-id}")
@@ -32,12 +36,17 @@ public class CategoryController {
     @PostMapping
     public ResponseEntity<CategoryResponse.Save> saveCategory(
             @Valid @RequestBody CategoryControllerDto.Save saveDto,
-            @PathVariable(name = "member-id") Long id
-    )
+            @PathVariable(name = "member-id") Long id )
     {
         Long result = categoryService.saveCategory(saveDto.toServiceDto(id));
 
-        return ResponseEntity.ok(new CategoryResponse.Save(result));
+        UriComponents uriComponents = MvcUriComponentsBuilder
+                .fromMethodCall(on(CategoryController.class).saveCategory(saveDto, id))
+                .build();
+
+        return ResponseEntity
+                .created(uriComponents.encode().toUri())
+                .body(new CategoryResponse.Save(result));
     }
 
     @ExceptionHandler

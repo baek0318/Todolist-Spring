@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
+import org.springframework.web.util.UriComponents;
 
 import javax.validation.Path;
 import javax.validation.Valid;
@@ -21,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 
 @RestController
 @RequestMapping("/todo")
@@ -40,7 +44,13 @@ public class TodoController {
 
         Long result = todoService.saveTodo(saveDto.toEntity(), memberId, saveDto.getCategoryId());
 
-        return ResponseEntity.ok(new TodoResponse.Save(result));
+        UriComponents uriComponents = MvcUriComponentsBuilder
+                .fromMethodCall(on(TodoController.class).save(saveDto, memberId))
+                .build();
+
+        return ResponseEntity
+                .created(uriComponents.encode().toUri())
+                .body(new TodoResponse.Save(result));
     }
 
     @GetMapping("{member-id}/all")

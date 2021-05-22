@@ -11,17 +11,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
+import org.springframework.web.util.UriComponents;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthenticationController {
-
-    private final String COOKIE = "Cookie";
 
     private final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
 
@@ -43,7 +45,13 @@ public class AuthenticationController {
                 signUpRequest.getName()
         );
 
-        return ResponseEntity.ok(new SignUpResponse(response));
+        UriComponents uriComponents = MvcUriComponentsBuilder
+                .fromMethodCall(on(AuthenticationController.class).memberSignUp(signUpRequest))
+                .build();
+
+        return ResponseEntity
+                .created(uriComponents.encode().toUri())
+                .body(new SignUpResponse(response));
     }
 
     @ExceptionHandler

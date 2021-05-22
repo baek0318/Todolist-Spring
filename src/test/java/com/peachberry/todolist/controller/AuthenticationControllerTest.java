@@ -38,6 +38,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -79,7 +80,8 @@ public class AuthenticationControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content))
-                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("id").value(1L));
     }
 
