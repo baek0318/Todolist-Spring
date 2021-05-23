@@ -66,7 +66,7 @@ public class TodoClientTest extends AuthUtil {
                         TodoResponse.Save.class,
                         1);
 
-        Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         Assertions.assertThat(responseEntity.getBody().getId()).isNotNull();
     }
 

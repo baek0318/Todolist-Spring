@@ -64,7 +64,7 @@ public class CategoryClientTest extends AuthUtil {
                         CategoryResponse.Save.class,
                         1L);
 
-        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         Assertions.assertThat(response.getBody().getId()).isNotNull();
     }
 

@@ -79,7 +79,7 @@ public class AuthenticationClientTest {
         ResponseEntity<SignUpResponse> response = restTemplate
                 .postForEntity("/auth/signup",request , SignUpResponse.class);
         System.out.println("ID : "+response.getBody().getId());
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody().getId()).isEqualTo(1L);
     }
 
